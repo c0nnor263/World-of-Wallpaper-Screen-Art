@@ -1,5 +1,6 @@
 package com.notdoppler.feature.home.presentation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -22,9 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.notdoppler.core.domain.domain.model.FetchedImage
-import com.notdoppler.core.domain.presentation.TabCategory
-import com.notdoppler.feature.home.domain.model.TabInfo
+import com.notdoppler.core.domain.model.FetchedImage
+import com.notdoppler.feature.home.domain.tabInfo
 import com.notdoppler.feature.home.presentation.common.HomeModalNavigationDrawer
 import com.notdoppler.feature.home.presentation.common.HomeScreenScaffold
 import com.notdoppler.feature.home.presentation.image.ImageCard
@@ -49,33 +51,40 @@ fun HomeScreen(
 }
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     images: LazyPagingItems<FetchedImage.Hit>,
     onNavigateToDetails: (FetchedImage.Hit?) -> Unit
 ) {
+    val pagerState = rememberPagerState {
+        tabInfo.size
+    }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         TabImages(modifier = Modifier.fillMaxWidth())
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(3),
-            verticalItemSpacing = 4.dp,
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1F)
-        ) {
-            items(images.itemCount) { index ->
-                ImageCard(
-                    image = images[index] ?: return@items,
-                    onNavigateToDetails = onNavigateToDetails,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                )
+            // TODO: Complete the implementation of the TabImages composable
+        HorizontalPager(state = pagerState) { page ->
+            LazyVerticalStaggeredGrid(
+                columns = StaggeredGridCells.Fixed(3),
+                verticalItemSpacing = 4.dp,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1F)
+            ) {
+                items(images.itemCount) { index ->
+                    ImageCard(
+                        image = images[index] ?: return@items,
+                        onNavigateToDetails = onNavigateToDetails,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                    )
+                }
             }
         }
     }
@@ -85,16 +94,6 @@ private fun HomeScreenContent(
 @Composable
 private fun TabImages(modifier: Modifier = Modifier) {
     var currentTab by remember { mutableIntStateOf(0) }
-    val tabInfo = remember {
-        listOf(
-            TabInfo(title = "RECENT", category = TabCategory.RECENT),
-            TabInfo(title = "PREMIUM", category = TabCategory.PREMIUM),
-            TabInfo(title = "RANDOM", category = TabCategory.RANDOM),
-            TabInfo(title = "WEEKLY POPULAR", category = TabCategory.WEEKLY_POPULAR),
-            TabInfo(title = "MONTHLY POPULAR", category = TabCategory.MONTHLY_POPULAR),
-            TabInfo(title = "MOST POPULAR", category = TabCategory.MOST_POPULAR)
-        )
-    }
 
     ScrollableTabRow(
         modifier = modifier,

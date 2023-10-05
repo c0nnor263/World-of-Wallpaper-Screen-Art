@@ -7,7 +7,7 @@ import com.notdoppler.core.domain.model.ImageRequestInfo
 import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
 import javax.inject.Inject
 
-class ImagePagingSource @Inject constructor(
+class ImagePagerPagingSource @Inject constructor(
     private val remoteImageSource: RemoteImageSource,
     private val imageRequestInfo: ImageRequestInfo,
 ) : PagingSource<Int, FetchedImage.Hit>() {
@@ -17,7 +17,7 @@ class ImagePagingSource @Inject constructor(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FetchedImage.Hit> {
         return try {
-            val key = params.key ?: 1
+            val key = params.key ?: imageRequestInfo.key ?: 1
             val response = remoteImageSource.getImagesByPage(key, imageRequestInfo.category)
             val hits = response.hits ?: throw Exception("No data")
             LoadResult.Page(

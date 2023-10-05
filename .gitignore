@@ -17,3 +17,5 @@ local.properties
 # Project exclude paths
 /buildSrc/build/
 /buildSrc/build/classes/kotlin/main/
+/keystore.properties
+/Firebase CLI/functions/wordefull-cf277-e8d47b1d8be6.json

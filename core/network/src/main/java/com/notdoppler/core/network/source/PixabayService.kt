@@ -1,7 +1,7 @@
 package com.notdoppler.core.network.source
 
 import com.notdoppler.core.data.API_KEY
-import com.notdoppler.core.domain.domain.model.FetchedImage
+import com.notdoppler.core.domain.model.FetchedImage
 import retrofit2.http.GET
 import retrofit2.http.Query
 import java.util.Locale

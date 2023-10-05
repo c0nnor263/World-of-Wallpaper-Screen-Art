@@ -27,7 +27,7 @@ object versions {
         const val bom = "2023.09.02"
         const val compiler = "1.5.3"
         const val hiltNavigation = "1.0.0"
-        const val navigation = "2.7.0-alpha01"
+        const val navigation = "2.7.4"
         val constraintLayout = "1.0.1"
     }
 

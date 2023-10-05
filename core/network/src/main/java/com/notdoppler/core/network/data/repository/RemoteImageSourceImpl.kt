@@ -1,6 +1,6 @@
 package com.notdoppler.core.network.data.repository
 
-import com.notdoppler.core.domain.domain.model.FetchedImage
+import com.notdoppler.core.domain.model.FetchedImage
 import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
 import com.notdoppler.core.domain.presentation.TabCategory
 import com.notdoppler.core.network.source.PixabayService

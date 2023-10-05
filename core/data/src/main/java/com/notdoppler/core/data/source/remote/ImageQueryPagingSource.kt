@@ -2,8 +2,8 @@ package com.notdoppler.core.data.source.remote
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.notdoppler.core.domain.domain.model.FetchedImage
-import com.notdoppler.core.domain.domain.model.ImageRequestInfo
+import com.notdoppler.core.domain.model.FetchedImage
+import com.notdoppler.core.domain.model.ImageRequestInfo
 import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
 import javax.inject.Inject
 

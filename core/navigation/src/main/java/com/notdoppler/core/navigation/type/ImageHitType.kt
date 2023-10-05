@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.navigation.NavType
 import com.google.gson.Gson
-import com.notdoppler.core.domain.domain.model.FetchedImage
+import com.notdoppler.core.domain.model.FetchedImage
 
 class ImageHitType : NavType<FetchedImage.Hit>(isNullableAllowed = false) {
   override fun get(bundle: Bundle, key: String): FetchedImage.Hit? {
