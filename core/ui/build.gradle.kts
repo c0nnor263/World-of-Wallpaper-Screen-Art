@@ -56,4 +56,6 @@ dependencies {
     composeCore()
 
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation ("androidx.paging:paging-runtime:3.2.1")
+    implementation ("androidx.paging:paging-compose:3.2.1")
 }

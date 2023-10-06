@@ -19,36 +19,48 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.notdoppler.feature.picturedetails.domain.enums.DragAnchors
 import com.notdoppler.feature.picturedetails.domain.model.AnchoredDraggableInfo
-import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AnchoredDraggableArea(
     modifier: Modifier = Modifier,
-    onEnd: () -> Unit = {},
+    onTopEnd: () -> Unit,
+    onBottomEnd: () -> Unit,
     content: @Composable (AnchoredDraggableInfo) -> Unit
 ) {
     val density = LocalDensity.current
-
-    var isEnd by remember { mutableStateOf(false) }
+    var isTopEnd by remember { mutableStateOf(false) }
+    var isBottomEnd by remember { mutableStateOf(false) }
     var lastProgress: Float by remember { mutableFloatStateOf(0F) }
+
     val state = remember {
         AnchoredDraggableState(
             initialValue = DragAnchors.Start,
             positionalThreshold = { distance: Float -> distance * 1f },
             velocityThreshold = { with(density) { 1000.dp.toPx() } },
             animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
+                dampingRatio = Spring.DampingRatioLowBouncy,
                 stiffness = Spring.StiffnessLow,
             ),
-        ) {
-            if (it == DragAnchors.End) {
-                if (!isEnd) onEnd()
-                isEnd = true
-                true
-            } else {
-                lastProgress = 0F
-                true
+        ) { anchor ->
+            when (anchor) {
+                DragAnchors.TopEnd -> {
+                    if (!isTopEnd) onTopEnd()
+                    isTopEnd = true
+                    true
+                }
+
+                DragAnchors.BottomEnd -> {
+                    if (!isBottomEnd) onBottomEnd()
+                    isBottomEnd = true
+                    lastProgress = 0F
+                    false
+                }
+
+                else -> {
+                    lastProgress = 0F
+                    true
+                }
             }
 
         }
@@ -57,7 +69,6 @@ fun AnchoredDraggableArea(
             lastProgress = it
         }
     }
-
 
     Box(
         modifier
@@ -78,7 +89,7 @@ fun AnchoredDraggableArea(
             AnchoredDraggableInfo(
                 state = state,
                 progress = lastProgress,
-                isEnd = isEnd
+                isEnd = isTopEnd
             )
         )
     }

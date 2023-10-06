@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class ImageQueryPagingSource @Inject constructor(
     private val remoteImageSource: RemoteImageSource,
-    private val imageRequestInfo: ImageRequestInfo
+    private val info: ImageRequestInfo
 ) : PagingSource<Int, FetchedImage.Hit>() {
     override fun getRefreshKey(state: PagingState<Int, FetchedImage.Hit>): Int? {
         return state.anchorPosition
@@ -19,7 +19,7 @@ class ImageQueryPagingSource @Inject constructor(
         return try {
             val key = params.key ?: 1
             val response =
-                remoteImageSource.getImagesByQuery(index = key, query = imageRequestInfo.query)
+                remoteImageSource.getImagesByQuery(info.copy(pageKey = key))
             val hits = response.hits ?: throw Exception("No data")
             LoadResult.Page(
                 data = hits,

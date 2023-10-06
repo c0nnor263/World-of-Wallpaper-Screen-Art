@@ -11,12 +11,14 @@ interface PixabayService {
     @GET("api")
     suspend fun getImagesByPage(
         @Query(value = "key") key: String = API_KEY,
-        @Query(value = "page") page: Int = 1,
+        @Query(value = "page") pageKey: Int = 1,
         @Query(value = "q", encoded = true) q: String? = null,
         @Query(value = "lang") lang: String = Locale.getDefault().country.lowercase(),
         @Query(value = "orientation") orientation: String = "vertical",
-        @Query(value = "category") category: String? = null
-
+        @Query(value = "category") category: String? = null,
+        @Query(value = "order") order: String? = null,
+        @Query(value = "per_page") perPage: Int = 20,
+        @Query(value = "safesearch") safesearch: Boolean = true,
     ): FetchedImage
 
 }

@@ -18,14 +18,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.notdoppler.core.domain.model.FetchedImage
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ImageCard(
     modifier: Modifier = Modifier,
     image: FetchedImage.Hit,
     onNavigateToDetails: (FetchedImage.Hit) -> Unit
 ) {
-    val density = LocalDensity.current
     Card(
         modifier = modifier.clickable(onClick = { onNavigateToDetails(image) }),
     ) {

@@ -1,26 +1,28 @@
 package com.notdoppler.core.network.data.repository
 
 import com.notdoppler.core.domain.model.FetchedImage
+import com.notdoppler.core.domain.model.ImageRequestInfo
 import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
-import com.notdoppler.core.domain.presentation.TabCategory
 import com.notdoppler.core.network.source.PixabayService
 import javax.inject.Inject
 
 class RemoteImageSourceImpl @Inject constructor(
     private val pixabayService: PixabayService
 ) : RemoteImageSource {
-    override suspend fun getImagesByPage(index: Int, category: TabCategory?): FetchedImage {
+    override suspend fun getImagesByPage(info: ImageRequestInfo): FetchedImage {
         return pixabayService.getImagesByPage(
-            page = index,
+            pageKey = info.pageKey,
             q = "",
-            category = category?.name ?: ""
+            order = info.order.requestValue,
+            perPage = info.pageSize
+
         )
     }
 
-    override suspend fun getImagesByQuery(index: Int, query: String?): FetchedImage {
+    override suspend fun getImagesByQuery(info: ImageRequestInfo): FetchedImage {
         return pixabayService.getImagesByPage(
-            page = index,
-            q = query
+            pageKey = info.pageKey,
+            q = info.query
         )
     }
 }

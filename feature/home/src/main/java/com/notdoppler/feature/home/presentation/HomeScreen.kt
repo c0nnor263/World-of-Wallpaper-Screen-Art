@@ -11,40 +11,42 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.compose.LazyPagingItems
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.notdoppler.core.domain.model.FetchedImage
+import com.notdoppler.core.domain.presentation.TabOrder
+import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.home.domain.tabInfo
 import com.notdoppler.feature.home.presentation.common.HomeModalNavigationDrawer
 import com.notdoppler.feature.home.presentation.common.HomeScreenScaffold
+import com.notdoppler.feature.home.presentation.common.TabImages
 import com.notdoppler.feature.home.presentation.image.ImageCard
+import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    onNavigateToDetails: (FetchedImage.Hit?) -> Unit
+    onNavigateToDetails: (Int, TabOrder) -> Unit
 ) {
-    val images = viewModel.imagesState.collectAsLazyPagingItems()
+    val tabPagingState = viewModel.tabPagingState
+
     HomeModalNavigationDrawer { drawerState ->
         HomeScreenScaffold(drawerState = drawerState) { innerPadding ->
             HomeScreenContent(
-                images = images,
+                tabPagingState = tabPagingState,
+                onNavigateToDetails = onNavigateToDetails,
+                onGetImages = viewModel::getImages,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding),
-                onNavigateToDetails = onNavigateToDetails
             )
         }
     }
@@ -55,19 +57,34 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
-    images: LazyPagingItems<FetchedImage.Hit>,
-    onNavigateToDetails: (FetchedImage.Hit?) -> Unit
+    tabPagingState: SnapshotStateMap<TabOrder, MutableStateFlow<PagingData<FetchedImage.Hit>>?>,
+    onGetImages: (TabOrder) -> Unit,
+    onNavigateToDetails: (Int, TabOrder) -> Unit
 ) {
-    val pagerState = rememberPagerState {
-        tabInfo.size
+
+    val pagerState = rememberPagerState { tabInfo.size }
+
+    LaunchedEffect(Unit) {
+        onGetImages(TabOrder.LATEST)
     }
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect {
+            val tabOrder = tabInfo[it].order
+            onGetImages(tabOrder)
+        }
+    }
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        TabImages(modifier = Modifier.fillMaxWidth())
-            // TODO: Complete the implementation of the TabImages composable
-        HorizontalPager(state = pagerState) { page ->
+        TabImages(modifier = Modifier.fillMaxWidth(), pagerState = pagerState)
+
+        HorizontalPager(state = pagerState) { pageIndex ->
+            val tabInfo = tabInfo[pageIndex]
+            val images =
+                tabPagingState[tabInfo.order]?.collectAsLazyPagingItems() ?: return@HorizontalPager
+
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(3),
                 verticalItemSpacing = 4.dp,
@@ -79,7 +96,9 @@ private fun HomeScreenContent(
                 items(images.itemCount) { index ->
                     ImageCard(
                         image = images[index] ?: return@items,
-                        onNavigateToDetails = onNavigateToDetails,
+                        onNavigateToDetails = {
+                            onNavigateToDetails(index, tabInfo.order)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight(),
@@ -89,27 +108,3 @@ private fun HomeScreenContent(
         }
     }
 }
-
-
-@Composable
-private fun TabImages(modifier: Modifier = Modifier) {
-    var currentTab by remember { mutableIntStateOf(0) }
-
-    ScrollableTabRow(
-        modifier = modifier,
-        selectedTabIndex = currentTab,
-        edgePadding = 0.dp,
-    ) {
-        tabInfo.forEachIndexed { index, tabInfo ->
-            Tab(
-                text = { Text(text = tabInfo.title) },
-                selected = currentTab == index,
-                onClick = {
-                    currentTab = index
-                }
-            )
-        }
-    }
-}
-
-
