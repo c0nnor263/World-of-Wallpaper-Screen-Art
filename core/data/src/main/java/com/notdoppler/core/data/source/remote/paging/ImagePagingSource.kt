@@ -1,15 +1,15 @@
-package com.notdoppler.core.data.source.remote
+package com.notdoppler.core.data.source.remote.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.notdoppler.core.domain.model.FetchedImage
 import com.notdoppler.core.domain.model.ImageRequestInfo
-import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
 import javax.inject.Inject
 
-class ImageQueryPagingSource @Inject constructor(
+class ImagePagingSource @Inject constructor(
     private val remoteImageSource: RemoteImageSource,
-    private val info: ImageRequestInfo
+    private val info: ImageRequestInfo,
 ) : PagingSource<Int, FetchedImage.Hit>() {
     override fun getRefreshKey(state: PagingState<Int, FetchedImage.Hit>): Int? {
         return state.anchorPosition
@@ -17,9 +17,8 @@ class ImageQueryPagingSource @Inject constructor(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, FetchedImage.Hit> {
         return try {
-            val key = params.key ?: 1
-            val response =
-                remoteImageSource.getImagesByQuery(info.copy(pageKey = key))
+            val key = params.key ?: info.pageKey
+            val response = remoteImageSource.getImagesByPage(info.copy(pageKey = key))
             val hits = response.hits ?: throw Exception("No data")
             LoadResult.Page(
                 data = hits,

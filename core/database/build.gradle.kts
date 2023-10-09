@@ -32,6 +32,7 @@ android {
     kotlinOptions {
         jvmTarget = versions.config.jvmTarget
     }
+
 }
 
 dependencies {

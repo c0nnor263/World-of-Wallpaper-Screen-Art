@@ -1,4 +1,4 @@
-package com.notdoppler.core.domain.source.remote.repositories
+package com.notdoppler.core.domain.source.remote.repository
 
 import com.notdoppler.core.domain.model.FetchedImage
 import com.notdoppler.core.domain.model.ImageRequestInfo

@@ -22,6 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.notdoppler.core.domain.model.FetchedImage
+import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.home.domain.tabInfo
@@ -34,7 +35,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    onNavigateToDetails: (Int, TabOrder) -> Unit
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
     val tabPagingState = viewModel.tabPagingState
 
@@ -59,7 +60,7 @@ private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     tabPagingState: SnapshotStateMap<TabOrder, MutableStateFlow<PagingData<FetchedImage.Hit>>?>,
     onGetImages: (TabOrder) -> Unit,
-    onNavigateToDetails: (Int, TabOrder) -> Unit
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
 
     val pagerState = rememberPagerState { tabInfo.size }
@@ -97,7 +98,7 @@ private fun HomeScreenContent(
                     ImageCard(
                         image = images[index] ?: return@items,
                         onNavigateToDetails = {
-                            onNavigateToDetails(index, tabInfo.order)
+                            onNavigateToDetails(PictureDetailsNavArgs(index, tabInfo.order))
                         },
                         modifier = Modifier
                             .fillMaxWidth()

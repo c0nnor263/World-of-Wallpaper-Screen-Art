@@ -2,7 +2,7 @@ package com.notdoppler.core.network.data.repository
 
 import com.notdoppler.core.domain.model.FetchedImage
 import com.notdoppler.core.domain.model.ImageRequestInfo
-import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
 import com.notdoppler.core.network.source.PixabayService
 import javax.inject.Inject
 

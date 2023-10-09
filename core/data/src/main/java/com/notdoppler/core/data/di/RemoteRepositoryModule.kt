@@ -1,7 +1,7 @@
 package com.notdoppler.core.data.di
 
 import com.notdoppler.core.data.source.remote.repository.ImagesRepositoryImpl
-import com.notdoppler.core.domain.source.remote.repositories.ImagesRepository
+import com.notdoppler.core.domain.source.remote.repository.ImagesRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

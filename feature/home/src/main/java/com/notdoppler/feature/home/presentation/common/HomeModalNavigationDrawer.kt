@@ -1,6 +1,8 @@
 package com.notdoppler.feature.home.presentation.common
 
 import androidx.compose.foundation.layout.mandatorySystemGesturesPadding
+import androidx.compose.foundation.layout.safeGesturesPadding
+import androidx.compose.foundation.layout.systemGesturesPadding
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ModalDrawerSheet
@@ -20,8 +22,8 @@ fun HomeModalNavigationDrawer(
         drawerContent = {
             HomeModalNavigationDrawerContent()
         },
-        gesturesEnabled = true,
-        modifier = modifier.mandatorySystemGesturesPadding()
+        gesturesEnabled  = drawerState.isOpen,
+        modifier = modifier
     ) {
         content(drawerState)
     }

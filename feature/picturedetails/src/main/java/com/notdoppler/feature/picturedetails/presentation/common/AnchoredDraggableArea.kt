@@ -1,5 +1,6 @@
 package com.notdoppler.feature.picturedetails.presentation.common
 
+import android.util.Log
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -25,12 +26,10 @@ import com.notdoppler.feature.picturedetails.domain.model.AnchoredDraggableInfo
 fun AnchoredDraggableArea(
     modifier: Modifier = Modifier,
     onTopEnd: () -> Unit,
-    onBottomEnd: () -> Unit,
     content: @Composable (AnchoredDraggableInfo) -> Unit
 ) {
     val density = LocalDensity.current
     var isTopEnd by remember { mutableStateOf(false) }
-    var isBottomEnd by remember { mutableStateOf(false) }
     var lastProgress: Float by remember { mutableFloatStateOf(0F) }
 
     val state = remember {
@@ -49,14 +48,6 @@ fun AnchoredDraggableArea(
                     isTopEnd = true
                     true
                 }
-
-                DragAnchors.BottomEnd -> {
-                    if (!isBottomEnd) onBottomEnd()
-                    isBottomEnd = true
-                    lastProgress = 0F
-                    false
-                }
-
                 else -> {
                     lastProgress = 0F
                     true

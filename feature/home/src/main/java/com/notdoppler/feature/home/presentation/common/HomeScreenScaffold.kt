@@ -30,7 +30,7 @@ fun HomeScreenScaffold(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = stringResource(id = R.string.app_name)) },
+                title = { Text(text = stringResource(id = com.notdoppler.core.domain.R.string.app_name)) },
                 navigationIcon = {
                     IconButton(
                         onClick = {

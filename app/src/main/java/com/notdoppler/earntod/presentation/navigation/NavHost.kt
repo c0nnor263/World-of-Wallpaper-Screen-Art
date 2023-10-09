@@ -14,6 +14,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.notdoppler.core.domain.getSafeParcelable
+import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.navigation.Screen
 import com.notdoppler.core.navigation.arg
@@ -22,6 +24,7 @@ import com.notdoppler.core.navigation.popBack
 import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.home.presentation.HomeScreen
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreen
+import com.notdoppler.feature.picturedetails.presentation.PictureDetailsViewModel
 
 @Composable
 fun NavHost(modifier: Modifier = Modifier, navController: NavHostController) {
@@ -29,7 +32,7 @@ fun NavHost(modifier: Modifier = Modifier, navController: NavHostController) {
 
     val homeViewModel = hiltViewModel<HomeScreenViewModel>()
     NavHost(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         navController = navController,
         startDestination = Screen.Home.route
     ) {
@@ -44,11 +47,10 @@ fun NavGraphBuilder.homeScreen(navController: NavHostController, viewModel: Home
     composable(home.route, arguments = home.arguments) {
         HomeScreen(
             viewModel = viewModel,
-            onNavigateToDetails = { selectedImageIndex, tabOrder ->
+            onNavigateToDetails = { args ->
                 navController.navigateTo(
                     Screen.Details(
-                        selectedImageIndex = selectedImageIndex.toString(),
-                        tabOrder = tabOrder.name
+                        args = args.toString()
                     )
                 )
             }
@@ -60,31 +62,40 @@ fun NavGraphBuilder.detailsScreen(
     navController: NavHostController, viewModel: HomeScreenViewModel
 ) {
     val details = Screen.Details()
-    composable(details.route, arguments = details.arguments, enterTransition = {
-        fadeIn(
-            animationSpec = tween(500)
-        ) + scaleIn(
-            animationSpec = tween(500),
-        ) + slideIntoContainer(
-            AnimatedContentTransitionScope.SlideDirection.Up, tween(500)
-        )
-    }, exitTransition = {
-        scaleOut(
-            animationSpec = tween(500),
-        ) + slideOutOfContainer(
-            AnimatedContentTransitionScope.SlideDirection.Up, tween(500)
-        ) + fadeOut(
-            animationSpec = tween(500)
-        )
-    }) {
-        val selectedImageIndex = it.arguments?.getInt(details.selectedImageIndex.arg()) ?: 1
-        val tabOrder = TabOrder.valueOf(
-            it.arguments?.getString(details.tabOrder.arg()) ?: TabOrder.LATEST.name
-        )
+    composable(
+        details.route,
+        arguments = details.arguments,
+        enterTransition = {
+            fadeIn(
+                animationSpec = tween(500)
+            ) + scaleIn(
+                animationSpec = tween(500),
+            ) + slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Up, tween(500)
+            )
+        },
+        exitTransition = {
+            scaleOut(
+                animationSpec = tween(500),
+            ) + slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Up, tween(500)
+            ) + fadeOut(
+                animationSpec = tween(500)
+            )
+        }
+    ) {
+        val pictureDetailsNavArgs =
+            it.arguments?.getSafeParcelable(details.args.arg())
+                ?: PictureDetailsNavArgs(
+                    selectedImageIndex = 1,
+                    tabOrder = TabOrder.LATEST
+                )
+
+        val pictureDetailsViewModel: PictureDetailsViewModel = hiltViewModel()
         PictureDetailsScreen(
-            viewModel = viewModel,
-            selectedImageIndex = selectedImageIndex,
-            tabOrder = tabOrder,
+            homeSharedViewModel = viewModel,
+            pictureDetailsViewModel = pictureDetailsViewModel,
+            navArgs = pictureDetailsNavArgs,
             onNavigateBack = {
                 navController.popBack()
             }

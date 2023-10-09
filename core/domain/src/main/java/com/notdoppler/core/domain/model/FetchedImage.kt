@@ -1,5 +1,6 @@
 package com.notdoppler.core.domain.model
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.Keep
@@ -12,10 +13,11 @@ data class FetchedImage(
     val hits: List<Hit>? = null,
     val total: Int? = null,
     val totalHits: Int? = null
-) :Parcelable{
+) : Parcelable {
     override fun toString(): String {
         return Uri.encode(Gson().toJson(this))
     }
+
     @Keep
     @Parcelize
     data class Hit(
@@ -42,7 +44,7 @@ data class FetchedImage(
         val webformatHeight: Int? = null,
         val webformatURL: String? = null,
         val webformatWidth: Int? = null
-    ): Parcelable{
+    ) : Parcelable {
         override fun toString(): String {
             return Uri.encode(Gson().toJson(this))
         }

@@ -1,6 +1,6 @@
 package com.notdoppler.core.network.di
 
-import com.notdoppler.core.domain.source.remote.repositories.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
 import com.notdoppler.core.network.data.repository.RemoteImageSourceImpl
 import dagger.Binds
 import dagger.Module

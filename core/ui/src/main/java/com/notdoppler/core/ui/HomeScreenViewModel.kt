@@ -1,5 +1,6 @@
 package com.notdoppler.core.ui
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
@@ -9,7 +10,7 @@ import androidx.paging.cachedIn
 import com.notdoppler.core.domain.model.FetchedImage
 import com.notdoppler.core.domain.model.ImageRequestInfo
 import com.notdoppler.core.domain.presentation.TabOrder
-import com.notdoppler.core.domain.source.remote.repositories.ImagesRepository
+import com.notdoppler.core.domain.source.remote.repository.ImagesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

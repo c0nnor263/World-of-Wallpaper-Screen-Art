@@ -1,44 +1,72 @@
 package com.notdoppler.feature.picturedetails.presentation
 
+import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
+import com.notdoppler.core.database.domain.model.FavoriteImage
+import com.notdoppler.core.domain.enums.ActionType
 import com.notdoppler.core.domain.model.FetchedImage
-import com.notdoppler.core.domain.model.ImageRequestInfo
-import com.notdoppler.core.domain.presentation.TabOrder
-import com.notdoppler.core.domain.source.remote.repositories.ImagesRepository
+import com.notdoppler.core.domain.source.local.repository.StorageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PictureDetailsViewModel @Inject constructor(
-    private val imagesRepository: ImagesRepository
+    private val favoriteImageRepository: com.notdoppler.core.database.domain.repository.FavoriteImageRepository,
+    private val storageManager: StorageManager
 ) : ViewModel() {
 
-    private val _imagesState: MutableStateFlow<PagingData<FetchedImage.Hit>> =
-        MutableStateFlow(value = PagingData.empty())
-    val imagesState: StateFlow<PagingData<FetchedImage.Hit>> = _imagesState
+    private val _uiState: MutableStateFlow<PictureDetailsUiState?> =
+        MutableStateFlow(null)
+    val uiState = _uiState.asStateFlow()
 
-    fun getPagerImages(pageKey: Int) = viewModelScope.launch(Dispatchers.IO) {
-        imagesRepository.getImages(
-            ImageRequestInfo(
-                order = TabOrder.LATEST,
-                pageSize = 3,
-                prefetchDistance = 5,
-
-                // For correct pagination, we need to increment the pageKey by 1
-                pageKey = pageKey.plus(1)
-            )
-        )
-            .distinctUntilChanged()
-            .cachedIn(viewModelScope).collect {
-                _imagesState.value = it
+    fun onActionClick(
+        type: ActionType,
+        image: FetchedImage.Hit?,
+        bitmap: Bitmap?
+    ) = viewModelScope.launch {
+        when (type) {
+            ActionType.FAVORITE -> {
+                _uiState.value = PictureDetailsUiState.SavedToFavorites
+                bitmap?.let {
+                    val favoriteImage = FavoriteImage(bitmap = it)
+                    favoriteImageRepository.upsert(favoriteImage)
+                }
             }
+
+            ActionType.DOWNLOAD -> {
+                _uiState.value = PictureDetailsUiState.StartDownload
+                val result = storageManager.saveToGallery(bitmap)
+                _uiState.value = if (result) {
+                    PictureDetailsUiState.Downloaded
+                } else {
+                    PictureDetailsUiState.Error("Failed to download image")
+                }
+            }
+
+            ActionType.SHARE -> {
+                _uiState.value = PictureDetailsUiState.Share
+                // TODO: Implement share
+            }
+        }
+    }
+
+
+    sealed class PictureDetailsUiState {
+        data object SavedToFavorites : PictureDetailsUiState()
+        data class Error(val message: String) : PictureDetailsUiState()
+        data object Share : PictureDetailsUiState()
+        data object StartDownload : PictureDetailsUiState()
+        data object Downloaded : PictureDetailsUiState()
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.i("TAG", "onCleared:")
     }
 }
