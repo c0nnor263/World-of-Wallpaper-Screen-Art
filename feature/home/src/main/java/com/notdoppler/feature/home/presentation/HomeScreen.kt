@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.notdoppler.core.domain.model.FetchedImage
 import com.notdoppler.core.domain.model.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.home.domain.tabInfo
@@ -38,7 +38,7 @@ fun HomeScreen(
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
     val tabPagingState = viewModel.tabPagingState
-
+// TODO fetching data loading indicator
     HomeModalNavigationDrawer { drawerState ->
         HomeScreenScaffold(drawerState = drawerState) { innerPadding ->
             HomeScreenContent(

@@ -1,14 +1,9 @@
 package com.notdoppler.core.domain.source.remote.repository
 
-import androidx.paging.PagingData
-import com.notdoppler.core.domain.model.FetchedImage
-import com.notdoppler.core.domain.model.ImageRequestInfo
-import kotlinx.coroutines.flow.Flow
+import androidx.paging.PagingSource
+import com.notdoppler.core.domain.model.remote.FetchedImage
+import com.notdoppler.core.domain.model.remote.ImageRequestInfo
 
 interface ImagesRepository {
-
-    fun getImages(
-        info: ImageRequestInfo
-    ): Flow<PagingData<FetchedImage.Hit>>
-    fun searchImages(  info: ImageRequestInfo): Flow<PagingData<FetchedImage.Hit>>
+    fun getImagePagingSource(info: ImageRequestInfo): PagingSource<Int, FetchedImage.Hit>
 }

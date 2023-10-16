@@ -6,6 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class FavoriteImage(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val bitmap: Bitmap
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    val bitmap: Bitmap,
+    val imageId: Int,
 )

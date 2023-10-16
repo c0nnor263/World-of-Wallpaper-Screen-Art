@@ -1,15 +1,8 @@
 @file:Suppress("UnstableApiUsage")
-
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     PluginType.LIBRARY.get(this)
 }
 
-
-val localProperties = Properties()
-localProperties.load(FileInputStream(rootProject.file("local.properties")))
 android {
     namespace = "com.notdoppler.core.data"
     compileSdk = versions.config.compileSdk
@@ -18,11 +11,7 @@ android {
         minSdk = versions.config.minSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField(
-            "String",
-            "API_KEY",
-            "\"${localProperties.getProperty("API_KEY")}\""
-        )
+
     }
 
     buildTypes {

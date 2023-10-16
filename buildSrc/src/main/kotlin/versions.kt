@@ -24,7 +24,7 @@ object versions {
 
     object compose {
         const val version = "1.5.0"
-        const val bom = "2023.09.02"
+        const val bom = "2023.10.00"
         const val compiler = "1.5.3"
         const val hiltNavigation = "1.0.0"
         const val navigation = "2.7.4"
@@ -32,6 +32,7 @@ object versions {
     }
 
     object tooling {
+        const val composeJunit = "1.5.3"
         const val benchmarkMacroJunit4 = "1.2.0-beta03"
         const val uiautomator = "2.2.0"
         const val androidEspressoCore = "3.5.1"
@@ -40,7 +41,7 @@ object versions {
     }
 
     object customPlugin {
-        const val benNamesVersions = "0.48.0"
+        const val benNamesVersions = "0.49.0"
 
     }
 
@@ -54,8 +55,8 @@ object versions {
         const val gradle = "8.0.2"
         const val kotlin = "1.9.10"
         const val coroutines = "1.7.3"
-        const val material = "1.9.0"
-        const val activity = "1.7.2"
+        const val material = "1.10.0"
+        const val activity = "1.8.0"
         const val appCompat = "1.6.1"
         const val lifecycle = "2.6.2"
         const val coreKtx = "1.12.0"
@@ -63,7 +64,7 @@ object versions {
 
     object common {
         const val kotlinVersion = "1.8.21"
-        const val hilt = "2.48"
+        const val hilt = "2.48.1"
         const val excludeFiles = "/META-INF/{AL2.0,LGPL2.1}"
         const val ksp = "1.9.10-1.0.13"
     }

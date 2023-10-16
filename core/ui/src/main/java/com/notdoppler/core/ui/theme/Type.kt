@@ -1,10 +1,7 @@
 package com.notdoppler.core.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
-import com.notdoppler.core.ui.R
 
 val standardTypography = Typography()
 

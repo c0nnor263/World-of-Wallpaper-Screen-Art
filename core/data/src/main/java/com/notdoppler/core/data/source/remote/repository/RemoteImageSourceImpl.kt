@@ -1,13 +1,13 @@
-package com.notdoppler.core.network.data.repository
+package com.notdoppler.core.data.source.remote.repository
 
-import com.notdoppler.core.domain.model.FetchedImage
-import com.notdoppler.core.domain.model.ImageRequestInfo
+import com.notdoppler.core.domain.model.remote.FetchedImage
+import com.notdoppler.core.domain.model.remote.ImageRequestInfo
+import com.notdoppler.core.domain.source.remote.RetrofitPixabayService
 import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
-import com.notdoppler.core.network.source.PixabayService
 import javax.inject.Inject
 
 class RemoteImageSourceImpl @Inject constructor(
-    private val pixabayService: PixabayService
+    private val pixabayService: RetrofitPixabayService,
 ) : RemoteImageSource {
     override suspend fun getImagesByPage(info: ImageRequestInfo): FetchedImage {
         return pixabayService.getImagesByPage(

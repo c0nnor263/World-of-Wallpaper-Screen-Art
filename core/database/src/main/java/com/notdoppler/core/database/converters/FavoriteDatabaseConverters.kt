@@ -9,9 +9,10 @@ import java.nio.ByteBuffer
 
 class FavoriteDatabaseConverters {
     @TypeConverter
-    fun bitmapToBase64(bitmap: Bitmap): String {
-        val byteBuffer = ByteBuffer.allocate(bitmap.height * bitmap.rowBytes)
-        bitmap.copyPixelsToBuffer(byteBuffer)
+    fun bitmapToBase64(originalBitmap: Bitmap): String {
+        val byteBuffer = ByteBuffer.allocate(originalBitmap.height * originalBitmap.rowBytes)
+        val newBitmap = originalBitmap.copy(Bitmap.Config.RGB_565, false)
+        newBitmap.copyPixelsToBuffer(byteBuffer)
         val byteArray = byteBuffer.array()
         return Base64.encodeToString(byteArray, DEFAULT)
     }

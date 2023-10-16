@@ -1,4 +1,4 @@
-package com.notdoppler.core.domain.model
+package com.notdoppler.core.domain.model.remote
 
 import com.notdoppler.core.domain.MAX_PAGE_SIZE
 import com.notdoppler.core.domain.PREFETCH_DISTANCE

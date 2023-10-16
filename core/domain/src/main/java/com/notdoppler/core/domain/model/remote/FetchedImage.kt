@@ -1,10 +1,11 @@
-package com.notdoppler.core.domain.model
+package com.notdoppler.core.domain.model.remote
 
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.Gson
+import com.notdoppler.core.domain.model.local.StorageImageInfo
 import kotlinx.parcelize.Parcelize
 
 @Keep
@@ -12,7 +13,7 @@ import kotlinx.parcelize.Parcelize
 data class FetchedImage(
     val hits: List<Hit>? = null,
     val total: Int? = null,
-    val totalHits: Int? = null
+    val totalHits: Int? = null,
 ) : Parcelable {
     override fun toString(): String {
         return Uri.encode(Gson().toJson(this))
@@ -43,10 +44,20 @@ data class FetchedImage(
         val views: Int? = null,
         val webformatHeight: Int? = null,
         val webformatURL: String? = null,
-        val webformatWidth: Int? = null
+        val webformatWidth: Int? = null,
     ) : Parcelable {
         override fun toString(): String {
             return Uri.encode(Gson().toJson(this))
+        }
+
+
+        fun createStorageInfo(bitmap: Bitmap?): StorageImageInfo {
+            return StorageImageInfo(
+                id = id,
+                userId = user_id,
+                type = type,
+                bitmap = bitmap,
+            )
         }
     }
 }

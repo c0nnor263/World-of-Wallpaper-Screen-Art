@@ -1,9 +1,12 @@
 @file:Suppress("UnstableApiUsage")
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     PluginType.LIBRARY.get(this)
 }
-
+val localProperties = Properties()
+localProperties.load(FileInputStream(rootProject.file("local.properties")))
 android {
     namespace = "com.notdoppler.core.domain"
     compileSdk = versions.config.compileSdk
@@ -15,6 +18,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField(
+            "String",
+            "API_KEY",
+            "\"${localProperties.getProperty("API_KEY")}\""
+        )
     }
 
     buildTypes {

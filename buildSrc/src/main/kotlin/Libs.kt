@@ -5,7 +5,8 @@ import org.gradle.kotlin.dsl.project
 object libs {
 
     object firebase {
-        val bom = Dependency("com.google.firebase:firebase-bom", versions.firebase.bom, Type.PLATFORM)
+        val bom =
+            Dependency("com.google.firebase:firebase-bom", versions.firebase.bom, Type.PLATFORM)
         val crashlyticsKtx = Dependency("com.google.firebase:firebase-crashlytics-ktx")
         val analyticsKtx = Dependency("com.google.firebase:firebase-analytics-ktx")
         val perfKtx = Dependency("com.google.firebase:firebase-perf-ktx")
@@ -28,6 +29,27 @@ object libs {
             "androidx.test.espresso:espresso-core",
             versions.tooling.androidEspressoCore, Type.ANDROID_TEST
         )
+        val composeJunit4 = Dependency(
+            "androidx.compose.ui:ui-test-junit4", version =versions.tooling.composeJunit,type = Type.ANDROID_TEST
+        )
+        val composeUiTestManifest = Dependency(
+            "androidx.compose.ui:ui-test-manifest", type = Type.DEBUG
+        )
+        val daggerHiltAndroidTesting = Dependency(
+            "com.google.dagger:hilt-android-testing",
+            versions.common.hilt,
+            Type.ANDROID_TEST
+        )
+
+        val daggerHiltAndroidCompiler = Dependency(
+            "com.google.dagger:hilt-android-compiler",
+            versions.common.hilt,
+            Type.KSP
+        )
+
+
+
+
     }
 
     object compose {
@@ -118,10 +140,14 @@ object libs {
             Dependency("androidx.startup:startup-runtime", versions.startup.startupRuntime)
     }
 
-    object network{
+    object network {
         val retrofit = Dependency("com.squareup.retrofit2:retrofit", versions.network.retrofit)
-        val retrofitConverterGson = Dependency("com.squareup.retrofit2:converter-gson", versions.network.converterGson)
-        val httpLoggingInterceptor = Dependency("com.squareup.okhttp3:logging-interceptor", versions.network.httpLoggingInterceptor)
+        val retrofitConverterGson =
+            Dependency("com.squareup.retrofit2:converter-gson", versions.network.converterGson)
+        val httpLoggingInterceptor = Dependency(
+            "com.squareup.okhttp3:logging-interceptor",
+            versions.network.httpLoggingInterceptor
+        )
         val gson = Dependency("com.google.code.gson:gson", versions.network.gson)
 
     }
@@ -141,6 +167,10 @@ fun DependencyHandler.test() {
     libs.tooling.junit.get(this)
     libs.tooling.androidJunit.get(this)
     libs.tooling.espressoCore.get(this)
+    libs.tooling.composeUiTestManifest.get(this)
+    libs.tooling.composeJunit4.get(this)
+    libs.tooling.daggerHiltAndroidTesting.get(this)
+    libs.tooling.daggerHiltAndroidCompiler.get(this)
 }
 
 fun DependencyHandler.firebase() {
@@ -211,7 +241,7 @@ fun DependencyHandler.networkModule() {
 }
 
 
-fun DependencyHandler.network(){
+fun DependencyHandler.network() {
     libs.network.retrofit.get(this)
     libs.network.retrofitConverterGson.get(this)
     libs.network.httpLoggingInterceptor.get(this)
