@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class SearchQueryState {
     var isSearching by mutableStateOf(false)
-    private val _query = MutableStateFlow("")
+    private val _query: MutableStateFlow<String> = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
 
     fun updateSearchQuery(newValue: String) {

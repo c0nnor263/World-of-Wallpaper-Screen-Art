@@ -20,8 +20,8 @@ import com.notdoppler.core.navigation.Screen
 import com.notdoppler.core.navigation.arg
 import com.notdoppler.core.navigation.navigateTo
 import com.notdoppler.core.navigation.popBack
-import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.home.presentation.HomeScreen
+import com.notdoppler.feature.home.presentation.HomeScreenViewModel
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreen
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsViewModel
 import com.notdoppler.feature.search.presentation.SearchScreen
@@ -142,7 +142,7 @@ fun NavGraphBuilder.detailsScreen(
 
         val pictureDetailsViewModel: PictureDetailsViewModel = hiltViewModel()
         PictureDetailsScreen(
-            pictureDetailsViewModel = pictureDetailsViewModel,
+            viewModel = pictureDetailsViewModel,
             navArgs = pictureDetailsNavArgs,
             onNavigateToSearch = onNavigateToSearch,
             onNavigateBack = onNavigateBack

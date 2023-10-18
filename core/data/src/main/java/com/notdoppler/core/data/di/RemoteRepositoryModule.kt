@@ -12,7 +12,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,6 +26,5 @@ interface RemoteRepositoryModule {
     fun provideSearchImagePagingRepository(searchImagePagingRepositoryImpl: SearchImagePagingRepositoryImpl): SearchImagePagingRepository
 
     @Binds
-    @Singleton
     fun provideApplicationPagingDataStore(applicationPagingDataStoreImpl: ApplicationPagingDataStoreImpl): ApplicationPagingDataStore
 }

@@ -13,23 +13,20 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
-import com.notdoppler.core.domain.presentation.TabOrder
-import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.core.ui.ImageCard
 import com.notdoppler.feature.home.domain.tabInfo
 import com.notdoppler.feature.home.presentation.common.HomeModalNavigationDrawer
 import com.notdoppler.feature.home.presentation.common.HomeScreenScaffold
 import com.notdoppler.feature.home.presentation.common.TabImages
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.notdoppler.feature.home.state.TabOrderState
 
 @Composable
 fun HomeScreen(
@@ -37,7 +34,8 @@ fun HomeScreen(
     onNavigateToSearch: (String?) -> Unit,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
 ) {
-    val tabPagingState = viewModel.tabPagingState
+
+    val images = viewModel.imageState.collectAsLazyPagingItems()
 // TODO fetching data loading indicator
     HomeModalNavigationDrawer { drawerState ->
         HomeScreenScaffold(
@@ -45,9 +43,9 @@ fun HomeScreen(
             onNavigateToSearch = onNavigateToSearch
         ) { innerPadding ->
             HomeScreenContent(
-                tabPagingState = tabPagingState,
+                images = images,
+                tabOrderState = viewModel.tabOrderState,
                 onNavigateToDetails = onNavigateToDetails,
-                onGetImages = viewModel::getImages,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(innerPadding),
@@ -61,19 +59,16 @@ fun HomeScreen(
 @Composable
 private fun HomeScreenContent(
     modifier: Modifier = Modifier,
-    tabPagingState: SnapshotStateMap<TabOrder, MutableStateFlow<PagingData<FetchedImage.Hit>>?>,
-    onGetImages: (TabOrder) -> Unit,
+    images: LazyPagingItems<FetchedImage.Hit>,
+    tabOrderState: TabOrderState,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
 ) {
 
     val pagerState = rememberPagerState { tabInfo.size }
 
-    LaunchedEffect(Unit) {
-        onGetImages(TabOrder.LATEST)
-    }
     LaunchedEffect(pagerState.currentPage) {
         val tabOrder = tabInfo[pagerState.currentPage].order
-        onGetImages(tabOrder)
+        tabOrderState.update(tabOrder)
     }
 
     Column(
@@ -84,9 +79,6 @@ private fun HomeScreenContent(
 
         HorizontalPager(state = pagerState) { pageIndex ->
             val tabInfo = tabInfo[pageIndex]
-            val images =
-                tabPagingState[tabInfo.order]?.collectAsLazyPagingItems() ?: return@HorizontalPager
-
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Fixed(3),
                 verticalItemSpacing = 4.dp,

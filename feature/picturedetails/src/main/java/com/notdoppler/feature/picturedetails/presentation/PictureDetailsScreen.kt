@@ -38,7 +38,7 @@ const val PictureDetailsScreenContentImage = "PictureDetailsScreenContentImage"
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PictureDetailsScreen(
-    pictureDetailsViewModel: PictureDetailsViewModel = hiltViewModel(),
+    viewModel: PictureDetailsViewModel = hiltViewModel(),
     navArgs: PictureDetailsNavArgs,
     onNavigateToSearch: (String?) -> Unit,
     onNavigateBack: () -> Unit,
@@ -46,9 +46,7 @@ fun PictureDetailsScreen(
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     val publisherInfoState = rememberPublisherInfoState()
-    val imageHits =
-        homeSharedViewModel.tabPagingState[navArgs.tabOrder]?.collectAsLazyPagingItems()
-
+    val images = viewModel.imageState.collectAsLazyPagingItems()
     var loadingDownloadDialogVisible by remember {
         mutableStateOf(false)
     }
@@ -58,7 +56,8 @@ fun PictureDetailsScreen(
 
 
     LaunchedEffect(Unit) {
-        pictureDetailsViewModel.uiState.collect { state ->
+        viewModel.setTabOrder(navArgs.tabOrder)
+        viewModel.uiState.collect { state ->
             when (state) {
                 PictureDetailsViewModel.UiState.StartDownload -> {
                     loadingDownloadDialogVisible = true
@@ -68,7 +67,7 @@ fun PictureDetailsScreen(
 
                     val message = context.getString(R.string.downloaded)
                     showToast(context, message) {
-                        pictureDetailsViewModel.clearUiState()
+                        viewModel.clearUiState()
                     }
                     loadingDownloadDialogVisible = false
                 }
@@ -76,13 +75,13 @@ fun PictureDetailsScreen(
                 PictureDetailsViewModel.UiState.SavedToFavorites -> {
                     val message = context.getString(R.string.saved_to_favorites)
                     showToast(context, message) {
-                        pictureDetailsViewModel.clearUiState()
+                        viewModel.clearUiState()
                     }
                 }
 
                 is PictureDetailsViewModel.UiState.Share -> {
                     showShareDialog(context, state.uri) {
-                        pictureDetailsViewModel.clearUiState()
+                        viewModel.clearUiState()
                     }
                 }
 
@@ -95,7 +94,7 @@ fun PictureDetailsScreen(
                         setPublisherData(state.data)
                         show()
                     }
-                    pictureDetailsViewModel.clearUiState()
+                    viewModel.clearUiState()
                 }
 
                 null -> {}
@@ -104,32 +103,25 @@ fun PictureDetailsScreen(
     }
 
 
-    CompositionLocalProvider(LocalFavoriteIconEnabled provides pictureDetailsViewModel.isFavoriteIconEnabled) {
-
-
-        if (imageHits == null) {
-            // TODO SHOW Error
-            return@CompositionLocalProvider
-        }
-
+    CompositionLocalProvider(LocalFavoriteIconEnabled provides viewModel.isFavoriteIconEnabled) {
         val pagerState = rememberPagerState(initialPage = navArgs.selectedImageIndex) {
-            imageHits.itemCount
+            images.itemCount
         }
 
         LaunchedEffect(pagerState.currentPage) {
-            val imageId = imageHits[pagerState.currentPage]?.id
-            pictureDetailsViewModel.checkForFavorite(imageId)
+            val imageId = images[pagerState.currentPage]?.id
+            viewModel.checkForFavorite(imageId)
         }
 
         PictureDetailsScreenContent(
             pagerState = pagerState,
-            imageHits = imageHits,
+            imageHits = images,
             onNavigateBack = onNavigateBack,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(PictureDetailsScreenTag)
         ) { type, image, bitmap ->
-            pictureDetailsViewModel.onActionClick(type, image, bitmap)
+            viewModel.onActionClick(type, image, bitmap)
         }
     }
 

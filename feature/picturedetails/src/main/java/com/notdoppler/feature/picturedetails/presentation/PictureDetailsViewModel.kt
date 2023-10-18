@@ -8,16 +8,29 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.notdoppler.core.database.domain.model.FavoriteImage
 import com.notdoppler.core.database.domain.repository.FavoriteImageRepository
 import com.notdoppler.core.domain.enums.ActionType
 import com.notdoppler.core.domain.model.remote.FetchedImage
+import com.notdoppler.core.domain.model.remote.ImageRequestInfo
+import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.domain.source.local.repository.StorageManager
+import com.notdoppler.core.domain.source.remote.ApplicationPagingDataStore
+import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
 import com.notdoppler.feature.picturedetails.domain.model.PublisherInfoData
+import com.notdoppler.feature.picturedetails.state.PictureDetailsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +38,8 @@ import javax.inject.Inject
 class PictureDetailsViewModel @Inject constructor(
     private val favoriteImageRepository: FavoriteImageRepository,
     private val storageManager: StorageManager,
+    private val imagePagingRepository: ImagePagingRepository,
+    private val applicationPagingDataStore: ApplicationPagingDataStore,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<UiState?> =
@@ -32,6 +47,29 @@ class PictureDetailsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     var isFavoriteIconEnabled by mutableStateOf(false)
+
+    val pictureDetailsState = PictureDetailsState()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val imageState =
+        pictureDetailsState.tabOrder
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), TabOrder.LATEST)
+            .flatMapLatest { order ->
+                order?.let {
+                    val info = ImageRequestInfo(order = order)
+                    applicationPagingDataStore.getPager(
+                        order.requestValue,
+                        info,
+                        imagePagingRepository.getPagingSource(info)
+                    ).flow
+                } ?: flowOf(PagingData.empty())
+            }
+            .distinctUntilChanged()
+            .cachedIn(viewModelScope)
+
+    fun setTabOrder(order: TabOrder) {
+        pictureDetailsState.updateTabOrder(order)
+    }
 
     fun checkForFavorite(imageId: Int?) = viewModelScope.launch(Dispatchers.IO) {
         isFavoriteIconEnabled = imageId?.let {

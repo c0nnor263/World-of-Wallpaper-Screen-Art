@@ -15,8 +15,8 @@ import com.notdoppler.core.domain.source.local.repository.StorageManager
 import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
 import com.notdoppler.core.picturedetails.domain.matchers.IntentShareMatcher
 import com.notdoppler.core.picturedetails.domain.matchers.chooser
-import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.core.ui.theme.WallpapersTheme
+import com.notdoppler.feature.home.presentation.HomeScreenViewModel
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreen
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreenTag
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsViewModel
@@ -63,7 +63,10 @@ class PictureDetailsInstrumentedTest {
         hiltRule.inject()
         composeTestRule.setContent {
             WallpapersTheme {
-                val homeScreenViewModel = HomeScreenViewModel(imagePagingRepository)
+                val homeScreenViewModel =
+                    com.notdoppler.feature.home.presentation.HomeScreenViewModel(
+                        imagePagingRepository
+                    )
                 val pictureDetailsViewModel = PictureDetailsViewModel(
                     favoriteImageRepository, storageManager
                 )
