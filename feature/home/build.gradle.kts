@@ -40,13 +40,16 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = versions.compose.compiler
     }
-    packaging {
-        resources {
-            resources.excludes.add(versions.common.excludeFiles)
-        }
-    }
-
 }
+
+
+androidComponents {
+    onVariants(selector().withBuildType("release")) {
+        // Exclude AndroidX version files
+        it.packaging.resources.excludes.add("META-INF/*.version")
+    }
+}
+
 
 dependencies {
     implementation(project(":core:data"))

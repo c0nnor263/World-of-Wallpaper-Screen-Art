@@ -6,6 +6,7 @@ import android.os.Parcelable
 import androidx.annotation.Keep
 import com.google.gson.Gson
 import com.notdoppler.core.domain.model.local.StorageImageInfo
+import com.notdoppler.core.domain.source.remote.ApplicationPagingData
 import kotlinx.parcelize.Parcelize
 
 @Keep
@@ -14,7 +15,7 @@ data class FetchedImage(
     val hits: List<Hit>? = null,
     val total: Int? = null,
     val totalHits: Int? = null,
-) : Parcelable {
+) : Parcelable, ApplicationPagingData {
     override fun toString(): String {
         return Uri.encode(Gson().toJson(this))
     }

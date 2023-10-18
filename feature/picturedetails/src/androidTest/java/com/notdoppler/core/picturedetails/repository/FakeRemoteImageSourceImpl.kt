@@ -3,7 +3,7 @@ package com.notdoppler.core.picturedetails.repository
 import com.google.gson.Gson
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.model.remote.ImageRequestInfo
-import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.RemoteImageSource
 import javax.inject.Inject
 
 class FakeRemoteImageSourceImpl @Inject constructor() : RemoteImageSource {

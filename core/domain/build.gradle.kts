@@ -51,19 +51,22 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = versions.compose.compiler
     }
-    packaging {
-        resources {
-            resources.excludes.add(versions.common.excludeFiles)
-        }
+}
+
+androidComponents {
+    onVariants(selector().withBuildType("release")) {
+        // Exclude AndroidX version files
+        it.packaging.resources.excludes.add("META-INF/*.version")
     }
 }
+
 
 dependencies {
     composeCore()
     coreData()
 
-    implementation ("androidx.paging:paging-runtime:3.2.1")
-    implementation ("androidx.paging:paging-compose:3.2.1")
+    implementation("androidx.paging:paging-runtime:3.2.1")
+    implementation("androidx.paging:paging-compose:3.2.1")
 
     libs.network.gson.get(this)
 }

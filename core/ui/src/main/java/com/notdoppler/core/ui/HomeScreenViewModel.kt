@@ -11,24 +11,28 @@ import androidx.paging.cachedIn
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.model.remote.ImageRequestInfo
 import com.notdoppler.core.domain.presentation.TabOrder
-import com.notdoppler.core.domain.source.remote.repository.ImagesRepository
+import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val imagesRepository: ImagesRepository
+    private val imagePagingRepository: ImagePagingRepository,
 ) : ViewModel() {
     private val _tabPagingState: SnapshotStateMap<TabOrder, MutableStateFlow<PagingData<FetchedImage.Hit>>?> =
         mutableStateMapOf()
     val tabPagingState: SnapshotStateMap<TabOrder, MutableStateFlow<PagingData<FetchedImage.Hit>>?> =
         _tabPagingState
 
-    fun getImages(tabOrder: TabOrder = TabOrder.LATEST) = viewModelScope.launch(Dispatchers.IO) {
+    private val _tabOrderState: MutableStateFlow<TabOrder> = MutableStateFlow(TabOrder.LATEST)
+    val tabOrderState: StateFlow<TabOrder> = _tabOrderState
+
+    fun getImages(tabOrder: TabOrder) = viewModelScope.launch(Dispatchers.IO) {
 
         if (tabPagingState.containsKey(tabOrder).not()) {
             val info = ImageRequestInfo(order = tabOrder)
@@ -38,7 +42,7 @@ class HomeScreenViewModel @Inject constructor(
                     prefetchDistance = info.prefetchDistance
                 ),
                 pagingSourceFactory = {
-                    imagesRepository.getImagePagingSource(info)
+                    imagePagingRepository.getPagingSource(info)
                 }
             ).flow
 

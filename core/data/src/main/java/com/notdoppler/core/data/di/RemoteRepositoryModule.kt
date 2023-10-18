@@ -1,20 +1,32 @@
 package com.notdoppler.core.data.di
 
-import com.notdoppler.core.data.source.remote.repository.ImagesRepositoryImpl
-import com.notdoppler.core.data.source.remote.repository.RemoteImageSourceImpl
-import com.notdoppler.core.domain.source.remote.repository.ImagesRepository
-import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
+import com.notdoppler.core.data.source.remote.ApplicationPagingDataStoreImpl
+import com.notdoppler.core.data.source.remote.RemoteImageSourceImpl
+import com.notdoppler.core.data.source.remote.repository.ImagePagingRepositoryImpl
+import com.notdoppler.core.data.source.remote.repository.SearchImagePagingRepositoryImpl
+import com.notdoppler.core.domain.source.remote.ApplicationPagingDataStore
+import com.notdoppler.core.domain.source.remote.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
+import com.notdoppler.core.domain.source.remote.repository.SearchImagePagingRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 interface RemoteRepositoryModule {
     @Binds
-    fun provideImagesRepository(imagesRepositoryImpl: ImagesRepositoryImpl): ImagesRepository
+    fun provideImagePagingRepository(imagePagingRepositoryImpl: ImagePagingRepositoryImpl): ImagePagingRepository
 
     @Binds
-    fun provideImageSourceRepository(fetchedImageSourceImpl: RemoteImageSourceImpl): RemoteImageSource
+    fun provideRemoteImageSource(remoteImageSourceImpl: RemoteImageSourceImpl): RemoteImageSource
+
+    @Binds
+    fun provideSearchImagePagingRepository(searchImagePagingRepositoryImpl: SearchImagePagingRepositoryImpl): SearchImagePagingRepository
+
+    @Binds
+    @Singleton
+    fun provideApplicationPagingDataStore(applicationPagingDataStoreImpl: ApplicationPagingDataStoreImpl): ApplicationPagingDataStore
 }

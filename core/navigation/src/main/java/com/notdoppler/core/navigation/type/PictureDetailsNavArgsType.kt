@@ -7,7 +7,7 @@ import com.notdoppler.core.domain.getSafeParcelable
 import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 
 
-class PictureDetailsNavArgsType : NavType<PictureDetailsNavArgs>(isNullableAllowed = false) {
+class PictureDetailsNavArgsType : NavType<PictureDetailsNavArgs>(isNullableAllowed = true) {
     override fun get(bundle: Bundle, key: String): PictureDetailsNavArgs? {
         return bundle.getSafeParcelable(key)
     }

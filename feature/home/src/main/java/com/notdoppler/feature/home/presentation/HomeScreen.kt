@@ -13,7 +13,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,22 +24,26 @@ import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.ui.HomeScreenViewModel
+import com.notdoppler.core.ui.ImageCard
 import com.notdoppler.feature.home.domain.tabInfo
 import com.notdoppler.feature.home.presentation.common.HomeModalNavigationDrawer
 import com.notdoppler.feature.home.presentation.common.HomeScreenScaffold
 import com.notdoppler.feature.home.presentation.common.TabImages
-import com.notdoppler.feature.home.presentation.image.ImageCard
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun HomeScreen(
     viewModel: HomeScreenViewModel = hiltViewModel(),
-    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
+    onNavigateToSearch: (String?) -> Unit,
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
 ) {
     val tabPagingState = viewModel.tabPagingState
 // TODO fetching data loading indicator
     HomeModalNavigationDrawer { drawerState ->
-        HomeScreenScaffold(drawerState = drawerState) { innerPadding ->
+        HomeScreenScaffold(
+            drawerState = drawerState,
+            onNavigateToSearch = onNavigateToSearch
+        ) { innerPadding ->
             HomeScreenContent(
                 tabPagingState = tabPagingState,
                 onNavigateToDetails = onNavigateToDetails,
@@ -60,7 +63,7 @@ private fun HomeScreenContent(
     modifier: Modifier = Modifier,
     tabPagingState: SnapshotStateMap<TabOrder, MutableStateFlow<PagingData<FetchedImage.Hit>>?>,
     onGetImages: (TabOrder) -> Unit,
-    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
 ) {
 
     val pagerState = rememberPagerState { tabInfo.size }
@@ -68,11 +71,9 @@ private fun HomeScreenContent(
     LaunchedEffect(Unit) {
         onGetImages(TabOrder.LATEST)
     }
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect {
-            val tabOrder = tabInfo[it].order
-            onGetImages(tabOrder)
-        }
+    LaunchedEffect(pagerState.currentPage) {
+        val tabOrder = tabInfo[pagerState.currentPage].order
+        onGetImages(tabOrder)
     }
 
     Column(

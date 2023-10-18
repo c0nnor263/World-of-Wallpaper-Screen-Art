@@ -1,12 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-include(":feature:picturedetails")
 
-
-include(":core:billing")
-
-
-include(":core:network")
 
 
 pluginManagement {
@@ -26,13 +20,26 @@ dependencyResolutionManagement {
 
 rootProject.name = "Wallpapers"
 include(":app")
+include(":core:billing")
 include(":core:database")
 include(":core:data")
 include(":core:domain")
+include(":core:network")
 include(":core:ui")
 include(":core:navigation")
 include(":feature:home")
-include(":feature:store")
-include(":feature:settings")
+include(":feature:picturedetails")
+include(":feature:search")
 include(":baselineprofile")
+
+
+
+
+
+
+
+
+
+
+
 

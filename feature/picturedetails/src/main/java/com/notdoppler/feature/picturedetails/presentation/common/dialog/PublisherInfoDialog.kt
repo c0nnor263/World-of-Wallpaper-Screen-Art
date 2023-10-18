@@ -2,6 +2,7 @@ package com.notdoppler.feature.picturedetails.presentation.common.dialog
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -9,10 +10,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
@@ -28,6 +31,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,8 +40,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -51,6 +60,12 @@ fun PublisherInfoDialog(
     state: PublisherInfoState,
     onTagSearch: (String) -> Unit,
 ) {
+    val tags = remember {
+        derivedStateOf {
+            state.info?.tags.also { Log.i("TAG", "tags: $it") }?.split(",")?.map { it.trim() }
+        }
+    }
+    Log.i("TAG", "PublisherInfoDialog: ${state.info}")
     AnimatedVisibility(
         visible = state.isVisible, modifier = modifier
     ) {
@@ -60,13 +75,15 @@ fun PublisherInfoDialog(
             }
         ) {
             Card(shape = RoundedCornerShape(24.dp)) {
-                Column(modifier = Modifier.padding(4.dp)) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     UserSection(state)
                     Spacer(modifier = Modifier.height(16.dp))
-                    state.info?.tags?.split(",")?.map { it.trim() }?.let { tags ->
+
+                    tags.value?.let { tags ->
                         TagSection(tags, onTagSearch = onTagSearch)
                     }
                     Spacer(modifier = Modifier.height(16.dp))
+
                     InfoSection(
                         state, modifier = Modifier
                             .fillMaxWidth()
@@ -82,75 +99,104 @@ fun PublisherInfoDialog(
 
 @Composable
 fun UserSection(state: PublisherInfoState, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
     Row(
-        modifier = modifier.padding(16.dp)
+        modifier = modifier
     ) {
+        UserProfileCard(state)
+        Spacer(modifier = Modifier.width(16.dp))
 
+        UserSourceCard(state.info?.pageURL)
+    }
+}
+
+@Composable
+fun RowScope.UserProfileCard(state: PublisherInfoState) {
+    val context = LocalContext.current
+    val profilePictureAvailable = remember { state.info?.userImageURL?.isNotBlank() == true }
+
+    Card(
+        shape = RoundedCornerShape(
+            topStart = if (profilePictureAvailable) 48.dp else 24.dp,
+            bottomStart = if (profilePictureAvailable) 48.dp else 24.dp,
+            bottomEnd = 24.dp,
+            topEnd = 24.dp
+        ),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary),
+        modifier = Modifier.weight(1f)
+    ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    onClick = {
+                        val url =
+                            context.getString(
+                                com.notdoppler.feature.picturedetails.R.string.pixabay_user_id_user_profile,
+                                state.info?.user?.lowercase(),
+                                state.info?.userId
+                            )
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        context.startActivity(intent)
+                    }
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = if (profilePictureAvailable) Arrangement.Start else Arrangement.Center
         ) {
-            AsyncImage(
-                model = state.info?.userImageURL,
-                contentDescription = null,
-                placeholder = painterResource(id = R.drawable.baseline_account_circle_24),
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .clickable(
-                        onClick = {
-                            val url =
-                                context.getString(
-                                    com.notdoppler.feature.picturedetails.R.string.pixabay_user_id_user_profile,
-                                    state.info?.user?.lowercase(),
-                                    state.info?.userId
-                                )
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            context.startActivity(intent)
-                        }
-                    )
-            )
+            if (profilePictureAvailable) {
+                AsyncImage(
+                    model = state.info?.userImageURL,
+                    contentDescription = null,
+                    placeholder = painterResource(id = R.drawable.baseline_account_circle_24),
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(64.dp)
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 Text(
                     text = state.info?.user.toString(),
                     style = MaterialTheme.typography.titleMedium,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
                 Text(
                     text = "ID:" + state.info?.userId.toString(),
                     style = MaterialTheme.typography.bodySmall,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
                 )
             }
         }
-        Spacer(modifier = Modifier.width(16.dp))
+    }
+}
 
-        Card(
-            shape = RoundedCornerShape(24.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary),
+@Composable
+fun RowScope.UserSourceCard(url: String?) {
+    val context = LocalContext.current
+    Card(
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(4.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .clickable {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context.startActivity(intent)
+                }
+                .padding(4.dp)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clickable {
-                        val url = state.info?.pageURL
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        context.startActivity(intent)
-                    }
-                    .padding(4.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_web_24),
-                    contentDescription = null
-                )
-                Text(
-                    stringResource(id = com.notdoppler.feature.picturedetails.R.string.source),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_web_24),
+                contentDescription = null
+            )
+            Text(
+                stringResource(id = com.notdoppler.feature.picturedetails.R.string.source),
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
@@ -162,8 +208,8 @@ fun TagSection(tags: List<String>, modifier: Modifier = Modifier, onTagSearch: (
         modifier = modifier,
         columns = StaggeredGridCells.Adaptive(80.dp),
         verticalItemSpacing = 8.dp,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        contentPadding = PaddingValues(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(tags) { tag ->
             TagCard(
@@ -227,12 +273,30 @@ fun InfoSection(state: PublisherInfoState, modifier: Modifier = Modifier) {
                 textData = (state.info?.comments ?: 0).toString()
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Type: " + state.info?.type.toString(),
-            style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray.copy(0.7F))
-        )
+        Spacer(modifier = Modifier.height(10.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Type: ")
+                    }
+                    append(state.info?.type.toString())
+                },
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray.copy(0.7F))
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Size: ")
+                    }
+                    append("${state.info?.imageWidth}x${state.info?.imageHeight}")
+                },
+                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray.copy(0.7F))
+            )
+        }
     }
+
 }
 
 @Composable

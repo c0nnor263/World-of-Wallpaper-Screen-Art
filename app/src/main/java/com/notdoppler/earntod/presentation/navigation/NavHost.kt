@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,41 +24,91 @@ import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.home.presentation.HomeScreen
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreen
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsViewModel
+import com.notdoppler.feature.search.presentation.SearchScreen
+import com.notdoppler.feature.search.presentation.SearchScreenViewModel
 
 @Composable
 fun NavHost(modifier: Modifier = Modifier, navController: NavHostController) {
-
-
-    val homeViewModel = hiltViewModel<HomeScreenViewModel>()
     NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = Screen.Home.route
     ) {
-        homeScreen(navController, homeViewModel)
-        detailsScreen(navController, homeViewModel)
-    }
-}
+        detailsScreen(onNavigateToSearch = { query ->
+            navController.navigateTo(
+                Screen.Search(
+                    query = query.toString()
+                )
+            )
+        },
+            onNavigateBack = { navController.popBackStack() })
 
-
-fun NavGraphBuilder.homeScreen(navController: NavHostController, viewModel: HomeScreenViewModel) {
-    val home = Screen.Home
-    composable(home.route, arguments = home.arguments) {
-        HomeScreen(
-            viewModel = viewModel,
+        homeScreen(
+            onNavigateToSearch = { query ->
+                navController.navigateTo(
+                    Screen.Search(
+                        query = query.toString()
+                    )
+                )
+            },
             onNavigateToDetails = { args ->
                 navController.navigateTo(
                     Screen.Details(
                         args = args.toString()
                     )
                 )
+            })
+        searchScreen(
+            onNavigateToDetails = { args ->
+                navController.navigateTo(
+                    Screen.Details(
+                        args = args.toString()
+                    )
+                )
+            }, onNavigateBack = {
+                navController.popBack()
             }
         )
     }
 }
 
+fun NavGraphBuilder.searchScreen(
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
+    onNavigateBack: () -> Unit,
+) {
+    val search = Screen.Search()
+
+    composable(search.route, arguments = search.arguments) {
+        val queryArg = it.arguments?.getString(search.query.arg())
+
+        val viewModel: SearchScreenViewModel = hiltViewModel()
+        SearchScreen(
+            viewModel = viewModel,
+            query = queryArg,
+            onNavigateToDetails = onNavigateToDetails,
+            onNavigateBack = onNavigateBack
+        )
+    }
+}
+
+fun NavGraphBuilder.homeScreen(
+    onNavigateToSearch: (String?) -> Unit,
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
+) {
+    val home = Screen.Home
+    composable(home.route, arguments = home.arguments) {
+        val viewModel = hiltViewModel<HomeScreenViewModel>()
+        HomeScreen(
+            viewModel = viewModel,
+            onNavigateToSearch = onNavigateToSearch,
+            onNavigateToDetails = onNavigateToDetails
+        )
+    }
+}
+
 fun NavGraphBuilder.detailsScreen(
-    navController: NavHostController, viewModel: HomeScreenViewModel
+    onNavigateBack: () -> Unit,
+    onNavigateToSearch: (String?) -> Unit,
 ) {
     val details = Screen.Details()
     composable(
@@ -93,12 +142,10 @@ fun NavGraphBuilder.detailsScreen(
 
         val pictureDetailsViewModel: PictureDetailsViewModel = hiltViewModel()
         PictureDetailsScreen(
-            homeSharedViewModel = viewModel,
             pictureDetailsViewModel = pictureDetailsViewModel,
             navArgs = pictureDetailsNavArgs,
-            onNavigateBack = {
-                navController.popBack()
-            }
+            onNavigateToSearch = onNavigateToSearch,
+            onNavigateBack = onNavigateBack
         )
     }
 }

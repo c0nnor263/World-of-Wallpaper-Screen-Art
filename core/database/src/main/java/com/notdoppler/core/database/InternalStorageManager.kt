@@ -63,7 +63,7 @@ class InternalStorageManager @Inject constructor(
 
     companion object {
         private const val DIRECTORY_PICTURE = "Pictures"
-        private const val MIME_TYPE = "image/*"
+        private const val MIME_TYPE = "image/png"
 
         fun createValues(appName: String, info: StorageImageInfo): ContentValues {
             val fileName = "${info.id}_${info.userId}"

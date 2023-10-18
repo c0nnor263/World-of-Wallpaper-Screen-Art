@@ -23,12 +23,11 @@ object versions {
     }
 
     object compose {
-        const val version = "1.5.0"
         const val bom = "2023.10.00"
         const val compiler = "1.5.3"
         const val hiltNavigation = "1.0.0"
         const val navigation = "2.7.4"
-        val constraintLayout = "1.0.1"
+        const val constraintLayout = "1.0.1"
     }
 
     object tooling {
@@ -52,7 +51,7 @@ object versions {
     }
 
     object android {
-        const val gradle = "8.0.2"
+        const val gradle = "8.1.2"
         const val kotlin = "1.9.10"
         const val coroutines = "1.7.3"
         const val material = "1.10.0"
@@ -63,9 +62,8 @@ object versions {
     }
 
     object common {
-        const val kotlinVersion = "1.8.21"
         const val hilt = "2.48.1"
-        const val excludeFiles = "/META-INF/{AL2.0,LGPL2.1}"
+        const val excludeFiles = "META-INF/*.version"
         const val ksp = "1.9.10-1.0.13"
     }
 
@@ -76,7 +74,7 @@ object versions {
     }
 
     object network {
-      const val httpLoggingInterceptor = "4.11.0"
+        const val httpLoggingInterceptor = "4.11.0"
         const val retrofit = "2.9.0"
         const val converterGson = "2.9.0"
         const val gson = "2.8.8"

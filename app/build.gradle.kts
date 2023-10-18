@@ -65,10 +65,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = versions.compose.compiler
     }
-    packaging {
-        resources {
-            resources.excludes.add(versions.common.excludeFiles)
-        }
+}
+androidComponents {
+    onVariants(selector().withBuildType("release")) {
+        // Exclude AndroidX version files
+        it.packaging.resources.excludes.add("META-INF/*.version")
     }
 }
 
@@ -80,10 +81,8 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":core:navigation"))
     implementation(project(":feature:home"))
-    implementation(project(":feature:store"))
-    implementation(project(":feature:settings"))
     implementation(project(":feature:picturedetails"))
-
+    implementation(project(":feature:search"))
     appModule()
 
     implementation("io.coil-kt:coil-compose:2.4.0")

@@ -1,9 +1,9 @@
 package com.notdoppler.core.picturedetails.di
 
 import com.notdoppler.core.data.di.RemoteRepositoryModule
-import com.notdoppler.core.domain.source.remote.repository.ImagesRepository
-import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
-import com.notdoppler.core.picturedetails.repository.FakeImagesRepositoryImpl
+import com.notdoppler.core.domain.source.remote.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
+import com.notdoppler.core.picturedetails.repository.FakeImagePagingRepositoryImpl
 import com.notdoppler.core.picturedetails.repository.FakeRemoteImageSourceImpl
 import dagger.Binds
 import dagger.Module
@@ -17,7 +17,7 @@ import dagger.hilt.testing.TestInstallIn
 )
 interface RemoteRepositoryModule {
     @Binds
-    fun provideImagesRepository(imagesRepositoryImpl: FakeImagesRepositoryImpl): ImagesRepository
+    fun provideImagesRepository(imagesRepositoryImpl: FakeImagePagingRepositoryImpl): ImagePagingRepository
 
     @Binds
     fun provideImageSourceRepository(fetchedImageSourceImpl: FakeRemoteImageSourceImpl): RemoteImageSource

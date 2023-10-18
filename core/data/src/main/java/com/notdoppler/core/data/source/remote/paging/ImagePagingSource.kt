@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.model.remote.ImageRequestInfo
-import com.notdoppler.core.domain.source.remote.repository.RemoteImageSource
+import com.notdoppler.core.domain.source.remote.RemoteImageSource
 import javax.inject.Inject
 
 class ImagePagingSource @Inject constructor(

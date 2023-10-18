@@ -24,7 +24,8 @@ import kotlinx.coroutines.launch
 fun HomeScreenScaffold(
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
-    content: @Composable (PaddingValues) -> Unit
+    onNavigateToSearch: (String?) -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     Scaffold(
@@ -45,6 +46,18 @@ fun HomeScreenScaffold(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.baseline_menu_24),
+                            contentDescription = null
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = {
+                            onNavigateToSearch(null)
+                        }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_search_24),
                             contentDescription = null
                         )
                     }

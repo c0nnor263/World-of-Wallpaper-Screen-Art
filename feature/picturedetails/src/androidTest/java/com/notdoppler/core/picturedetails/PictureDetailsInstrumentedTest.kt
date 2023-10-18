@@ -12,7 +12,7 @@ import com.notdoppler.core.database.domain.repository.FavoriteImageRepository
 import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.domain.source.local.repository.StorageManager
-import com.notdoppler.core.domain.source.remote.repository.ImagesRepository
+import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
 import com.notdoppler.core.picturedetails.domain.matchers.IntentShareMatcher
 import com.notdoppler.core.picturedetails.domain.matchers.chooser
 import com.notdoppler.core.ui.HomeScreenViewModel
@@ -50,7 +50,7 @@ class PictureDetailsInstrumentedTest {
     val composeTestRule = createComposeRule()
 
     @Inject
-    lateinit var imagesRepository: ImagesRepository
+    lateinit var imagePagingRepository: ImagePagingRepository
 
     @Inject
     lateinit var favoriteImageRepository: FavoriteImageRepository
@@ -63,7 +63,7 @@ class PictureDetailsInstrumentedTest {
         hiltRule.inject()
         composeTestRule.setContent {
             WallpapersTheme {
-                val homeScreenViewModel = HomeScreenViewModel(imagesRepository)
+                val homeScreenViewModel = HomeScreenViewModel(imagePagingRepository)
                 val pictureDetailsViewModel = PictureDetailsViewModel(
                     favoriteImageRepository, storageManager
                 )

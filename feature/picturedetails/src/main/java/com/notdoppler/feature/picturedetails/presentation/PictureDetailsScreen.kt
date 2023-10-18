@@ -23,7 +23,6 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.notdoppler.core.domain.enums.ActionType
 import com.notdoppler.core.domain.model.PictureDetailsNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
-import com.notdoppler.core.ui.HomeScreenViewModel
 import com.notdoppler.feature.picturedetails.R
 import com.notdoppler.feature.picturedetails.presentation.common.DetailsImage
 import com.notdoppler.feature.picturedetails.presentation.common.dialog.LoadingDownload
@@ -39,22 +38,22 @@ const val PictureDetailsScreenContentImage = "PictureDetailsScreenContentImage"
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PictureDetailsScreen(
-    homeSharedViewModel: HomeScreenViewModel = hiltViewModel(),
     pictureDetailsViewModel: PictureDetailsViewModel = hiltViewModel(),
     navArgs: PictureDetailsNavArgs,
+    onNavigateToSearch: (String?) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
-
-
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+    val publisherInfoState = rememberPublisherInfoState()
     val imageHits =
         homeSharedViewModel.tabPagingState[navArgs.tabOrder]?.collectAsLazyPagingItems()
 
-    val context = LocalContext.current
-    val snackbarHostState = remember { SnackbarHostState() }
     var loadingDownloadDialogVisible by remember {
         mutableStateOf(false)
     }
-    val publisherInfoState = rememberPublisherInfoState()
+
+
 
 
 
@@ -136,9 +135,7 @@ fun PictureDetailsScreen(
 
     LoadingDownload(visible = loadingDownloadDialogVisible)
 
-    PublisherInfoDialog(state = publisherInfoState, onTagSearch = {
-
-    })
+    PublisherInfoDialog(state = publisherInfoState, onTagSearch = onNavigateToSearch)
 }
 
 

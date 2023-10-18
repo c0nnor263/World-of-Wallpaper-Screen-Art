@@ -37,6 +37,12 @@ android {
         buildConfig = true
     }
 }
+androidComponents {
+    onVariants(selector().withBuildType("release")) {
+        // Exclude AndroidX version files
+        it.packaging.resources.excludes.add("META-INF/*.version")
+    }
+}
 
 dependencies {
     implementation(project(":core:database"))
