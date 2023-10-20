@@ -14,7 +14,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.notdoppler.core.domain.getSafeParcelable
-import com.notdoppler.core.domain.model.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.SearchNavArgs
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.navigation.Screen
 import com.notdoppler.core.navigation.arg
@@ -34,36 +35,28 @@ fun NavHost(modifier: Modifier = Modifier, navController: NavHostController) {
         navController = navController,
         startDestination = Screen.Home.route
     ) {
-        detailsScreen(onNavigateToSearch = { query ->
+        detailsScreen(onNavigateToSearch = { args ->
             navController.navigateTo(
-                Screen.Search(
-                    query = query.toString()
-                )
+                Screen.Search(args = args.toString())
             )
         },
             onNavigateBack = { navController.popBackStack() })
 
         homeScreen(
-            onNavigateToSearch = { query ->
+            onNavigateToSearch = { args ->
                 navController.navigateTo(
-                    Screen.Search(
-                        query = query.toString()
-                    )
+                    Screen.Search(args = args.toString())
                 )
             },
             onNavigateToDetails = { args ->
                 navController.navigateTo(
-                    Screen.Details(
-                        args = args.toString()
-                    )
+                    Screen.Details(args = args.toString())
                 )
             })
         searchScreen(
             onNavigateToDetails = { args ->
                 navController.navigateTo(
-                    Screen.Details(
-                        args = args.toString()
-                    )
+                    Screen.Details(args = args.toString())
                 )
             }, onNavigateBack = {
                 navController.popBack()
@@ -79,12 +72,13 @@ fun NavGraphBuilder.searchScreen(
     val search = Screen.Search()
 
     composable(search.route, arguments = search.arguments) {
-        val queryArg = it.arguments?.getString(search.query.arg())
+        val queryArg = it.arguments?.getSafeParcelable(search.args.arg())
+            ?: SearchNavArgs(query = "", tabOrder = TabOrder.POPULAR)
 
         val viewModel: SearchScreenViewModel = hiltViewModel()
         SearchScreen(
             viewModel = viewModel,
-            query = queryArg,
+            navArgs = queryArg,
             onNavigateToDetails = onNavigateToDetails,
             onNavigateBack = onNavigateBack
         )
@@ -92,7 +86,7 @@ fun NavGraphBuilder.searchScreen(
 }
 
 fun NavGraphBuilder.homeScreen(
-    onNavigateToSearch: (String?) -> Unit,
+    onNavigateToSearch: (SearchNavArgs?) -> Unit,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
 ) {
     val home = Screen.Home
@@ -108,7 +102,7 @@ fun NavGraphBuilder.homeScreen(
 
 fun NavGraphBuilder.detailsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToSearch: (String?) -> Unit,
+    onNavigateToSearch: (SearchNavArgs?) -> Unit,
 ) {
     val details = Screen.Details()
     composable(

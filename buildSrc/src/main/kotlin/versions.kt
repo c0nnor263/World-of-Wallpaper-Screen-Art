@@ -23,6 +23,7 @@ object versions {
     }
 
     object compose {
+        const val exclude = "/META-INF/{AL2.0,LGPL2.1}"
         const val bom = "2023.10.00"
         const val compiler = "1.5.3"
         const val hiltNavigation = "1.0.0"
@@ -56,6 +57,7 @@ object versions {
         const val coroutines = "1.7.3"
         const val material = "1.10.0"
         const val activity = "1.8.0"
+        const val kotlinImmutableCollections = "0.3.6"
         const val appCompat = "1.6.1"
         const val lifecycle = "2.6.2"
         const val coreKtx = "1.12.0"
@@ -63,7 +65,6 @@ object versions {
 
     object common {
         const val hilt = "2.48.1"
-        const val excludeFiles = "META-INF/*.version"
         const val ksp = "1.9.10-1.0.13"
     }
 

@@ -40,13 +40,15 @@ fun AnchoredDraggableArea(
                 dampingRatio = Spring.DampingRatioLowBouncy,
                 stiffness = Spring.StiffnessLow,
             ),
-        ) { anchor ->
+        )
+        { anchor ->
             when (anchor) {
                 DragAnchors.TopEnd -> {
                     if (!isTopEnd) onTopEnd()
                     isTopEnd = true
                     true
                 }
+
                 else -> {
                     lastProgress = 0F
                     true
@@ -65,11 +67,9 @@ fun AnchoredDraggableArea(
             .onSizeChanged { layoutSize ->
                 state.updateAnchors(
                     DraggableAnchors {
-                        DragAnchors
-                            .values()
-                            .forEach { anchor ->
-                                anchor at layoutSize.height * anchor.fraction
-                            }
+                        DragAnchors.entries.forEach { anchor ->
+                            anchor at layoutSize.height * anchor.fraction
+                        }
                     }
                 )
             },

@@ -1,16 +1,18 @@
 package com.notdoppler.core.domain.source.remote
 
-import androidx.paging.Pager
+import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.model.remote.ImageRequestInfo
+import kotlinx.coroutines.flow.Flow
 
 interface ApplicationPagingDataStore {
-    val pagingData: MutableMap<String, Pager<Int, FetchedImage.Hit>>
+    val pagingData: MutableMap<String, Flow<PagingData<FetchedImage.Hit>>>
 
     fun getPager(
-        key: String,
+        key: String? = null,
         info: ImageRequestInfo,
+        cacheEnabled: Boolean = true,
         source: PagingSource<Int, FetchedImage.Hit>,
-    ): Pager<Int, FetchedImage.Hit>
+    ): Flow<PagingData<FetchedImage.Hit>>
 }

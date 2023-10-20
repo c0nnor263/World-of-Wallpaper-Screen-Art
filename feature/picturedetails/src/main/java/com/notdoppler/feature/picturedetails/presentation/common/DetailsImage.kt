@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,16 +72,22 @@ fun DetailsImage(
                                 .roundToInt()
                         )
                     }
-                    .anchoredDraggable(draggableInfo.state, Orientation.Vertical))
+                    .anchoredDraggable(draggableInfo.state, Orientation.Vertical)
+            )
 
 
+            val isActionRowVisible = remember {
+                derivedStateOf {
+                    draggableInfo.progress < 0.035F
+                }
+            }
             ActionRow(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(
                         bottom = 8.dp
                     ),
-                visible = draggableInfo.progress < 0.035F,
+                visible = isActionRowVisible.value,
                 onActionClick = {
                     onActionClick(it, image, bitmap)
                 }

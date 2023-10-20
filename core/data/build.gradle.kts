@@ -36,11 +36,10 @@ android {
     buildFeatures {
         buildConfig = true
     }
-}
-androidComponents {
-    onVariants(selector().withBuildType("release")) {
-        // Exclude AndroidX version files
-        it.packaging.resources.excludes.add("META-INF/*.version")
+    packaging {
+        resources {
+            excludes += versions.compose.exclude
+        }
     }
 }
 
@@ -57,6 +56,7 @@ dependencies {
     implementation("com.android.billingclient:billing-ktx:${versions.playServices.billing}")
     implementation("com.android.volley:volley:1.2.1")
     coreData()
+    libs.android.kotlinImmutableCollections.get(this)
 
 
     implementation("com.google.android.play:review:2.0.1")

@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.navigation.NavType
 import com.google.gson.Gson
 import com.notdoppler.core.domain.getSafeParcelable
-import com.notdoppler.core.domain.model.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
 
 
-class PictureDetailsNavArgsType : NavType<PictureDetailsNavArgs>(isNullableAllowed = true) {
+class PictureDetailsNavArgsType : NavType<PictureDetailsNavArgs>(isNullableAllowed = false) {
     override fun get(bundle: Bundle, key: String): PictureDetailsNavArgs? {
         return bundle.getSafeParcelable(key)
     }

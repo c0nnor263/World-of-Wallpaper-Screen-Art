@@ -32,6 +32,7 @@ import com.notdoppler.core.billing.domain.model.PurchaseProduct
 import com.notdoppler.core.domain.di.ApplicationScope
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -169,13 +170,13 @@ class BillingDataSource @Inject constructor(
         if (inAppDetailsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             val result = inAppDetailsResult.productDetailsList
             _productsDetailsFlow.value = _productsDetailsFlow.value.copy(
-                inAppDetails = result
+                inAppDetails = result?.toImmutableList()
             )
         }
         if (subscriptionDetailsResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
             val result = subscriptionDetailsResult.productDetailsList
             _productsDetailsFlow.value =
-                _productsDetailsFlow.value.copy(subscriptionDetails = result)
+                _productsDetailsFlow.value.copy(subscriptionDetails = result?.toImmutableList())
         }
     }
 

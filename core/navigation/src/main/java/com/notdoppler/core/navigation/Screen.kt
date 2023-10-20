@@ -1,26 +1,28 @@
 package com.notdoppler.core.navigation
 
 import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.notdoppler.core.navigation.type.PictureDetailsNavArgsType
+import com.notdoppler.core.navigation.type.SearchNavArgsType
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 
 sealed class Screen(
     val route: String,
-    val arguments: List<NamedNavArgument> = emptyList(),
+    val arguments: ImmutableList<NamedNavArgument> = persistentListOf(),
 ) {
     data object Home : Screen(route = "home")
-    data class Search(val query: String = "{query}") :
+    data class Search(val args: String = "{args}") :
         Screen(
-            route = "search?query=$query",
-            arguments = listOf(
+            route = "search?args=$args",
+            arguments = persistentListOf(
                 navArgument(
-                    name = query.arg()
+                    name = args.arg()
                 ) {
-                    type = NavType.StringType
-                    defaultValue = null
+                    type = SearchNavArgsType()
                     nullable = true
+                    defaultValue = null
                 }
             )
         )
@@ -29,12 +31,11 @@ sealed class Screen(
         val args: String = "{args}",
     ) : Screen(
         route = "details?args=$args",
-        arguments = listOf(
+        arguments = persistentListOf(
             navArgument(
                 name = args.arg()
             ) {
                 type = PictureDetailsNavArgsType()
-                nullable = true
             }
         )
     )

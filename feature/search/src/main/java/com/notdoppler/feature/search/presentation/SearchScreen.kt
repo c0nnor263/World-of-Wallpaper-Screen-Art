@@ -2,18 +2,14 @@ package com.notdoppler.feature.search.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -29,46 +25,43 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.notdoppler.core.domain.model.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.SearchNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.presentation.TabOrder
+import com.notdoppler.core.ui.ApplicationScaffold
 import com.notdoppler.core.ui.ImageCard
+import com.notdoppler.core.ui.LoadingBar
 import com.notdoppler.feature.search.state.SearchQueryState
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     viewModel: SearchScreenViewModel,
-    query: String?,
+    navArgs: SearchNavArgs,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
 
-    LaunchedEffect(key1 = Unit, block = {
-        viewModel.setQuery(query)
-    })
+    LaunchedEffect(Unit) {
+        viewModel.setSearchState(navArgs)
+    }
 
     val images = viewModel.imageState.collectAsLazyPagingItems()
 
+    ApplicationScaffold(
+        title = navArgs.query.ifBlank { "Search" },
+        navigationIcon = {
+            IconButton(
+                onClick = onNavigateBack
+            ) {
+                Icon(
+                    painter = painterResource(id = com.notdoppler.core.ui.R.drawable.baseline_arrow_left_24),
+                    contentDescription = null
+                )
+            }
+        },
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(text = query ?: "Search") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateBack
-                    ) {
-                        Icon(
-                            painter = painterResource(id = com.notdoppler.core.ui.R.drawable.baseline_menu_24),
-                            contentDescription = null
-                        )
-                    }
-                },
-                modifier = Modifier.displayCutoutPadding()
-            )
-        }, modifier = Modifier.fillMaxSize()
-    ) { innerPadding ->
+        ) { innerPadding ->
         SearchScreenContent(
             images = images,
             searchQueryState = viewModel.searchQueryState,
@@ -85,18 +78,14 @@ fun SearchScreenContent(
     images: LazyPagingItems<FetchedImage.Hit>,
     searchQueryState: SearchQueryState,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
-
     modifier: Modifier = Modifier,
-
-    ) {
+) {
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-
         SearchField(searchQueryState = searchQueryState)
-
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(3),
             verticalItemSpacing = 4.dp,
@@ -109,7 +98,12 @@ fun SearchScreenContent(
                 ImageCard(
                     image = images[index] ?: return@items,
                     onNavigateToDetails = {
-                        onNavigateToDetails(PictureDetailsNavArgs(index, TabOrder.LATEST))
+                        onNavigateToDetails(
+                            PictureDetailsNavArgs(
+                                selectedImageIndex = index,
+                                tabOrder = TabOrder.SEARCH
+                            )
+                        )
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -118,6 +112,7 @@ fun SearchScreenContent(
             }
         }
     }
+    LoadingBar(visible = searchQueryState.isSearching)
 }
 
 @Composable
@@ -136,9 +131,10 @@ fun SearchField(
                 modifier = Modifier.padding(16.dp)
             )
         },
-        onValueChange = searchQueryState::updateSearchQuery,
+        onValueChange = searchQueryState::updateQuery,
         placeholder = { Text(text = "Search") }
     )
+
 
 }
 
@@ -146,5 +142,17 @@ fun SearchField(
 @Composable
 fun SearchFieldPreview() {
     val searchQuery = remember { mutableStateOf("") }
-    SearchField(searchQueryState = SearchQueryState())
+    SearchField(searchQueryState = SearchQueryState().apply {
+        updateQuery(
+            searchQuery.value
+        )
+    })
 }
+
+
+
+
+
+
+
+

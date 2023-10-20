@@ -4,12 +4,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Parcelable
 import androidx.annotation.Keep
+import androidx.compose.runtime.Stable
 import com.google.gson.Gson
 import com.notdoppler.core.domain.model.local.StorageImageInfo
 import kotlinx.parcelize.Parcelize
 
 @Keep
 @Parcelize
+@Stable
 data class FetchedImage(
     val hits: List<Hit>? = null,
     val total: Int? = null,

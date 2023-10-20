@@ -46,29 +46,26 @@ android {
     }
     kotlinOptions {
         jvmTarget = versions.config.jvmTarget
-    }
 
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = versions.compose.compiler
+    }
     buildFeatures {
         buildConfig = true
+        compose = true
     }
-}
-androidComponents {
-    onVariants(selector().withBuildType("release")) {
-        // Exclude AndroidX version files
-        it.packaging.resources.excludes.add("META-INF/*.version")
+    packaging {
+        resources {
+            excludes += versions.compose.exclude
+        }
     }
 }
 
 dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
-
-    implementation("androidx.core:core-ktx:${versions.android.coreKtx}")
-    implementation("androidx.appcompat:appcompat:${versions.android.appCompat}")
-    implementation("com.google.android.material:material:${versions.android.material}")
-    testImplementation("junit:junit:${versions.tooling.junit}")
-    androidTestImplementation("androidx.test.ext:junit:${versions.tooling.androidJunit}")
-    androidTestImplementation("androidx.test.espresso:espresso-core:${versions.tooling.androidEspressoCore}")
+    composeCore()
     implementation("com.android.billingclient:billing-ktx:${versions.playServices.billing}")
     implementation("com.android.volley:volley:1.2.1")
     coreData()

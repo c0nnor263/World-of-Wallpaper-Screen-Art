@@ -2,7 +2,6 @@ package com.notdoppler.feature.picturedetails.presentation.common.dialog
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -52,6 +50,8 @@ import coil.compose.AsyncImage
 import com.notdoppler.core.ui.R
 import com.notdoppler.feature.picturedetails.domain.model.PublisherInfoData
 import com.notdoppler.feature.picturedetails.state.PublisherInfoState
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,10 +62,9 @@ fun PublisherInfoDialog(
 ) {
     val tags = remember {
         derivedStateOf {
-            state.info?.tags.also { Log.i("TAG", "tags: $it") }?.split(",")?.map { it.trim() }
+            state.info?.tags?.split(",")?.map { it.trim() }?.toImmutableList()
         }
     }
-    Log.i("TAG", "PublisherInfoDialog: ${state.info}")
     AnimatedVisibility(
         visible = state.isVisible, modifier = modifier
     ) {
@@ -100,7 +99,8 @@ fun PublisherInfoDialog(
 @Composable
 fun UserSection(state: PublisherInfoState, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         UserProfileCard(state)
         Spacer(modifier = Modifier.width(16.dp))
@@ -203,10 +203,14 @@ fun RowScope.UserSourceCard(url: String?) {
 
 
 @Composable
-fun TagSection(tags: List<String>, modifier: Modifier = Modifier, onTagSearch: (String) -> Unit) {
+fun TagSection(
+    tags: ImmutableList<String>,
+    modifier: Modifier = Modifier,
+    onTagSearch: (String) -> Unit,
+) {
     LazyVerticalStaggeredGrid(
         modifier = modifier,
-        columns = StaggeredGridCells.Adaptive(80.dp),
+        columns = StaggeredGridCells.Fixed(3),
         verticalItemSpacing = 8.dp,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(vertical = 8.dp)
@@ -233,8 +237,7 @@ fun TagCard(text: String, modifier: Modifier = Modifier, onTagSearch: (String) -
                     onClick = {
                         onTagSearch(text)
                     },
-                )
-                .wrapContentSize(Alignment.Center),
+                ),
         ) {
             Text(
                 text = text,

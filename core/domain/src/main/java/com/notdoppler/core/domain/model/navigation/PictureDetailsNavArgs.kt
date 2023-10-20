@@ -1,4 +1,4 @@
-package com.notdoppler.core.domain.model
+package com.notdoppler.core.domain.model.navigation
 
 import android.net.Uri
 import android.os.Parcelable

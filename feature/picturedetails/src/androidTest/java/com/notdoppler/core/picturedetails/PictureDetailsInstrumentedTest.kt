@@ -9,7 +9,7 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.rule.IntentsRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.notdoppler.core.database.domain.repository.FavoriteImageRepository
-import com.notdoppler.core.domain.model.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
 import com.notdoppler.core.domain.presentation.TabOrder
 import com.notdoppler.core.domain.source.local.repository.StorageManager
 import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository

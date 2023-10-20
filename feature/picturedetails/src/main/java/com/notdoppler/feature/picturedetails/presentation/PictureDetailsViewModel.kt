@@ -3,9 +3,7 @@ package com.notdoppler.feature.picturedetails.presentation
 import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -46,7 +44,6 @@ class PictureDetailsViewModel @Inject constructor(
         MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
 
-    var isFavoriteIconEnabled by mutableStateOf(false)
 
     val pictureDetailsState = PictureDetailsState()
 
@@ -58,21 +55,19 @@ class PictureDetailsViewModel @Inject constructor(
                 order?.let {
                     val info = ImageRequestInfo(order = order)
                     applicationPagingDataStore.getPager(
-                        order.requestValue,
-                        info,
-                        imagePagingRepository.getPagingSource(info)
-                    ).flow
+                        info = info,
+                        source = imagePagingRepository.getPagingSource(info)
+                    )
                 } ?: flowOf(PagingData.empty())
             }
             .distinctUntilChanged()
             .cachedIn(viewModelScope)
-
     fun setTabOrder(order: TabOrder) {
         pictureDetailsState.updateTabOrder(order)
     }
 
     fun checkForFavorite(imageId: Int?) = viewModelScope.launch(Dispatchers.IO) {
-        isFavoriteIconEnabled = imageId?.let {
+        pictureDetailsState.isFavoriteEnabled = imageId?.let {
             favoriteImageRepository.checkForFavorite(it)
         } ?: false
     }
@@ -88,13 +83,14 @@ class PictureDetailsViewModel @Inject constructor(
                 bitmap?.let {
                     val favoriteImage = FavoriteImage(bitmap = it, imageId = image?.id ?: 0)
                     Log.i("TAG", "onActionClick: $favoriteImage")
-                    isFavoriteIconEnabled = if (isFavoriteIconEnabled) {
-                        favoriteImageRepository.deleteById(favoriteImage.imageId)
-                        false
-                    } else {
-                        favoriteImageRepository.upsert(favoriteImage)
-                        true
-                    }
+                    pictureDetailsState.isFavoriteEnabled =
+                        if (pictureDetailsState.isFavoriteEnabled) {
+                            favoriteImageRepository.deleteById(favoriteImage.imageId)
+                            false
+                        } else {
+                            favoriteImageRepository.upsert(favoriteImage)
+                            true
+                        }
                 }
             }
 
@@ -147,6 +143,8 @@ class PictureDetailsViewModel @Inject constructor(
     sealed class UiState {
         data object SavedToFavorites : UiState()
         data class Error(val message: String) : UiState()
+
+        @Stable
         data class Share(val uri: Uri) : UiState()
         data class PublisherInfo(val data: PublisherInfoData) : UiState()
 

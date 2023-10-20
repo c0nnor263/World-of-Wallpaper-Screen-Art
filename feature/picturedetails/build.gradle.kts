@@ -40,13 +40,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = versions.compose.compiler
     }
-}
-
-
-androidComponents {
-    onVariants(selector().withBuildType("release")) {
-        // Exclude AndroidX version files
-        it.packaging.resources.excludes.add("META-INF/*.version")
+    packaging {
+        resources {
+            excludes += versions.compose.exclude
+        }
     }
 }
 
@@ -60,7 +57,8 @@ dependencies {
     composeCore()
 
     implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("androidx.compose.foundation:foundation:1.6.0-alpha07")
+    //noinspection GradleDependency
+    implementation("androidx.compose.foundation:foundation:1.6.0-alpha01")
     implementation("androidx.paging:paging-runtime:3.2.1")
     implementation("androidx.paging:paging-compose:3.2.1")
     androidTestImplementation("androidx.paging:paging-testing:3.2.1")

@@ -53,6 +53,8 @@ object libs {
     }
 
     object compose {
+
+
         val bom = Dependency("androidx.compose:compose-bom", versions.compose.bom, Type.PLATFORM)
         val ui = Dependency("androidx.compose.ui:ui")
         val uiGraphics = Dependency("androidx.compose.ui:ui-graphics")
@@ -89,6 +91,11 @@ object libs {
 
     object android {
         val coreKtx = Dependency("androidx.core:core-ktx", versions.android.coreKtx)
+        val kotlinImmutableCollections =
+            Dependency(
+                "org.jetbrains.kotlinx:kotlinx-collections-immutable",
+                versions.android.kotlinImmutableCollections
+            )
         val activity = Dependency("androidx.activity:activity-compose", versions.android.activity)
     }
 
@@ -159,6 +166,7 @@ fun DependencyHandler.composeCore() {
     test()
     libs.android.coreKtx.get(this)
     libs.android.activity.get(this)
+    libs.android.kotlinImmutableCollections.get(this)
     libs.lifecycle.runtimeComposeKtx.get(this)
     getAll(this, libs.compose.all)
 }

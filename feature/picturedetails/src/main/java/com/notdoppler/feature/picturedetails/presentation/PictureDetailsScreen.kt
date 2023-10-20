@@ -21,7 +21,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.notdoppler.core.domain.enums.ActionType
-import com.notdoppler.core.domain.model.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
+import com.notdoppler.core.domain.model.navigation.SearchNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.feature.picturedetails.R
 import com.notdoppler.feature.picturedetails.presentation.common.DetailsImage
@@ -40,7 +41,7 @@ const val PictureDetailsScreenContentImage = "PictureDetailsScreenContentImage"
 fun PictureDetailsScreen(
     viewModel: PictureDetailsViewModel = hiltViewModel(),
     navArgs: PictureDetailsNavArgs,
-    onNavigateToSearch: (String?) -> Unit,
+    onNavigateToSearch: (SearchNavArgs?) -> Unit,
     onNavigateBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -50,9 +51,6 @@ fun PictureDetailsScreen(
     var loadingDownloadDialogVisible by remember {
         mutableStateOf(false)
     }
-
-
-
 
 
     LaunchedEffect(Unit) {
@@ -103,14 +101,16 @@ fun PictureDetailsScreen(
     }
 
 
-    CompositionLocalProvider(LocalFavoriteIconEnabled provides viewModel.isFavoriteIconEnabled) {
+    CompositionLocalProvider(LocalFavoriteIconEnabled provides viewModel.pictureDetailsState.isFavoriteEnabled) {
         val pagerState = rememberPagerState(initialPage = navArgs.selectedImageIndex) {
             images.itemCount
         }
 
         LaunchedEffect(pagerState.currentPage) {
-            val imageId = images[pagerState.currentPage]?.id
-            viewModel.checkForFavorite(imageId)
+            if (images.itemCount > 0) {
+                val imageId = images[pagerState.currentPage]?.id
+                viewModel.checkForFavorite(imageId)
+            }
         }
 
         PictureDetailsScreenContent(
@@ -127,7 +127,17 @@ fun PictureDetailsScreen(
 
     LoadingDownload(visible = loadingDownloadDialogVisible)
 
-    PublisherInfoDialog(state = publisherInfoState, onTagSearch = onNavigateToSearch)
+    PublisherInfoDialog(
+        state = publisherInfoState,
+        onTagSearch = { tag ->
+            onNavigateToSearch(
+                SearchNavArgs(
+                    query = tag,
+                    tabOrder = navArgs.tabOrder
+                )
+            )
+        }
+    )
 }
 
 
