@@ -13,15 +13,16 @@ class RemoteImageSourceImpl @Inject constructor(
         return pixabayService.getImagesByPage(
             pageKey = info.pageKey,
             q = "",
+            category = info.category,
             order = info.order.requestValue,
             perPage = info.pageSize
-
         )
     }
 
     override suspend fun getImagesByQuery(info: ImageRequestInfo): FetchedImage {
         return pixabayService.getImagesByPage(
             pageKey = info.pageKey,
+            category = info.category,
             q = info.query
         )
     }

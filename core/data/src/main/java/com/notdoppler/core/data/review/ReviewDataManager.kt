@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.activity.ComponentActivity
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.notdoppler.core.domain.source.local.repository.AppPreferencesDataStoreRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,19 +15,18 @@ import javax.inject.Inject
 
 class ReviewDataManager @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
+    private val appPreferencesDataStoreRepository: AppPreferencesDataStoreRepository,
 ) {
     private val manager = ReviewManagerFactory.create(applicationContext)
 
 
     private suspend fun isAvailableForReview(): Boolean = withContext(Dispatchers.IO) {
-        // todo check if user is eligible for review
-        true
+        appPreferencesDataStoreRepository.getIsAvailableForReview()
     }
 
-    suspend fun requestReviewInfo(activity: ComponentActivity, showDialog: () -> Unit) {
+    suspend fun requestReviewInfo(activity: ComponentActivity) {
 
         if (isAvailableForReview()) {
-            showDialog()
             manager.requestReviewFlow().addOnCompleteListener { task ->
                 if (task.isSuccessful) {
 
@@ -34,8 +34,7 @@ class ReviewDataManager @Inject constructor(
                     startReviewFlow(activity, reviewInfo)
 
                     CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-
-                        // TODO set review requested
+                        appPreferencesDataStoreRepository.setIsAvailableForReview(false)
                     }
                 }
             }

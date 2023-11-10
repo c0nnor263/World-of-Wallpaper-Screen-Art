@@ -1,8 +1,8 @@
 package com.notdoppler.feature.home.domain.model
 
-import com.notdoppler.core.domain.presentation.TabOrder
+import com.notdoppler.core.domain.enums.PagingKey
 
 data class TabInfo(
     val title: String,
-    val order: TabOrder
+    val order: PagingKey,
 )

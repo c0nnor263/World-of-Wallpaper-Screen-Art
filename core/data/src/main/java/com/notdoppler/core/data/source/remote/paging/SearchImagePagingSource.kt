@@ -5,9 +5,8 @@ import androidx.paging.PagingState
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.domain.model.remote.ImageRequestInfo
 import com.notdoppler.core.domain.source.remote.RemoteImageSource
-import javax.inject.Inject
 
-class SearchImagePagingSource @Inject constructor(
+class SearchImagePagingSource(
     private val remoteImageSource: RemoteImageSource,
     private val info: ImageRequestInfo,
 ) : PagingSource<Int, FetchedImage.Hit>() {

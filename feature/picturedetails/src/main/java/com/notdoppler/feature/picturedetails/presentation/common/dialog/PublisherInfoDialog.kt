@@ -86,7 +86,7 @@ fun PublisherInfoDialog(
                     InfoSection(
                         state, modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(vertical = 16.dp)
                     )
                 }
             }
@@ -254,7 +254,10 @@ fun TagCard(text: String, modifier: Modifier = Modifier, onTagSearch: (String) -
 
 @Composable
 fun InfoSection(state: PublisherInfoState, modifier: Modifier = Modifier) {
-    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
@@ -285,6 +288,8 @@ fun InfoSection(state: PublisherInfoState, modifier: Modifier = Modifier) {
                     }
                     append(state.info?.type.toString())
                 },
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray.copy(0.7F))
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -295,6 +300,8 @@ fun InfoSection(state: PublisherInfoState, modifier: Modifier = Modifier) {
                     }
                     append("${state.info?.imageWidth}x${state.info?.imageHeight}")
                 },
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
                 style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray.copy(0.7F))
             )
         }
@@ -313,7 +320,11 @@ fun InfoCard(@DrawableRes drawable: Int, modifier: Modifier = Modifier, textData
             painter = painterResource(id = drawable),
             contentDescription = null
         )
-        Text(text = textData)
+        Text(
+            text = textData,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
+        )
     }
 }
 

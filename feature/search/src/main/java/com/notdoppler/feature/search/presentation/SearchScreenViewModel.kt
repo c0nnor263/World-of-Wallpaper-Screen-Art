@@ -3,10 +3,10 @@ package com.notdoppler.feature.search.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import com.notdoppler.core.data.domain.ApplicationPagingDataStore
+import com.notdoppler.core.domain.enums.PagingKey
 import com.notdoppler.core.domain.model.navigation.SearchNavArgs
 import com.notdoppler.core.domain.model.remote.ImageRequestInfo
-import com.notdoppler.core.domain.presentation.TabOrder
-import com.notdoppler.core.domain.source.remote.ApplicationPagingDataStore
 import com.notdoppler.core.domain.source.remote.repository.SearchImagePagingRepository
 import com.notdoppler.feature.search.state.SearchQueryState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,14 +31,13 @@ class SearchScreenViewModel @Inject constructor(
     val imageState =
         searchQueryState.query
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
-            .debounce(300.milliseconds)
+            .debounce(500.milliseconds)
             .onEach { searchQueryState.isSearching = true }
             .flatMapLatest { query ->
-                val info = ImageRequestInfo(query = query, order = searchQueryState.tabOrder)
+                val info = ImageRequestInfo(query = query, order = searchQueryState.pagingKey)
                 applicationPagingDataStore.getPager(
-                    key = TabOrder.SEARCH.requestValue,
+                    key = PagingKey.SEARCH.requestValue + query,
                     info = info,
-                    cacheEnabled = false,
                     source = searchImagePagingRepository.getPagingSource(info),
                 )
             }
@@ -46,7 +45,8 @@ class SearchScreenViewModel @Inject constructor(
             .cachedIn(viewModelScope)
 
     fun setSearchState(navArgs: SearchNavArgs) {
+        if (searchQueryState.query.value == navArgs.query || navArgs.query.isBlank()) return
         searchQueryState.updateQuery(navArgs.query)
-        searchQueryState.updateTabOrder(navArgs.tabOrder)
+        searchQueryState.updateTabOrder(navArgs.pagingKey)
     }
 }

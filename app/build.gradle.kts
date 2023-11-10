@@ -78,15 +78,15 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
-    implementation(project(":core:navigation"))
     implementation(project(":feature:home"))
     implementation(project(":feature:picturedetails"))
     implementation(project(":feature:search"))
+    implementation(project(":feature:splash"))
+    implementation(project(":feature:favorites"))
     appModule()
 
+    libs.network.gson.get(this)
     implementation("io.coil-kt:coil-compose:2.4.0")
-
-
 }
 
 

@@ -64,7 +64,7 @@ class BillingDataSource @Inject constructor(
     private val billingStateListener = object : BillingClientStateListener {
         override fun onBillingSetupFinished(billingResult: BillingResult) {
             if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                scope.launch(Dispatchers.IO) {
+                scope.launch {
                     queryProductDetails()
                 }
             }
@@ -140,7 +140,7 @@ class BillingDataSource @Inject constructor(
     suspend fun queryProductDetails() = withContext(Dispatchers.IO) {
         val inAppParams = QueryProductDetailsParams.newBuilder()
             .setProductList(
-                BillingProductType.values()
+                BillingProductType.entries
                 .filter { it.productType == ProductType.INAPP }
                 .map {
                     QueryProductDetailsParams.Product.newBuilder()

@@ -37,4 +37,8 @@ android {
 dependencies {
     implementation(project(":core:domain"))
     databaseModule()
+
+
+    implementation("androidx.paging:paging-runtime:3.2.1")
+    implementation("androidx.room:room-paging:2.6.0")
 }

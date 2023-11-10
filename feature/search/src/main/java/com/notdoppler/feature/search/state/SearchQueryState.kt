@@ -4,28 +4,26 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.notdoppler.core.domain.presentation.TabOrder
+import com.notdoppler.core.domain.enums.PagingKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 
 @Stable
 class SearchQueryState {
     private val _query: MutableStateFlow<String> = MutableStateFlow("")
-    val query: StateFlow<String> = _query.asStateFlow()
+    val query: StateFlow<String> = _query
 
-    var tabOrder: TabOrder by mutableStateOf(TabOrder.POPULAR)
+    var pagingKey: PagingKey by mutableStateOf(PagingKey.POPULAR)
         private set
     var isSearching by mutableStateOf(false)
 
 
     fun updateQuery(data: String) {
         _query.value = data
-
     }
 
-    fun updateTabOrder(data: TabOrder) {
-        tabOrder = data
+    fun updateTabOrder(data: PagingKey) {
+        pagingKey = data
     }
 }

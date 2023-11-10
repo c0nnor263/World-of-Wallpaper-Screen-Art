@@ -27,7 +27,8 @@ fun ApplicationScaffold(
                 actions = { actions.forEach { it() } },
                 modifier = Modifier.displayCutoutPadding()
             )
-        }, modifier = modifier.fillMaxSize()
+        },
+        modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         content(innerPadding)
     }

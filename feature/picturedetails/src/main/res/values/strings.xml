@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="saved_to_favorites">Saved to favorites</string>
-    <string name="share_text_title">Share with</string>
-    <string name="share_app_text_content">Discover endless beauty with %1$s!\n
-        Explore countless categories of beautiful wallpapers and make your screen truly stunning.\n
-        Share the beauty with friends today!\n
-        https://play.google.com/store/apps/details?id=%2$s</string>
     <string name="copied_to_clipboard">Copied</string>
     <string name="downloaded">Downloaded</string>
     <string name="pixabay_user_id_user_profile">https://pixabay.com/users/%1$s-%2$d</string>
     <string name="source">Source</string>
+    <string name="failed_to_download_image">Failed to download image</string>
+    <string name="image_is_not_ready">Image is not ready</string>
+    <string name="error">Error</string>
 </resources>

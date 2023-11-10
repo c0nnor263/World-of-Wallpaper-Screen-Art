@@ -20,13 +20,11 @@ class InternalStorageManager @Inject constructor(
         val values = createValues(appName, info)
 
         val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
         return if (uri != null) {
             try {
                 contentResolver.openOutputStream(uri)?.use { stream ->
                     info.bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 }
-
                 values.put(MediaStore.Images.Media.IS_PENDING, false)
                 contentResolver.update(uri, values, null, null)
                 true
@@ -42,14 +40,11 @@ class InternalStorageManager @Inject constructor(
         val values = createValues(appName, info)
 
         val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-
-
         val result = uri?.let {
             try {
                 contentResolver.openOutputStream(uri)?.use { stream ->
                     info.bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 }
-
                 values.put(MediaStore.Images.Media.IS_PENDING, false)
                 contentResolver.update(uri, values, null, null)
                 uri

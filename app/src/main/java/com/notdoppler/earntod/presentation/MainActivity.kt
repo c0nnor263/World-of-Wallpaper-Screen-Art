@@ -12,14 +12,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.notdoppler.core.ui.theme.WallpapersTheme
-import com.notdoppler.earntod.presentation.navigation.AppContent
-import com.notdoppler.earntod.presentation.navigation.AppContentViewModel
+import com.notdoppler.earntod.presentation.composables.AppContent
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,9 +46,6 @@ class MainActivity : ComponentActivity() {
 
 
         setFullscreen()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            setDisplayCutoutMode()
-        }
     }
 
     override fun onResume() {
@@ -70,6 +64,9 @@ class MainActivity : ComponentActivity() {
                 systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 hide(WindowInsets.Type.systemBars())
             }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            setDisplayCutoutMode()
         }
     }
 

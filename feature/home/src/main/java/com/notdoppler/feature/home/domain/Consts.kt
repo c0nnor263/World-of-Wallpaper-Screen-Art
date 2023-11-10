@@ -1,10 +1,27 @@
 package com.notdoppler.feature.home.domain
 
-import com.notdoppler.core.domain.presentation.TabOrder
-import com.notdoppler.feature.home.domain.model.TabInfo
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
-val tabInfo =
-    listOf(
-        TabInfo(title = "Latest", order = TabOrder.LATEST),
-        TabInfo(title = "Popular", order = TabOrder.POPULAR),
-    )
+val tagCategories: ImmutableList<String> = persistentListOf(
+    "animals",
+    "backgrounds",
+    "buildings",
+    "business",
+    "computer",
+    "education",
+    "fashion",
+    "feelings",
+    "food",
+    "health",
+    "industry",
+    "music",
+    "nature",
+    "people",
+    "places",
+    "religion",
+    "science",
+    "sports",
+    "transportation",
+    "travel"
+)

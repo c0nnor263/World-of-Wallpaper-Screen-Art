@@ -10,6 +10,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,15 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import coil.compose.AsyncImagePainter
 import com.notdoppler.core.domain.enums.ActionType
 import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
 import com.notdoppler.core.domain.model.navigation.SearchNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
+import com.notdoppler.core.ui.LoadingBar
 import com.notdoppler.feature.picturedetails.R
-import com.notdoppler.feature.picturedetails.presentation.common.DetailsImage
-import com.notdoppler.feature.picturedetails.presentation.common.dialog.LoadingDownload
+import com.notdoppler.feature.picturedetails.presentation.common.DetailImage
 import com.notdoppler.feature.picturedetails.presentation.common.dialog.PublisherInfoDialog
 import com.notdoppler.feature.picturedetails.showShareDialog
 import com.notdoppler.feature.picturedetails.showToast
@@ -48,75 +51,107 @@ fun PictureDetailsScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val publisherInfoState = rememberPublisherInfoState()
     val images = viewModel.imageState.collectAsLazyPagingItems()
-    var loadingDownloadDialogVisible by remember {
-        mutableStateOf(false)
-    }
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
+    val pagerState = rememberPagerState(
+        initialPage = navArgs.selectedImageIndex
+    ) { images.itemCount }
 
-    LaunchedEffect(Unit) {
-        viewModel.setTabOrder(navArgs.tabOrder)
-        viewModel.uiState.collect { state ->
-            when (state) {
-                PictureDetailsViewModel.UiState.StartDownload -> {
-                    loadingDownloadDialogVisible = true
-                }
+    var loadingDownloadDialogVisible by remember { mutableStateOf(false) }
 
-                PictureDetailsViewModel.UiState.Downloaded -> {
+    LaunchedEffect(uiState.value) {
+        when (val state = uiState.value) {
 
-                    val message = context.getString(R.string.downloaded)
-                    showToast(context, message) {
-                        viewModel.clearUiState()
-                    }
-                    loadingDownloadDialogVisible = false
-                }
+            PictureDetailsViewModel.UiState.NoMoreFavorites -> {
+                onNavigateBack()
+            }
 
-                PictureDetailsViewModel.UiState.SavedToFavorites -> {
-                    val message = context.getString(R.string.saved_to_favorites)
-                    showToast(context, message) {
-                        viewModel.clearUiState()
-                    }
-                }
+            PictureDetailsViewModel.UiState.ImageStateLoading,
+            PictureDetailsViewModel.UiState.Actions.StartSavingPictureToDevice,
+            -> {
+                loadingDownloadDialogVisible = true
+            }
 
-                is PictureDetailsViewModel.UiState.Share -> {
-                    showShareDialog(context, state.uri) {
-                        viewModel.clearUiState()
-                    }
-                }
+            is PictureDetailsViewModel.UiState.ImageStateLoaded -> {
+                loadingDownloadDialogVisible = false
+            }
 
-                is PictureDetailsViewModel.UiState.Error -> {
-                    snackbarHostState.showSnackbar(state.message)
-                }
+            is PictureDetailsViewModel.UiState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.clearUiState()
+            }
 
-                is PictureDetailsViewModel.UiState.PublisherInfo -> {
-                    publisherInfoState.apply {
-                        setPublisherData(state.data)
-                        show()
-                    }
+            PictureDetailsViewModel.UiState.Actions.FinishedSavingPictureToDevice -> {
+
+                val message = context.getString(R.string.downloaded)
+                showToast(context, message)
+                viewModel.clearUiState()
+                loadingDownloadDialogVisible = false
+            }
+
+            PictureDetailsViewModel.UiState.Actions.SavedPictureToFavorites -> {
+                val message = context.getString(R.string.saved_to_favorites)
+                showToast(context, message)
+                viewModel.clearUiState()
+            }
+
+            is PictureDetailsViewModel.UiState.Actions.Share -> {
+                showShareDialog(context, state.uri) {
                     viewModel.clearUiState()
                 }
-
-                null -> {}
             }
+
+            is PictureDetailsViewModel.UiState.Actions.ShowPublisherInfo -> {
+                publisherInfoState.apply {
+                    setPublisherData(state.data)
+                    show()
+                }
+                viewModel.clearUiState()
+            }
+
+            null -> {}
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.setTabOrder(navArgs.pagingKey, navArgs.additionalKey)
+    }
+
+    LaunchedEffect(pagerState.currentPage, Unit, images.itemCount) {
+        if (images.itemCount > 0) {
+            val imageId = images[pagerState.currentPage]?.id
+            viewModel.checkForFavorite(imageId)
         }
     }
 
 
     CompositionLocalProvider(LocalFavoriteIconEnabled provides viewModel.pictureDetailsState.isFavoriteEnabled) {
-        val pagerState = rememberPagerState(initialPage = navArgs.selectedImageIndex) {
-            images.itemCount
-        }
-
-        LaunchedEffect(pagerState.currentPage) {
-            if (images.itemCount > 0) {
-                val imageId = images[pagerState.currentPage]?.id
-                viewModel.checkForFavorite(imageId)
-            }
-        }
-
         PictureDetailsScreenContent(
             pagerState = pagerState,
             imageHits = images,
             onNavigateBack = onNavigateBack,
+            onImageStateChanged = { state ->
+                when (state) {
+                    is AsyncImagePainter.State.Success -> {
+                        val newState = PictureDetailsViewModel.UiState.ImageStateLoaded
+                        viewModel.updateUiState(newState)
+                    }
+
+                    is AsyncImagePainter.State.Loading -> {
+                        viewModel.updateUiState(PictureDetailsViewModel.UiState.ImageStateLoading)
+                    }
+
+                    is AsyncImagePainter.State.Error -> {
+                        val message = state.result.throwable.localizedMessage
+                            ?: context.getString(R.string.error)
+                        viewModel.updateUiState(PictureDetailsViewModel.UiState.Error(message))
+                    }
+
+                    is AsyncImagePainter.State.Empty -> {}
+
+                    else -> {}
+                }
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(PictureDetailsScreenTag)
@@ -124,20 +159,15 @@ fun PictureDetailsScreen(
             viewModel.onActionClick(type, image, bitmap)
         }
     }
+    LoadingBar(visible = loadingDownloadDialogVisible)
 
-    LoadingDownload(visible = loadingDownloadDialogVisible)
-
-    PublisherInfoDialog(
-        state = publisherInfoState,
-        onTagSearch = { tag ->
-            onNavigateToSearch(
-                SearchNavArgs(
-                    query = tag,
-                    tabOrder = navArgs.tabOrder
-                )
+    PublisherInfoDialog(state = publisherInfoState, onTagSearch = { tag ->
+        onNavigateToSearch(
+            SearchNavArgs(
+                query = tag, pagingKey = navArgs.pagingKey
             )
-        }
-    )
+        )
+    })
 }
 
 
@@ -148,16 +178,25 @@ fun PictureDetailsScreenContent(
     pagerState: PagerState,
     imageHits: LazyPagingItems<FetchedImage.Hit>,
     onNavigateBack: () -> Unit,
+    onImageStateChanged: (AsyncImagePainter.State) -> Unit,
     onActionClick: (ActionType, FetchedImage.Hit?, Bitmap?) -> Unit,
 ) {
+    val thresholdIndex = remember {
+        derivedStateOf {
+            pagerState.settledPage.coerceAtMost(pagerState.currentPage + 1)
+        }
+    }
     HorizontalPager(
         modifier = modifier,
         state = pagerState,
+        key = { imageHits[it]?.id ?: 0 },
     ) { pageIndex ->
-        DetailsImage(
-            imageHit = imageHits[pageIndex],
+        DetailImage(
+            image = imageHits[pageIndex],
+            isActive = thresholdIndex.value == pageIndex,
             onActionClick = onActionClick,
             onNavigateBack = onNavigateBack,
+            onImageStateChanged = onImageStateChanged,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(PictureDetailsScreenContentImage)

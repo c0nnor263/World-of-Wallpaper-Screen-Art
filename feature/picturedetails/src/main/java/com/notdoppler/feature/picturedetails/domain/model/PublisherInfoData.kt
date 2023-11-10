@@ -1,18 +1,39 @@
 package com.notdoppler.feature.picturedetails.domain.model
 
+import com.notdoppler.core.domain.model.remote.FetchedImage
+
 data class PublisherInfoData(
-    val comments: Int?,
-    val downloads: Int?,
-    val imageHeight: Int?,
-    val imageWidth: Int?,
-    val largeImageURL: String?,
-    val likes: Int?,
-    val pageURL: String?,
-    val previewURL: String?,
-    val tags: String?,
-    val type: String?,
-    val user: String?,
-    val userImageURL: String?,
-    val userId: Int?,
-    val views: Int?,
-)
+    val comments: Int? = null,
+    val downloads: Int? = null,
+    val imageHeight: Int? = null,
+    val imageWidth: Int? = null,
+    val largeImageURL: String? = null,
+    val likes: Int? = null,
+    val pageURL: String? = null,
+    val previewURL: String? = null,
+    val tags: String? = null,
+    val type: String? = null,
+    val user: String? = null,
+    val userImageURL: String? = null,
+    val userId: Int? = null,
+    val views: Int? = null,
+) {
+    fun createFromImage(image: FetchedImage.Hit?): PublisherInfoData {
+        return PublisherInfoData(
+            comments = image?.comments,
+            downloads = image?.downloads,
+            imageHeight = image?.imageHeight,
+            imageWidth = image?.imageWidth,
+            largeImageURL = image?.largeImageURL,
+            likes = image?.likes,
+            pageURL = image?.pageURL,
+            previewURL = image?.previewURL,
+            tags = image?.tags,
+            type = image?.type,
+            user = image?.user,
+            userImageURL = image?.userImageURL,
+            userId = image?.user_id,
+            views = image?.views,
+        )
+    }
+}

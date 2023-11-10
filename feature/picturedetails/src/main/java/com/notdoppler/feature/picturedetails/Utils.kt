@@ -4,8 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import com.notdoppler.core.ui.R
 
-fun showShareDialog(context: Context, uri: Uri, onClear: () -> Unit) {
+fun showShareDialog(context: Context, uri: Uri?, onClear: () -> Unit) {
     val appName = context.getString(com.notdoppler.core.domain.R.string.app_name)
     val bundle = context.packageName
 
@@ -16,7 +17,7 @@ fun showShareDialog(context: Context, uri: Uri, onClear: () -> Unit) {
                 R.string.share_app_text_content, appName, bundle
             )
         )
-        putExtra(Intent.EXTRA_STREAM, uri)
+        uri?.let { putExtra(Intent.EXTRA_STREAM, uri) }
     }
 
     val intentChooser = Intent.createChooser(
@@ -26,7 +27,6 @@ fun showShareDialog(context: Context, uri: Uri, onClear: () -> Unit) {
     onClear()
 }
 
-fun showToast(context: Context, message: String, onClear: () -> Unit = {}) {
+fun showToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-    onClear()
 }

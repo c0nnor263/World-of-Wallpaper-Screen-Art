@@ -1,7 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":feature:splash")
 
 
+include(":feature:favorites")
 
 pluginManagement {
     repositories {
@@ -26,7 +28,6 @@ include(":core:data")
 include(":core:domain")
 include(":core:network")
 include(":core:ui")
-include(":core:navigation")
 include(":feature:home")
 include(":feature:picturedetails")
 include(":feature:search")

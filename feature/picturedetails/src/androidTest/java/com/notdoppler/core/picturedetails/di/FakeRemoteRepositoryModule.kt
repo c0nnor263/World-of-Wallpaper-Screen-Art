@@ -1,6 +1,6 @@
 package com.notdoppler.core.picturedetails.di
 
-import com.notdoppler.core.data.di.RemoteRepositoryModule
+import com.notdoppler.core.data.di.RemoteSourceModule
 import com.notdoppler.core.domain.source.remote.RemoteImageSource
 import com.notdoppler.core.domain.source.remote.repository.ImagePagingRepository
 import com.notdoppler.core.picturedetails.repository.FakeImagePagingRepositoryImpl
@@ -13,7 +13,7 @@ import dagger.hilt.testing.TestInstallIn
 @Module
 @TestInstallIn(
     components = [SingletonComponent::class],
-    replaces = [RemoteRepositoryModule::class]
+    replaces = [RemoteSourceModule::class]
 )
 interface RemoteRepositoryModule {
     @Binds
