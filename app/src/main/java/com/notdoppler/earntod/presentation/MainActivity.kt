@@ -15,12 +15,18 @@ import androidx.annotation.RequiresApi
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
+import com.notdoppler.core.advertising.data.AppOpenAdManager
 import com.notdoppler.core.ui.theme.WallpapersTheme
 import com.notdoppler.earntod.presentation.composables.AppContent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var appOpenAdManager: AppOpenAdManager
+
+
     private val viewModel by viewModels<AppContentViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
@@ -51,6 +57,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.onResumeBilling()
+        appOpenAdManager.showAdIfAvailable(this)
     }
 
     private fun setFullscreen() {

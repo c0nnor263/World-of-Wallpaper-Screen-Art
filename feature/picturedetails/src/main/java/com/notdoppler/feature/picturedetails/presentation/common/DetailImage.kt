@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +27,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import com.notdoppler.core.advertising.presentation.NativeAdCard
 import com.notdoppler.core.domain.enums.ActionType
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.ui.tweenMedium
+import com.notdoppler.feature.picturedetails.domain.model.PageData
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreenContentImage
 import com.notdoppler.feature.picturedetails.presentation.common.actions.ActionRow
 import kotlin.math.roundToInt
@@ -37,17 +40,32 @@ import kotlin.math.roundToInt
 @Composable
 fun DetailImage(
     modifier: Modifier = Modifier,
-    image: FetchedImage.Hit?,
+    pageData: PageData,
     isActive: Boolean,
     onActionClick: (ActionType, FetchedImage.Hit?, Bitmap?) -> Unit,
     onNavigateBack: () -> Unit,
     onImageStateChanged: (AsyncImagePainter.State) -> Unit,
 ) {
+    var isNativeAdDismissed by remember { mutableStateOf(false) }
     var localBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var imageStateBuffer by remember {
+        mutableStateOf<AsyncImagePainter.State?>(null)
+    }
+    LaunchedEffect(isActive, imageStateBuffer) {
+        if (isActive) {
+            imageStateBuffer?.let {
+                onImageStateChanged(it)
+            }
+        }
+    }
+
+
     AnchoredDraggableArea(
         modifier = modifier,
         onTopEnd = onNavigateBack,
     ) { draggableInfo ->
+
+
         val isImageSwiping = draggableInfo.progress < 0.035F
         val clipRoundedShapeAnimation by animateDpAsState(
             targetValue = if (isImageSwiping) 0.dp else 24.dp,
@@ -55,14 +73,14 @@ fun DetailImage(
             label = ""
         )
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             AsyncImage(
-                image?.largeImageURL,
+                pageData.image.value?.largeImageURL,
                 onState = { state ->
                     if (state is AsyncImagePainter.State.Success) {
                         localBitmap = (state.result.drawable as BitmapDrawable).bitmap
                     }
-                    onImageStateChanged(state)
+                    imageStateBuffer = state
                 },
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
@@ -78,24 +96,36 @@ fun DetailImage(
                                 .roundToInt()
                         )
                     }
-                    .anchoredDraggable(draggableInfo.state, Orientation.Vertical)
+                    .anchoredDraggable(
+                        state = draggableInfo.state,
+                        orientation = Orientation.Vertical,
+                        enabled = isActive,
+                    )
                     .clip(
                         RoundedCornerShape(
                             bottomStart = clipRoundedShapeAnimation,
                             bottomEnd = clipRoundedShapeAnimation
                         )
                     )
+
             )
+
+            NativeAdCard(
+                nativeAd = pageData.nativeAd.value,
+                isAdDismissed = isNativeAdDismissed
+            ) {
+                isNativeAdDismissed = true
+            }
 
             ActionRow(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 8.dp),
                 visible = isImageSwiping,
-                userImageUrl = image?.userImageURL ?: "",
+                userImageUrl = pageData.image.value?.userImageURL ?: "",
                 onActionClick = {
                     if (isActive) {
-                        onActionClick(it, image, localBitmap)
+                        onActionClick(it, pageData.image.value, localBitmap)
                     }
                 }
             )

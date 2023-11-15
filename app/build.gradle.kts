@@ -73,6 +73,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:advertising"))
     implementation(project(":core:billing"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))
@@ -86,7 +87,7 @@ dependencies {
     appModule()
 
     libs.network.gson.get(this)
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    libs.compose.coil.get(this)
 }
 
 

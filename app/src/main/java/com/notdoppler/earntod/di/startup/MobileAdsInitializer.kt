@@ -9,9 +9,9 @@ class MobileAdsInitializer : Initializer<MobileAdsInitializer> {
     private val configuration = RequestConfiguration.Builder()
         .setTestDeviceIds(
             listOf(
+                "09AF940917E6B5AF122140AE402FABF1"
             )
         )
-        // TODO: Add your test device ID here
         .build()
 
     override fun create(context: Context): MobileAdsInitializer {

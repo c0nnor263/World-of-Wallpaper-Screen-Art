@@ -99,7 +99,7 @@ fun SearchScreenContent(
                             PictureDetailsNavArgs(
                                 selectedImageIndex = index,
                                 pagingKey = PagingKey.SEARCH,
-                                additionalKey = query
+                                query = query
                             )
                         )
                     },

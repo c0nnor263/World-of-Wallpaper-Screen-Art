@@ -10,14 +10,16 @@ import kotlinx.coroutines.flow.asStateFlow
 
 @Stable
 class PictureDetailsState {
-    var isFavoriteEnabled by mutableStateOf(false)
-    var pagerKey by mutableStateOf("")
+
     private val _pagingKey: MutableStateFlow<PagingKey?> = MutableStateFlow(null)
-    val tabOrder = _pagingKey.asStateFlow()
+    val pagingKey = _pagingKey.asStateFlow()
+
+    var isFavoriteEnabled by mutableStateOf(false)
+    var query by mutableStateOf("")
 
 
-    fun updateData(order: PagingKey, key: String) {
-        _pagingKey.value = order
-        pagerKey = key
+    fun updateData(key: PagingKey, query: String) {
+        _pagingKey.value = key
+        this.query = query
     }
 }

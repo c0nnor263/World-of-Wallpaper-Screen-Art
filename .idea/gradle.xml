@@ -24,6 +24,7 @@
             <option value="$PROJECT_DIR$/baselineprofile" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/advertising" />
             <option value="$PROJECT_DIR$/core/billing" />
             <option value="$PROJECT_DIR$/core/data" />
             <option value="$PROJECT_DIR$/core/database" />

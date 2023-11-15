@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:advertising")
+
+
 include(":feature:splash")
 
 

@@ -73,6 +73,10 @@ object libs {
             "androidx.constraintlayout:constraintlayout-compose",
             versions.compose.constraintLayout
         )
+        val coil = Dependency(
+            "io.coil-kt:coil-compose",
+            versions.compose.coil
+        )
 
         val all = listOf(
             bom,
@@ -129,7 +133,7 @@ object libs {
     object playServices {
         val billingKtx =
             Dependency("com.android.billingclient:billing-ktx", versions.playServices.billing)
-        val playServicesAds =
+        val ads =
             Dependency("com.google.android.gms:play-services-ads", versions.playServices.ads)
         val integrity =
             Dependency("com.google.android.play:integrity", versions.playServices.integrity)
@@ -156,7 +160,6 @@ object libs {
             versions.network.httpLoggingInterceptor
         )
         val gson = Dependency("com.google.code.gson:gson", versions.network.gson)
-
     }
 }
 
@@ -218,7 +221,7 @@ fun DependencyHandler.hilt() {
 fun DependencyHandler.coreData() {
     hilt()
     fullStorage()
-    libs.playServices.playServicesAds.get(this)
+    libs.playServices.ads.get(this)
 }
 
 
@@ -232,7 +235,7 @@ fun DependencyHandler.appModule() {
     libs.startup.profileinstaller.get(this)
     libs.startup.startupRuntime.get(this)
     libs.playServices.billingKtx.get(this)
-    libs.playServices.playServicesAds.get(this)
+    libs.playServices.ads.get(this)
     libs.playServices.integrity.get(this)
 }
 
@@ -240,7 +243,7 @@ fun DependencyHandler.databaseModule() {
     fullStorage()
     hilt()
 
-    libs.playServices.playServicesAds.get(this)
+    libs.playServices.ads.get(this)
 }
 
 fun DependencyHandler.networkModule() {

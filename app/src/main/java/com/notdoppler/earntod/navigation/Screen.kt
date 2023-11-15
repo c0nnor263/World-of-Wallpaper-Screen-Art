@@ -12,7 +12,6 @@ sealed class Screen(
     val route: String,
     val arguments: ImmutableList<NamedNavArgument> = persistentListOf(),
 ) {
-
     data object Splash : Screen(route = "splash")
     data object Home : Screen(route = "home")
     data object Favorites : Screen(route = "favorites")

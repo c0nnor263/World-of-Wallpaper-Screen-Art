@@ -49,6 +49,7 @@ android {
 
 
 dependencies {
+    implementation(project(":core:advertising"))
     implementation(project(":core:data"))
     implementation(project(":core:domain"))
     implementation(project(":core:database"))
@@ -67,4 +68,6 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.5.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     libs.network.gson.get(this)
+
+    libs.playServices.ads.get(this)
 }

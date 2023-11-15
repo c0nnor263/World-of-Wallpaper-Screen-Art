@@ -9,8 +9,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -110,8 +108,8 @@ fun TabImages(
                     text = {
                         AnimatedVisibility(
                             visible = !isLoading || !selected,
-                            enter = fadeIn(tweenMedium()) + scaleIn(tweenMedium()),
-                            exit = scaleOut(tweenMedium()) + fadeOut(tweenMedium()),
+                            enter = fadeIn(tweenMedium()),
+                            exit = fadeOut(tweenMedium()),
                         ) {
                             Text(
                                 text = page.name,
@@ -140,8 +138,6 @@ fun TabIndicator(
     tabPage: TabPage,
     isLoading: Boolean,
 ) {
-
-
     val transition = updateTransition(
         tabPage, label = "Tab indicator"
     )

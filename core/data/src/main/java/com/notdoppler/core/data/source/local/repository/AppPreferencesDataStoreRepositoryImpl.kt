@@ -15,4 +15,12 @@ class AppPreferencesDataStoreRepositoryImpl @Inject constructor(
     override suspend fun getIsAvailableForReview(): Boolean {
         return appPreferencesDataStore.getIsAvailableForReview()
     }
+
+    override suspend fun incrementAppOpenTimes() {
+        appPreferencesDataStore.incrementAppOpenTimes()
+    }
+
+    override suspend fun getIsAvailableForAppOpenAd(): Boolean {
+        return appPreferencesDataStore.getIsAvailableForAppOpenAd()
+    }
 }

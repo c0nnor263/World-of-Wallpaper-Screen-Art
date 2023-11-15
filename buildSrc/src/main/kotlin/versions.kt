@@ -29,6 +29,7 @@ object versions {
         const val hiltNavigation = "1.0.0"
         const val navigation = "2.7.4"
         const val constraintLayout = "1.0.1"
+        const val coil = "2.4.0"
     }
 
     object tooling {

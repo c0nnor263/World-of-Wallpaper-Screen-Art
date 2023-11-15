@@ -50,6 +50,7 @@ android {
 
 
 dependencies {
+    implementation(project(":core:advertising"))
     implementation(project(":core:data"))
     implementation(project(":core:database"))
     implementation(project(":core:domain"))

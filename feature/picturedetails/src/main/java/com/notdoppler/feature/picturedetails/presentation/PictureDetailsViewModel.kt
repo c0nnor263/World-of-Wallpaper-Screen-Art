@@ -10,6 +10,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.google.android.gms.ads.nativead.NativeAd
+import com.notdoppler.core.advertising.data.NativeAdManager
 import com.notdoppler.core.data.domain.ApplicationPagingDataStore
 import com.notdoppler.core.database.domain.model.FavoriteImage
 import com.notdoppler.core.database.domain.repository.FavoriteImageRepository
@@ -45,16 +47,15 @@ class PictureDetailsViewModel @Inject constructor(
     private val imagePagingRepository: ImagePagingRepository,
     private val applicationPagingDataStore: ApplicationPagingDataStore,
     private val stringResourceProvider: StringResourceProvider,
+    private val nativeAdManager: NativeAdManager,
 ) : ViewModel() {
-
     private val _uiState: MutableStateFlow<UiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
-
 
     val pictureDetailsState = PictureDetailsState()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val imageState = pictureDetailsState.tabOrder.stateIn(
+    val imageState = pictureDetailsState.pagingKey.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
         PagingKey.LATEST
@@ -69,8 +70,8 @@ class PictureDetailsViewModel @Inject constructor(
         .distinctUntilChanged()
         .cachedIn(viewModelScope)
 
-    fun setTabOrder(order: PagingKey, pagerKey: String) {
-        pictureDetailsState.updateData(order, pagerKey)
+    fun setPagingData(key: PagingKey, query: String) {
+        pictureDetailsState.updateData(key, query)
     }
 
     fun checkForFavorite(imageId: Int?) = viewModelScope.launch(Dispatchers.IO) {
@@ -99,7 +100,8 @@ class PictureDetailsViewModel @Inject constructor(
                 val info = image?.createStorageInfo(bitmap) ?: return@launch
                 storageManager.saveToGallery(info) { resultUri ->
                     val favoriteImage = FavoriteImage(
-                        fileUri = resultUri.toString(), imageId = image.id ?: 0
+                        fileUri = resultUri.toString(),
+                        imageId = image.id ?: 0
                     ).copyFromFetchedHit(image)
 
                     upsertFavoriteImage(favoriteImage)
@@ -124,7 +126,6 @@ class PictureDetailsViewModel @Inject constructor(
                 storageManager.saveToGallery(info) { uri ->
                     updateUiState(uri?.let { UiState.Actions.Share(it) })
                 }
-
             }
 
             ActionType.PUBLISHER_INFO -> {
@@ -159,7 +160,7 @@ class PictureDetailsViewModel @Inject constructor(
     private fun getOrCreatePager(info: ImageRequestInfo): Flow<PagingData<FetchedImage.Hit>> {
         return if (info.order != PagingKey.FAVORITES) {
             applicationPagingDataStore.getPager(
-                key = info.order.requestValue + pictureDetailsState.pagerKey,
+                key = info.order.requestValue + pictureDetailsState.query,
                 info = info,
                 source = imagePagingRepository.getPagingSource(info)
             )
@@ -178,6 +179,14 @@ class PictureDetailsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getNativeAdById(id: Int): NativeAd? {
+        return nativeAdManager.getNativeAdById(id)
+    }
+
+    fun onActivityDestroy() {
+        nativeAdManager.onActivityDestroy()
     }
 
     sealed class UiState {
