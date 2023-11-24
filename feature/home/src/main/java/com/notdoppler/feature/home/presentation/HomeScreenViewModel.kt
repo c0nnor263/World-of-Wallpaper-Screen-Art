@@ -36,47 +36,43 @@ class HomeScreenViewModel @Inject constructor(
     private val imagePagingRepository: ImagePagingRepository,
     private val applicationPagingDataStore: ApplicationPagingDataStore,
     private val tagImageRepository: TagImageRepository,
-    private val reviewDataManager: ReviewDataManager,
+    private val reviewDataManager: ReviewDataManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState?>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     val pagingKeyState = PagingKeyState()
 
-    private val _mapPagingData: SnapshotStateMap<PagingKey, MutableStateFlow<PagingData<FetchedImage.Hit>>?> =
+    private val mapPagingData: SnapshotStateMap<PagingKey, MutableStateFlow<PagingData<FetchedImage.Hit>>?> =
         mutableStateMapOf()
-    val mapPagingData: SnapshotStateMap<PagingKey, MutableStateFlow<PagingData<FetchedImage.Hit>>?> =
-        _mapPagingData
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val imagesFlow = pagingKeyState.pagingKeyState.stateIn(
+    val imageFlow = pagingKeyState.state.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(),
         PagingKey.LATEST
-    ).flatMapLatest { order ->
-        val info = ImageRequestInfo(order = order)
-        applicationPagingDataStore.getPager(
-            key = order.requestValue,
-            info = info,
-            source = imagePagingRepository.getPagingSource(info)
-        )
-    }
+    )
+        .flatMapLatest { order ->
+            val info = ImageRequestInfo(order = order)
+            applicationPagingDataStore.getPager(
+                key = order.requestValue,
+                info = info,
+                source = imagePagingRepository.getPagingSource(info)
+            )
+        }
         .distinctUntilChanged()
         .cachedIn(viewModelScope)
 
     fun updatePagingData(newValue: PagingData<FetchedImage.Hit>?) =
         viewModelScope.launch {
-            _mapPagingData.getOrPut(pagingKeyState.pagingKeyState.value) {
-                MutableStateFlow(PagingData.empty())
-            }?.value = newValue ?: PagingData.empty()
+            mapPagingData[pagingKeyState.state.value]?.value = newValue ?: PagingData.empty()
         }
 
     fun updateUiState(uiState: UiState?) {
         _uiState.value = uiState
     }
 
-
-    suspend fun getTagImages(tagList: ImmutableList<TagData>) = viewModelScope.launch {
+    fun getTagData(tagList: ImmutableList<TagData>) = viewModelScope.launch {
         updateUiState(UiState.Loading)
         val asyncList = mutableListOf<Deferred<Unit>>()
         tagList.forEach { tag ->
@@ -86,15 +82,19 @@ class HomeScreenViewModel @Inject constructor(
                 }
             )
         }
-        asyncList.awaitAll().also {
-            updateUiState(null)
-        }
+        asyncList.awaitAll()
+        updateUiState(null)
     }
 
     fun requestReview(activity: ComponentActivity) = viewModelScope.launch {
-        reviewDataManager.requestReviewInfo(activity)
+        reviewDataManager.requestInfo(activity)
     }
 
+    fun getImageData(key: PagingKey): MutableStateFlow<PagingData<FetchedImage.Hit>>? {
+        return mapPagingData.getOrPut(key) {
+            MutableStateFlow(PagingData.empty())
+        }
+    }
 
     sealed class UiState {
         data object Loading : UiState()

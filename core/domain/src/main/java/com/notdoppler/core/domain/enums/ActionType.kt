@@ -4,5 +4,6 @@ enum class ActionType {
     FAVORITE,
     DOWNLOAD,
     SHARE,
-    PUBLISHER_INFO
+    PUBLISHER_INFO,
+    NOT_DEFINED
 }

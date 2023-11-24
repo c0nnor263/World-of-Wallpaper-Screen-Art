@@ -8,12 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.notdoppler.core.ui.card.CardImage
 
 @Composable
 fun FetchedImageItem(
     modifier: Modifier = Modifier,
     previewURL: String,
-    onNavigateToDetails: () -> Unit,
+    onNavigateToDetails: () -> Unit
 ) {
     CardImage(modifier = modifier) {
         AsyncImage(

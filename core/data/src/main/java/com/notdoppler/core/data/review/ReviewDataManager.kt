@@ -15,16 +15,15 @@ import javax.inject.Inject
 
 class ReviewDataManager @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    private val appPreferencesDataStoreRepository: AppPreferencesDataStoreRepository,
+    private val appPreferencesDataStoreRepository: AppPreferencesDataStoreRepository
 ) {
     private val manager = ReviewManagerFactory.create(applicationContext)
-
 
     private suspend fun isAvailableForReview(): Boolean = withContext(Dispatchers.IO) {
         appPreferencesDataStoreRepository.getIsAvailableForReview()
     }
 
-    suspend fun requestReviewInfo(activity: ComponentActivity) {
+    suspend fun requestInfo(activity: ComponentActivity) {
 
         if (isAvailableForReview()) {
             manager.requestReviewFlow().addOnCompleteListener { task ->

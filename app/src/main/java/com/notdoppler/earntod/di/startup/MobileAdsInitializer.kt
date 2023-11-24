@@ -16,8 +16,8 @@ class MobileAdsInitializer : Initializer<MobileAdsInitializer> {
 
     override fun create(context: Context): MobileAdsInitializer {
         return MobileAdsInitializer().also {
-            MobileAds.initialize(context)
             MobileAds.setRequestConfiguration(configuration)
+            MobileAds.initialize(context)
         }
     }
 

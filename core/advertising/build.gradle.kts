@@ -26,7 +26,6 @@ android {
         }
     }
 
-
     compileOptions {
         sourceCompatibility = versions.config.sourceCompatibility
         targetCompatibility = versions.config.targetCompatibility
@@ -47,10 +46,10 @@ android {
     }
 }
 
-
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":core:ui"))
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.cardview:cardview:1.0.0")

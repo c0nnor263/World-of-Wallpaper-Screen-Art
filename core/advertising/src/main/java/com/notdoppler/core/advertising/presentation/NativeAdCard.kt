@@ -7,7 +7,10 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
+import androidx.cardview.widget.CardView
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -16,12 +19,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
 import com.notdoppler.core.advertising.R
+import com.notdoppler.core.ui.tweenMedium
 
 @SuppressLint("InflateParams")
 @Composable
@@ -29,15 +34,19 @@ fun NativeAdCard(
     modifier: Modifier = Modifier,
     nativeAd: NativeAd?,
     isAdDismissed: Boolean,
-    onDismiss: () -> Unit,
+    onDismiss: () -> Unit
 ) {
     val isVisible = nativeAd != null
 
-
-    AnimatedVisibility(modifier = modifier, visible = isVisible && isAdDismissed.not()) {
+    AnimatedVisibility(
+        modifier = modifier,
+        visible = isVisible && isAdDismissed.not(),
+        exit = scaleOut(tweenMedium()) + fadeOut(tweenMedium())
+    ) {
         Card(
             modifier = Modifier.wrapContentSize(),
             elevation = CardDefaults.cardElevation(4.dp),
+            colors = CardDefaults.cardColors(Color.DarkGray),
             border = BorderStroke(2.dp, MaterialTheme.colorScheme.inversePrimary)
         ) {
             AndroidView(
@@ -54,7 +63,7 @@ fun NativeAdCard(
                 // MediaView
                 view.mediaView = view.findViewById<MediaView>(R.id.media_view).apply {
                     mediaContent = nativeAd.mediaContent
-                    visibility = View.VISIBLE
+                    view.findViewById<CardView>(R.id.media_view_card).visibility = View.VISIBLE
                     setImageScaleType(ImageView.ScaleType.CENTER_CROP)
                 }
 
@@ -83,14 +92,12 @@ fun NativeAdCard(
                     text = nativeAd.body
                 }
 
-
                 // Call to Action
                 view.callToActionView = view.findViewById<AppCompatButton>(R.id.cta).apply {
                     text = nativeAd.callToAction
                 }
 
                 view.setNativeAd(nativeAd)
-
 
                 view.findViewById<AppCompatButton>(R.id.dismiss_btn).setOnClickListener {
                     onDismiss()

@@ -1,4 +1,4 @@
-package com.notdoppler.core.ui
+package com.notdoppler.core.ui.card
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
@@ -19,7 +19,7 @@ import com.notdoppler.core.ui.theme.WallpapersTheme
 fun CardButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    text: @Composable () -> Unit,
+    text: @Composable () -> Unit
 ) {
     Card(
         modifier = modifier,
@@ -29,7 +29,6 @@ fun CardButton(
         Button(onClick = onClick, shape = RectangleShape) {
             text()
         }
-
     }
 }
 

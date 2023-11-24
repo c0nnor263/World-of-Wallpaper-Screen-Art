@@ -18,14 +18,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.notdoppler.core.ui.CardImage
+import com.notdoppler.core.ui.card.CardImage
 
 @Composable
 fun TagCard(
     modifier: Modifier = Modifier,
     title: String,
     previewURL: String,
-    onNavigateToSearch: (String) -> Unit,
+    onNavigateToSearch: (String) -> Unit
 ) {
     CardImage(modifier = modifier) {
         Box(
@@ -46,14 +46,15 @@ fun TagCard(
                 text = title,
                 style = MaterialTheme.typography.headlineLarge.copy(
                     shadow = Shadow(
-                        color = Color.Black, offset = Offset(0F, 10F), blurRadius = 50f
+                        color = Color.Black,
+                        offset = Offset(0F, 10F),
+                        blurRadius = 50f
                     )
                 ),
                 color = Color.White,
                 textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Bold
             )
         }
     }
-
 }

@@ -33,7 +33,9 @@ import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.ui.tweenMedium
 import com.notdoppler.feature.picturedetails.domain.model.PageData
 import com.notdoppler.feature.picturedetails.presentation.PictureDetailsScreenContentImage
+import com.notdoppler.feature.picturedetails.presentation.PictureDetailsViewModel
 import com.notdoppler.feature.picturedetails.presentation.common.actions.ActionRow
+import com.notdoppler.feature.picturedetails.state.LocalPictureDetailsUiState
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -41,39 +43,48 @@ import kotlin.math.roundToInt
 fun DetailImage(
     modifier: Modifier = Modifier,
     pageData: PageData,
-    isActive: Boolean,
+    isActiveNow: Boolean,
     onActionClick: (ActionType, FetchedImage.Hit?, Bitmap?) -> Unit,
     onNavigateBack: () -> Unit,
-    onImageStateChanged: (AsyncImagePainter.State) -> Unit,
+    onImageStateChanged: (AsyncImagePainter.State) -> Unit
 ) {
+    val pictureDetailsUiState = LocalPictureDetailsUiState.current
     var isNativeAdDismissed by remember { mutableStateOf(false) }
     var localBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var imageStateBuffer by remember {
         mutableStateOf<AsyncImagePainter.State?>(null)
     }
-    LaunchedEffect(isActive, imageStateBuffer) {
-        if (isActive) {
+    LaunchedEffect(isActiveNow, imageStateBuffer) {
+        if (isActiveNow) {
             imageStateBuffer?.let {
                 onImageStateChanged(it)
             }
         }
     }
 
+    val isNativeAdNotExists = pageData.nativeAd.value == null || isNativeAdDismissed
+
+    val isActionRowEnabled =
+        isActiveNow &&
+            isNativeAdNotExists &&
+            pictureDetailsUiState == PictureDetailsViewModel.UiState.ImageStateLoaded ||
+            pictureDetailsUiState == null
 
     AnchoredDraggableArea(
         modifier = modifier,
-        onTopEnd = onNavigateBack,
+        onTopEnd = onNavigateBack
     ) { draggableInfo ->
-
-
-        val isImageSwiping = draggableInfo.progress < 0.035F
+        val isDragReachedThreshold = draggableInfo.progress < 0.035F
         val clipRoundedShapeAnimation by animateDpAsState(
-            targetValue = if (isImageSwiping) 0.dp else 24.dp,
+            targetValue = if (isDragReachedThreshold) 0.dp else 24.dp,
             animationSpec = tweenMedium(),
             label = ""
         )
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
             AsyncImage(
                 pageData.image.value?.largeImageURL,
                 onState = { state ->
@@ -99,7 +110,7 @@ fun DetailImage(
                     .anchoredDraggable(
                         state = draggableInfo.state,
                         orientation = Orientation.Vertical,
-                        enabled = isActive,
+                        enabled = isActiveNow && isNativeAdNotExists
                     )
                     .clip(
                         RoundedCornerShape(
@@ -121,15 +132,15 @@ fun DetailImage(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 8.dp),
-                visible = isImageSwiping,
+                isActive = isActionRowEnabled,
+                visible = isDragReachedThreshold,
                 userImageUrl = pageData.image.value?.userImageURL ?: "",
                 onActionClick = {
-                    if (isActive) {
+                    if (isActiveNow) {
                         onActionClick(it, pageData.image.value, localBitmap)
                     }
                 }
             )
         }
-
     }
 }

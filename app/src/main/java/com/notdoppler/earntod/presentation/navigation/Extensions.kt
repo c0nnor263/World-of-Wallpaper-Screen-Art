@@ -26,9 +26,8 @@ import com.notdoppler.feature.search.presentation.SearchScreenViewModel
 import com.notdoppler.feature.splash.presentation.SplashScreen
 import com.notdoppler.feature.splash.presentation.SplashScreenViewModel
 
-
 fun NavGraphBuilder.splashScreen(
-    onNavigateToHome: () -> Unit,
+    onNavigateToHome: () -> Unit
 ) {
     val splash = Screen.Splash
 
@@ -38,10 +37,9 @@ fun NavGraphBuilder.splashScreen(
     }
 }
 
-
 fun NavGraphBuilder.searchScreen(
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
-    onNavigateBack: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val search = Screen.Search()
 
@@ -63,7 +61,7 @@ fun NavGraphBuilder.searchScreen(
 fun NavGraphBuilder.homeScreen(
     onNavigateToFavorites: () -> Unit,
     onNavigateToSearch: (SearchNavArgs?) -> Unit,
-    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
     val home = Screen.Home
     composable(home.route, arguments = home.arguments) {
@@ -79,7 +77,7 @@ fun NavGraphBuilder.homeScreen(
 
 fun NavGraphBuilder.detailsScreen(
     onNavigateBack: () -> Unit,
-    onNavigateToSearch: (SearchNavArgs?) -> Unit,
+    onNavigateToSearch: (SearchNavArgs?) -> Unit
 ) {
     val details = Screen.Details()
     composable(
@@ -87,19 +85,19 @@ fun NavGraphBuilder.detailsScreen(
         arguments = details.arguments,
         enterTransition = {
             fadeIn(animationSpec = tweenMedium()) +
-                    scaleIn(animationSpec = tweenMedium()) +
-                    slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Up,
-                        tweenMedium()
-                    )
+                scaleIn(animationSpec = tweenMedium()) +
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up,
+                    tweenMedium()
+                )
         },
         exitTransition = {
             slideOutOfContainer(
                 AnimatedContentTransitionScope.SlideDirection.Up,
                 tweenMedium()
             ) +
-                    scaleOut(animationSpec = tweenMedium()) +
-                    fadeOut(animationSpec = tweenMedium())
+                scaleOut(animationSpec = tweenMedium()) +
+                fadeOut(animationSpec = tweenMedium())
         }
     ) {
         val defaultValue = PictureDetailsNavArgs(
@@ -120,11 +118,10 @@ fun NavGraphBuilder.detailsScreen(
     }
 }
 
-
 fun NavGraphBuilder.favoritesScreen(
     onNavigateBack: () -> Unit,
     onNavigateToHome: () -> Unit,
-    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
     val favorites = Screen.Favorites
     composable(

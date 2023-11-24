@@ -47,7 +47,7 @@ class PictureDetailsViewModel @Inject constructor(
     private val imagePagingRepository: ImagePagingRepository,
     private val applicationPagingDataStore: ApplicationPagingDataStore,
     private val stringResourceProvider: StringResourceProvider,
-    private val nativeAdManager: NativeAdManager,
+    private val nativeAdManager: NativeAdManager
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
@@ -62,7 +62,7 @@ class PictureDetailsViewModel @Inject constructor(
     ).flatMapLatest { order ->
         order?.let {
             val info = ImageRequestInfo(
-                order = order,
+                order = order
             )
             getOrCreatePager(info)
         } ?: flowOf(PagingData.empty())
@@ -80,18 +80,19 @@ class PictureDetailsViewModel @Inject constructor(
         } ?: false
     }
 
-
     private fun isPictureReadyForActions() =
         uiState.value !is UiState.ImageStateLoading &&
-                uiState.value !is UiState.Error
+            uiState.value !is UiState.Error
 
     fun onActionClick(
         type: ActionType,
         image: FetchedImage.Hit?,
-        bitmap: Bitmap?,
+        bitmap: Bitmap?
     ) = viewModelScope.launch {
         if (isPictureReadyForActions()) {
-            updateUiState(UiState.Error(stringResourceProvider.getString(R.string.image_is_not_ready)))
+            updateUiState(
+                UiState.Error(stringResourceProvider.getString(R.string.image_is_not_ready))
+            )
         }
         when (type) {
             ActionType.FAVORITE -> {
@@ -116,7 +117,9 @@ class PictureDetailsViewModel @Inject constructor(
                 val newState = if (result) {
                     UiState.Actions.FinishedSavingPictureToDevice
                 } else {
-                    UiState.Error(stringResourceProvider.getString(R.string.failed_to_download_image))
+                    UiState.Error(
+                        stringResourceProvider.getString(R.string.failed_to_download_image)
+                    )
                 }
                 updateUiState(newState)
             }
@@ -132,6 +135,8 @@ class PictureDetailsViewModel @Inject constructor(
                 val data = PublisherInfoData().createFromImage(image)
                 updateUiState(UiState.Actions.ShowPublisherInfo(data))
             }
+
+            else -> {}
         }
     }
 
@@ -147,7 +152,6 @@ class PictureDetailsViewModel @Inject constructor(
         pictureDetailsState.isFavoriteEnabled = !pictureDetailsState.isFavoriteEnabled
     }
 
-
     fun updateUiState(state: UiState?) {
         _uiState.value = state
     }
@@ -155,7 +159,6 @@ class PictureDetailsViewModel @Inject constructor(
     fun clearUiState() {
         _uiState.value = null
     }
-
 
     private fun getOrCreatePager(info: ImageRequestInfo): Flow<PagingData<FetchedImage.Hit>> {
         return if (info.order != PagingKey.FAVORITES) {
@@ -168,7 +171,7 @@ class PictureDetailsViewModel @Inject constructor(
             Pager(
                 config = PagingConfig(
                     pageSize = info.pageSize,
-                    prefetchDistance = info.prefetchDistance,
+                    prefetchDistance = info.prefetchDistance
                 ),
                 pagingSourceFactory = {
                     favoriteImageRepository.pagingSource()

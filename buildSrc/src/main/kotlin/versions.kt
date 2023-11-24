@@ -43,12 +43,11 @@ object versions {
 
     object customPlugin {
         const val benNamesVersions = "0.49.0"
-
     }
 
     object playServices {
         const val ads = "22.4.0"
-        const val billing = "6.0.1"
+        const val billing = "6.1.0"
         const val integrity = "1.2.0"
     }
 
@@ -80,8 +79,5 @@ object versions {
         const val retrofit = "2.9.0"
         const val converterGson = "2.9.0"
         const val gson = "2.8.8"
-
     }
-
-
 }

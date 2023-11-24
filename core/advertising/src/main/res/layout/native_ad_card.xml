@@ -2,6 +2,7 @@
 
 <com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/native_ad_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -29,29 +30,40 @@
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/dismiss_btn"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:background="@color/gnt_blue"
                 android:gravity="center"
                 android:lines="1"
+                android:maxLines="1"
+                android:minWidth="36dp"
+                android:minHeight="36dp"
                 android:text="X"
                 android:textColor="@color/gnt_white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="HardcodedText" />
         </androidx.cardview.widget.CardView>
 
 
-        <com.google.android.gms.ads.nativead.MediaView
-            android:id="@+id/media_view"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/media_view_card"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_margin="@dimen/gnt_no_size"
             android:layout_marginTop="@dimen/gnt_no_margin"
             android:visibility="gone"
+            app:cardCornerRadius="24dp"
             app:layout_constraintBottom_toTopOf="@id/middle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.gms.ads.nativead.MediaView
+                android:id="@+id/media_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.cardview.widget.CardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/middle"
@@ -61,7 +73,7 @@
             app:layout_constraintBottom_toTopOf="@+id/body"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/media_view">
+            app:layout_constraintTop_toBottomOf="@id/media_view_card">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="@dimen/gnt_no_size"
@@ -81,6 +93,7 @@
                     android:layout_marginEnd="@dimen/gnt_no_margin"
                     android:layout_marginBottom="@dimen/gnt_no_margin"
                     android:layout_weight="0"
+                    android:importantForAccessibility="no"
                     android:scaleType="fitCenter"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="H,1:1"
@@ -149,8 +162,9 @@
                             android:layout_marginStart="@dimen/gnt_no_margin"
                             android:layout_marginTop="@dimen/gnt_ad_indicator_top_margin"
                             android:layout_marginEnd="@dimen/gnt_default_margin"
+                            android:ellipsize="end"
                             android:gravity="center"
-                            android:text="Ad"
+                            android:maxLines="2"
                             android:textColor="@color/gnt_white"
                             android:textSize="@dimen/gnt_ad_indicator_text_size"
                             android:textStyle="bold"
@@ -167,7 +181,6 @@
                             android:layout_marginTop="@dimen/gnt_no_margin"
                             android:layout_marginEnd="@dimen/gnt_no_margin"
                             android:layout_marginBottom="@dimen/gnt_no_margin"
-                            android:background="@android:color/transparent"
                             android:lines="1"
                             android:numStars="5"
                             android:stepSize="0.1"
@@ -215,6 +228,7 @@
             android:paddingStart="@dimen/gnt_default_margin"
             android:paddingLeft="@dimen/gnt_default_margin"
             android:paddingBottom="@dimen/gnt_default_margin"
+            android:textColor="@color/gnt_white"
             app:layout_constraintBottom_toTopOf="@+id/cta_card"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

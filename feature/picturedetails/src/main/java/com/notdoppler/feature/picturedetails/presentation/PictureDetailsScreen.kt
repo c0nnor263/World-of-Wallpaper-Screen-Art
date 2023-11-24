@@ -34,6 +34,7 @@ import com.notdoppler.feature.picturedetails.presentation.common.dialog.Publishe
 import com.notdoppler.feature.picturedetails.showShareDialog
 import com.notdoppler.feature.picturedetails.showToast
 import com.notdoppler.feature.picturedetails.state.LocalFavoriteIconEnabled
+import com.notdoppler.feature.picturedetails.state.LocalPictureDetailsUiState
 import com.notdoppler.feature.picturedetails.state.PagerDetailState
 import com.notdoppler.feature.picturedetails.state.rememberPagerDetailState
 import com.notdoppler.feature.picturedetails.state.rememberPublisherInfoState
@@ -46,7 +47,7 @@ fun PictureDetailsScreen(
     viewModel: PictureDetailsViewModel = hiltViewModel(),
     navArgs: PictureDetailsNavArgs,
     onNavigateToSearch: (SearchNavArgs?) -> Unit,
-    onNavigateBack: () -> Unit,
+    onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,7 +86,7 @@ fun PictureDetailsScreen(
             }
 
             PictureDetailsViewModel.UiState.ImageStateLoading,
-            PictureDetailsViewModel.UiState.Actions.StartSavingPictureToDevice,
+            PictureDetailsViewModel.UiState.Actions.StartSavingPictureToDevice
             -> {
                 loadingDownloadDialogVisible = true
             }
@@ -102,8 +103,8 @@ fun PictureDetailsScreen(
             PictureDetailsViewModel.UiState.Actions.FinishedSavingPictureToDevice -> {
                 val message = context.getString(R.string.downloaded)
                 showToast(context, message)
-                viewModel.clearUiState()
                 loadingDownloadDialogVisible = false
+                viewModel.clearUiState()
             }
 
             PictureDetailsViewModel.UiState.Actions.SavedPictureToFavorites -> {
@@ -134,7 +135,10 @@ fun PictureDetailsScreen(
         viewModel.setPagingData(navArgs.pagingKey, navArgs.query)
     }
 
-    CompositionLocalProvider(LocalFavoriteIconEnabled provides viewModel.pictureDetailsState.isFavoriteEnabled) {
+    CompositionLocalProvider(
+        LocalFavoriteIconEnabled provides viewModel.pictureDetailsState.isFavoriteEnabled,
+        LocalPictureDetailsUiState provides uiState.value
+    ) {
         PictureDetailsScreenContent(
             pagerState = pagerDetailState,
             onNavigateBack = onNavigateBack,
@@ -189,12 +193,12 @@ fun PictureDetailsScreenContent(
     pagerState: PagerDetailState,
     onNavigateBack: () -> Unit,
     onImageStateChanged: (AsyncImagePainter.State) -> Unit,
-    onActionClick: (ActionType, FetchedImage.Hit?, Bitmap?) -> Unit,
+    onActionClick: (ActionType, FetchedImage.Hit?, Bitmap?) -> Unit
 ) {
     HorizontalPager(
         modifier = modifier,
         state = pagerState.pagerState,
-        key = pagerState::getKey,
+        key = pagerState::getKey
     ) { pageIndex ->
         val pageData = remember { pagerState.getPageData(pageIndex) }
         val isActiveNow by remember {
@@ -205,7 +209,7 @@ fun PictureDetailsScreenContent(
 
         DetailImage(
             pageData = pageData,
-            isActive = isActiveNow,
+            isActiveNow = isActiveNow,
             onActionClick = onActionClick,
             onNavigateBack = onNavigateBack,
             onImageStateChanged = onImageStateChanged,

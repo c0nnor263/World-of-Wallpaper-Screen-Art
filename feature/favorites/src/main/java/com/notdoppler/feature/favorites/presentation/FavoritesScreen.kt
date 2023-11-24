@@ -28,10 +28,10 @@ import com.notdoppler.core.domain.enums.PagingKey
 import com.notdoppler.core.domain.model.navigation.PictureDetailsNavArgs
 import com.notdoppler.core.domain.model.remote.FetchedImage
 import com.notdoppler.core.ui.ApplicationScaffold
-import com.notdoppler.core.ui.CardButton
-import com.notdoppler.core.ui.CardImage
-import com.notdoppler.core.ui.CardImageList
 import com.notdoppler.core.ui.NavigationIcon
+import com.notdoppler.core.ui.card.CardButton
+import com.notdoppler.core.ui.card.CardImage
+import com.notdoppler.core.ui.list.CardImageList
 import com.notdoppler.feature.favorites.R
 
 // TODO Fetched.Hit and FavoriteImage inheritance from same class
@@ -40,7 +40,7 @@ fun FavoritesScreen(
     viewModel: FavoritesScreenViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToHome: () -> Unit,
-    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
     val favoriteImages =
         viewModel.favoriteImages.collectAsLazyPagingItems()
@@ -58,7 +58,7 @@ fun FavoritesScreen(
             modifier = Modifier.padding(innerPadding),
             favoriteImages = favoriteImages,
             onNavigateToDetails = onNavigateToDetails,
-            onNavigateToHome = onNavigateToHome,
+            onNavigateToHome = onNavigateToHome
         )
     }
 }
@@ -68,13 +68,16 @@ fun FavoritesScreenContent(
     modifier: Modifier = Modifier,
     favoriteImages: LazyPagingItems<FetchedImage.Hit>,
     onNavigateToHome: () -> Unit,
-    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
+    onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
-    if (favoriteImages.itemCount != 0) {
-        CardImageList(
-            modifier = modifier,
-            columns = StaggeredGridCells.Fixed(3),
-        ) {
+    CardImageList(
+        modifier = modifier,
+        columns = StaggeredGridCells.Fixed(3),
+        isItemsEmpty = favoriteImages.itemCount == 0,
+        onEmptyContent = {
+            FavoritesEmptyListContent(onNavigateToHome = onNavigateToHome)
+        },
+        content = {
             items(favoriteImages.itemCount) { index ->
                 val image = favoriteImages[index]
                 FavoriteImageItem(
@@ -83,50 +86,21 @@ fun FavoritesScreenContent(
                         onNavigateToDetails(
                             PictureDetailsNavArgs(
                                 selectedImageIndex = index,
-                                pagingKey = PagingKey.FAVORITES,
+                                pagingKey = PagingKey.FAVORITES
                             )
                         )
                     }
                 )
             }
         }
-    } else {
-        Column(
-            modifier = modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-
-            Text(
-                text = stringResource(R.string.your_favorites_list_is_empty),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = stringResource(R.string.check_more_wallpapers),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            CardButton(onClick = { onNavigateToHome() }) {
-                Text(
-                    stringResource(R.string.go_to_home_screen),
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
-                )
-            }
-        }
-    }
+    )
 }
-
 
 @Composable
 fun FavoriteImageItem(
     modifier: Modifier = Modifier,
     fileURI: String,
-    onNavigateToDetails: () -> Unit,
+    onNavigateToDetails: () -> Unit
 ) {
     CardImage(modifier = modifier) {
         AsyncImage(
@@ -138,5 +112,36 @@ fun FavoriteImageItem(
             contentDescription = null,
             contentScale = ContentScale.Crop
         )
+    }
+}
+
+@Composable
+fun FavoritesEmptyListContent(modifier: Modifier = Modifier, onNavigateToHome: () -> Unit) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Text(
+            text = stringResource(R.string.your_favorites_list_is_empty),
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = stringResource(R.string.check_more_wallpapers),
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        CardButton(onClick = { onNavigateToHome() }) {
+            Text(
+                stringResource(R.string.go_to_home_screen),
+                modifier = Modifier.padding(vertical = 8.dp),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2
+            )
+        }
     }
 }

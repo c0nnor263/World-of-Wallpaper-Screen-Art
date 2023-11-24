@@ -27,7 +27,7 @@ import javax.inject.Singleton
 class AppOpenAdManager @Inject constructor(
     @ApplicationContext private val context: Context,
     @ApplicationScope private val applicationScope: CoroutineScope,
-    private val appPreferencesDataStoreRepository: AppPreferencesDataStoreRepository,
+    private val appPreferencesDataStoreRepository: AppPreferencesDataStoreRepository
 ) {
     private val _adStatus = MutableStateFlow(AdStatus.LOADING)
     val adStatus: StateFlow<AdStatus> = _adStatus
@@ -37,7 +37,6 @@ class AppOpenAdManager @Inject constructor(
     private var loadTime = 0L
     private var isLoadingAd = false
     private var isShowingAd = false
-
 
     init {
         loadAd()
@@ -89,13 +88,11 @@ class AppOpenAdManager @Inject constructor(
         appOpenAd?.show(activity)
     }
 
-
     private suspend fun isAdAvailable(): Boolean {
         return appOpenAd != null &&
-                !wasLoadTimeLessThanLimitHoursAgo(loadTime, 4) &&
-                appPreferencesDataStoreRepository.getIsAvailableForAppOpenAd()
+            !wasLoadTimeLessThanLimitHoursAgo(loadTime, 4) &&
+            appPreferencesDataStoreRepository.getIsAvailableForAppOpenAd()
     }
-
 
     private fun updateAppOpenAd(ad: AppOpenAd?, adStatus: AdStatus) {
         when (adStatus) {
