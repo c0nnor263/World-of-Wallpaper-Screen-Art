@@ -33,7 +33,7 @@ import com.doodle.core.ui.ApplicationScaffold
 import com.doodle.core.ui.NavigationIcon
 import com.doodle.core.ui.card.CardButton
 import com.doodle.core.ui.card.CardImage
-import com.doodle.core.ui.list.CardImageList
+import com.doodle.core.ui.card.CardImageList
 import com.doodle.feature.favorites.R
 
 @Composable

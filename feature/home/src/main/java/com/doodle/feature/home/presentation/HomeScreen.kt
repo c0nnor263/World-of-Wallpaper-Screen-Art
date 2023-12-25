@@ -49,8 +49,8 @@ import com.doodle.core.ui.ApplicationScaffold
 import com.doodle.core.ui.FetchedImageItem
 import com.doodle.core.ui.NavigationIcon
 import com.doodle.core.ui.captureChildrenGestures
-import com.doodle.core.ui.list.CardImageList
-import com.doodle.core.ui.list.EmptyListContent
+import com.doodle.core.ui.card.CardImageList
+import com.doodle.core.ui.card.EmptyListContent
 import com.doodle.feature.home.PagingLaunchedEffect
 import com.doodle.feature.home.checkForSpecificException
 import com.doodle.feature.home.domain.enums.TabPage
