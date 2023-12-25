@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.notdoppler.feature.search"
+    namespace = "com.doodle.feature.search"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -47,8 +47,6 @@ android {
     }
 }
 
-
-
 dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:database"))
@@ -57,7 +55,7 @@ dependencies {
     implementation(project(":core:network"))
     composeCore()
 
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("androidx.paging:paging-runtime:3.2.1")
-    implementation("androidx.paging:paging-compose:3.2.1")
+    implementation("io.coil-kt:coil-compose:${versions.compose.coil}")
+    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
+    implementation("androidx.paging:paging-compose:${versions.common.paging}")
 }

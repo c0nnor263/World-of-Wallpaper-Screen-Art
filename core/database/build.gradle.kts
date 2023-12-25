@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.notdoppler.core.database"
+    namespace = "com.doodle.core.database"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -38,7 +38,6 @@ dependencies {
     implementation(project(":core:domain"))
     databaseModule()
 
-
-    implementation("androidx.paging:paging-runtime:3.2.1")
-    implementation("androidx.room:room-paging:2.6.0")
+    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
+    implementation("androidx.room:room-paging:${versions.common.roomPaging}")
 }

@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.notdoppler.feature.picturedetails"
+    namespace = "com.doodle.feature.picturedetails"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
         minSdk = versions.config.minSdk
-        testInstrumentationRunner = "com.notdoppler.core.picturedetails.di.HiltTestRunner"
+        testInstrumentationRunner = "com.doodle.core.picturedetails.di.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
         vectorDrawables {
             useSupportLibrary = true
@@ -47,7 +47,6 @@ android {
     }
 }
 
-
 dependencies {
     implementation(project(":core:advertising"))
     implementation(project(":core:data"))
@@ -57,11 +56,11 @@ dependencies {
     implementation(project(":core:ui"))
     composeCore()
 
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-compose:${versions.compose.coil}")
     //noinspection GradleDependency
-    implementation("androidx.compose.foundation:foundation:1.6.0-alpha01")
-    implementation("androidx.paging:paging-runtime:3.2.1")
-    implementation("androidx.paging:paging-compose:3.2.1")
+    implementation("androidx.compose.foundation:foundation:${versions.compose.foundation}")
+    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
+    implementation("androidx.paging:paging-compose:${versions.common.paging}")
     androidTestImplementation("androidx.paging:paging-testing:3.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
     androidTestImplementation("androidx.test:runner:1.5.2")

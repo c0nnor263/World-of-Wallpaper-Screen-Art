@@ -1,4 +1,5 @@
 <resources>
+    <string name="no_images_available">No images available…</string>
     <string name="share_text_title">Share with</string>
     <string name="share_app_text_content">Discover endless beauty with %1$s!\n
         Explore countless categories of beautiful wallpapers and make your screen truly stunning.\n

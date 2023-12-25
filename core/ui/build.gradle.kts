@@ -4,7 +4,7 @@ plugins {
     PluginType.LIBRARY.get(this)
 }
 android {
-    namespace = "com.notdoppler.core.ui"
+    namespace = "com.doodle.core.ui"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -26,7 +26,6 @@ android {
         }
     }
 
-
     compileOptions {
         sourceCompatibility = versions.config.sourceCompatibility
         targetCompatibility = versions.config.targetCompatibility
@@ -47,14 +46,13 @@ android {
     }
 }
 
-
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     coreData()
     composeCore()
 
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation ("androidx.paging:paging-runtime:3.2.1")
-    implementation ("androidx.paging:paging-compose:3.2.1")
+    implementation("io.coil-kt:coil-compose:${versions.compose.coil}")
+    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
+    implementation("androidx.paging:paging-compose:${versions.common.paging}")
 }

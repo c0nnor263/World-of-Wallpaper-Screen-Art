@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.notdoppler.baselineprofile"
+    namespace = "com.doodle.baselineprofile"
     compileSdk = versions.config.compileSdk
 
     compileOptions {
@@ -54,8 +54,10 @@ baselineProfile {
 }
 
 dependencies {
-    implementation("androidx.test.ext:junit:1.1.5")
-    implementation("androidx.test.espresso:espresso-core:3.5.1")
-    implementation("androidx.test.uiautomator:uiautomator:2.2.0")
-    implementation("androidx.benchmark:benchmark-macro-junit4:1.2.0-rc02")
+    implementation("androidx.test.ext:junit:${versions.tooling.androidJunit}")
+    implementation("androidx.test.espresso:espresso-core:${versions.tooling.androidEspressoCore}")
+    implementation("androidx.test.uiautomator:uiautomator:${versions.tooling.uiautomator}")
+    implementation(
+        "androidx.benchmark:benchmark-macro-junit4:${versions.tooling.benchmarkMacroJunit4}"
+    )
 }

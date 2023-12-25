@@ -7,6 +7,8 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/.idea/sonarlint
+/.idea/codeStyles
 .DS_Store
 /build
 /captures
@@ -19,3 +21,9 @@ local.properties
 /buildSrc/build/classes/kotlin/main/
 /keystore.properties
 /Firebase CLI/functions/wordefull-cf277-e8d47b1d8be6.json
+/admobdata.properties
+/app/release/app-release.apk
+/app/release/output-metadata.json
+/com.doodle.turboracing3.jks
+/gradle.properties
+/app/google-services.json

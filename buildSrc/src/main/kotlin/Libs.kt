@@ -1,7 +1,6 @@
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.project
 
-
 object libs {
 
     object firebase {
@@ -27,13 +26,17 @@ object libs {
             Dependency("androidx.test.ext:junit", versions.tooling.androidJunit, Type.ANDROID_TEST)
         val espressoCore = Dependency(
             "androidx.test.espresso:espresso-core",
-            versions.tooling.androidEspressoCore, Type.ANDROID_TEST
+            versions.tooling.androidEspressoCore,
+            Type.ANDROID_TEST
         )
         val composeJunit4 = Dependency(
-            "androidx.compose.ui:ui-test-junit4", version =versions.tooling.composeJunit,type = Type.ANDROID_TEST
+            "androidx.compose.ui:ui-test-junit4",
+            version = versions.tooling.composeJunit,
+            type = Type.ANDROID_TEST
         )
         val composeUiTestManifest = Dependency(
-            "androidx.compose.ui:ui-test-manifest", type = Type.DEBUG
+            "androidx.compose.ui:ui-test-manifest",
+            type = Type.DEBUG
         )
         val daggerHiltAndroidTesting = Dependency(
             "com.google.dagger:hilt-android-testing",
@@ -46,14 +49,9 @@ object libs {
             versions.common.hilt,
             Type.KSP
         )
-
-
-
-
     }
 
     object compose {
-
 
         val bom = Dependency("androidx.compose:compose-bom", versions.compose.bom, Type.PLATFORM)
         val ui = Dependency("androidx.compose.ui:ui")
@@ -78,6 +76,11 @@ object libs {
             versions.compose.coil
         )
 
+        val composeUtil = Dependency(
+            "androidx.compose.ui:ui-util",
+            versions.compose.composeUtil
+        )
+
         val all = listOf(
             bom,
             ui,
@@ -89,7 +92,8 @@ object libs {
             uiTestManifest,
             navigationCompose,
             hiltNavigationCompose,
-            constraintLayoutCompose
+            constraintLayoutCompose,
+            composeUtil
         )
     }
 
@@ -163,7 +167,6 @@ object libs {
     }
 }
 
-
 fun DependencyHandler.composeCore() {
     hilt()
     test()
@@ -224,14 +227,12 @@ fun DependencyHandler.coreData() {
     libs.playServices.ads.get(this)
 }
 
-
 fun DependencyHandler.appModule() {
     add("baselineProfile", project(":baselineprofile"))
     composeCore()
     firebase()
     lifecycle()
     coroutines()
-    libs.startup.coreSplashscreen.get(this)
     libs.startup.profileinstaller.get(this)
     libs.startup.startupRuntime.get(this)
     libs.playServices.billingKtx.get(this)
@@ -251,24 +252,9 @@ fun DependencyHandler.networkModule() {
     hilt()
 }
 
-
 fun DependencyHandler.network() {
     libs.network.retrofit.get(this)
     libs.network.retrofitConverterGson.get(this)
     libs.network.httpLoggingInterceptor.get(this)
     libs.network.gson.get(this)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

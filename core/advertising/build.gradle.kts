@@ -4,7 +4,7 @@ plugins {
     PluginType.LIBRARY.get(this)
 }
 android {
-    namespace = "com.notdoppler.core.advertising"
+    namespace = "com.doodle.core.advertising"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -26,7 +26,6 @@ android {
         }
     }
 
-
     compileOptions {
         sourceCompatibility = versions.config.sourceCompatibility
         targetCompatibility = versions.config.targetCompatibility
@@ -47,13 +46,15 @@ android {
     }
 }
 
-
 dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.cardview:cardview:1.0.0")
+    implementation(project(":core:ui"))
+    implementation(
+        "androidx.constraintlayout:constraintlayout:${versions.android.constraintLayoutXML}"
+    )
+    implementation("androidx.appcompat:appcompat:${versions.android.appCompat}")
+    implementation("androidx.cardview:cardview:${versions.android.cardView}")
     coreData()
     composeCore()
 

@@ -1,14 +1,15 @@
 @file:Suppress("UnstableApiUsage")
+
 import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
     PluginType.LIBRARY.get(this)
 }
-val localProperties = Properties()
-localProperties.load(FileInputStream(rootProject.file("local.properties")))
+val gradleProperties = Properties()
+gradleProperties.load(FileInputStream(rootProject.file("gradle.properties")))
 android {
-    namespace = "com.notdoppler.core.domain"
+    namespace = "com.doodle.core.domain"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -22,7 +23,7 @@ android {
         buildConfigField(
             "String",
             "API_KEY",
-            "\"${localProperties.getProperty("API_KEY")}\""
+            "\"${gradleProperties.getProperty("API_KEY")}\""
         )
     }
 
@@ -35,7 +36,6 @@ android {
             )
         }
     }
-
 
     compileOptions {
         sourceCompatibility = versions.config.sourceCompatibility
@@ -58,14 +58,12 @@ android {
     }
 }
 
-
-
 dependencies {
     composeCore()
     coreData()
 
-    implementation("androidx.paging:paging-runtime:3.2.1")
-    implementation("androidx.paging:paging-compose:3.2.1")
+    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
+    implementation("androidx.paging:paging-compose:${versions.common.paging}")
 
     libs.network.gson.get(this)
 }

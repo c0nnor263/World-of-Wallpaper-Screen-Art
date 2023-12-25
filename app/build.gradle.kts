@@ -7,14 +7,13 @@ plugins {
     PluginType.APPLICATION.get(this)
 }
 
-
 val keystorePropertiesFile: File = rootProject.file("keystore.properties")
 val keystoreProperties = Properties().apply {
     load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
-    namespace = "com.notdoppler.earntod"
+    namespace = "com.doodle.turboracing3"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -22,7 +21,7 @@ android {
         minSdk = versions.config.minSdk
         targetSdk = versions.config.targetSdk
         versionCode = 1
-        versionName = "2023.1.0"
+        versionName = "2023.12.15.01-ALPHA"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -40,6 +39,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -89,7 +91,3 @@ dependencies {
     libs.network.gson.get(this)
     libs.compose.coil.get(this)
 }
-
-
-
-

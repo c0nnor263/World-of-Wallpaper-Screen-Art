@@ -7,11 +7,10 @@ plugins {
     PluginType.LIBRARY.get(this)
 }
 
-
-val localProperties = Properties()
-localProperties.load(FileInputStream(rootProject.file("local.properties")))
+val gradleProperties = Properties()
+gradleProperties.load(FileInputStream(rootProject.file("gradle.properties")))
 android {
-    namespace = "com.notdoppler.core.billing"
+    namespace = "com.doodle.core.billing"
     compileSdk = versions.config.compileSdk
 
     defaultConfig {
@@ -22,9 +21,8 @@ android {
         buildConfigField(
             "String",
             "verifyPurchases",
-            "\"${localProperties.getProperty("verifyPurchases")}\""
+            "\"${gradleProperties.getProperty("verifyPurchases")}\""
         )
-        // TODO BuildConfigField verifyPurchases
     }
 
     buildTypes {
@@ -46,7 +44,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = versions.config.jvmTarget
-
     }
     composeOptions {
         kotlinCompilerExtensionVersion = versions.compose.compiler
@@ -65,12 +62,11 @@ android {
 dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
+    implementation(project(":core:data"))
     composeCore()
     implementation("com.android.billingclient:billing-ktx:${versions.playServices.billing}")
-    implementation("com.android.volley:volley:1.2.1")
+    implementation("com.android.volley:volley:${versions.android.volley}")
     coreData()
 
-
-    implementation("com.google.android.play:review:2.0.1")
-    implementation("com.google.android.play:review-ktx:2.0.1")
+    implementation("com.google.android.play:review-ktx:${versions.playServices.playReview}")
 }
