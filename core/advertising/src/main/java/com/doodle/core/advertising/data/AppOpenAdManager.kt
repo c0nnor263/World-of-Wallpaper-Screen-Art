@@ -2,12 +2,13 @@ package com.doodle.core.advertising.data
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import com.doodle.core.advertising.domain.DEFAULT_LOAD_RETRY
 import com.doodle.core.advertising.domain.enums.AdStatus
 import com.doodle.core.advertising.wasLoadTimeLessThanLimitHoursAgo
 import com.doodle.core.data.R
-import com.doodle.core.data.di.MainDispatcher
 import com.doodle.core.domain.di.ApplicationScope
+import com.doodle.core.domain.di.MainDispatcher
 import com.doodle.core.domain.source.local.repository.AppPreferencesDataStoreRepository
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -16,13 +17,13 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.appopen.AppOpenAd.AppOpenAdLoadCallback
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class AppOpenAdManager @Inject constructor(
@@ -72,6 +73,13 @@ class AppOpenAdManager @Inject constructor(
         if (isShowingAd) {
             return@launch
         }
+
+        Log.i(
+            "TAG",
+            "showAdIfAvailable: ${appOpenAd != null} &&" +
+                    "${!wasLoadTimeLessThanLimitHoursAgo(loadTime, 4)} &&" +
+                    "${appPreferencesDataStoreRepository.getIsAvailableForAppOpenAd()}"
+        )
         if (!isAdAvailable()) {
             loadAd()
             return@launch
@@ -97,6 +105,7 @@ class AppOpenAdManager @Inject constructor(
     }
 
     private fun updateAppOpenAd(ad: AppOpenAd?, adStatus: AdStatus) {
+        Log.i("TAG", "updateAppOpenAd: $ad $adStatus")
         when (adStatus) {
             AdStatus.LOADED -> {
                 appOpenAd = ad

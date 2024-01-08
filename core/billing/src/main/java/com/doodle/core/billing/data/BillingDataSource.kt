@@ -28,12 +28,10 @@ import com.doodle.core.billing.domain.enums.BillingProductType
 import com.doodle.core.billing.domain.enums.VerifyResult
 import com.doodle.core.billing.domain.model.ProductDetailsInfo
 import com.doodle.core.billing.domain.model.PurchaseProduct
-import com.doodle.core.data.di.IoDispatcher
 import com.doodle.core.domain.di.ApplicationScope
+import com.doodle.core.domain.di.IoDispatcher
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -45,6 +43,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 @ActivityRetainedScoped
 class BillingDataSource @Inject constructor(

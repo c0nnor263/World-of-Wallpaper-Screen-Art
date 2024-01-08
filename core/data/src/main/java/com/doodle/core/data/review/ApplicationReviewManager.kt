@@ -2,18 +2,18 @@ package com.doodle.core.data.review
 
 import android.content.Context
 import androidx.activity.ComponentActivity
-import com.doodle.core.data.di.IoDispatcher
+import com.doodle.core.domain.di.IoDispatcher
 import com.doodle.core.domain.source.local.repository.AppPreferencesDataStoreRepository
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 class ApplicationReviewManager @Inject constructor(
     @ApplicationContext private val applicationContext: Context,

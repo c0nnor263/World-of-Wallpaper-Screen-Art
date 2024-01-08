@@ -5,10 +5,10 @@ plugins {
 }
 android {
     namespace = "com.doodle.core.advertising"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
-        minSdk = versions.config.minSdk
+        minSdk = Versions.Config.minSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         vectorDrawables {
@@ -27,21 +27,21 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = versions.compose.compiler
+        kotlinCompilerExtensionVersion = Versions.Compose.compiler
     }
     packaging {
         resources {
-            excludes += versions.compose.exclude
+            excludes += Versions.Compose.exclude
         }
     }
 }
@@ -51,10 +51,10 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
     implementation(
-        "androidx.constraintlayout:constraintlayout:${versions.android.constraintLayoutXML}"
+        "androidx.constraintlayout:constraintlayout:${Versions.Android.constraintLayoutXML}"
     )
-    implementation("androidx.appcompat:appcompat:${versions.android.appCompat}")
-    implementation("androidx.cardview:cardview:${versions.android.cardView}")
+    implementation("androidx.appcompat:appcompat:${Versions.Android.appCompat}")
+    implementation("androidx.cardview:cardview:${Versions.Android.cardView}")
     coreData()
     composeCore()
 

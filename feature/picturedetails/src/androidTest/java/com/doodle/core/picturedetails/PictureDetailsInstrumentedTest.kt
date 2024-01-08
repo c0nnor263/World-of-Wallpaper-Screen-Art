@@ -42,37 +42,12 @@ class PictureDetailsInstrumentedTest {
     @get:Rule(order = 3)
     val composeTestRule = createComposeRule()
 
-    @Inject
-    lateinit var remoteImagePagingRepository: RemoteImagePagingRepository
-
-    @Inject
-    lateinit var favoriteImageRepository: FavoriteImageRepository
-
-    @Inject
-    lateinit var storageManager: StorageManager
-
     @Before
     fun setup() {
         hiltRule.inject()
         composeTestRule.setContent {
             WallpapersTheme {
-//                val homeScreenViewModel =
-//                    com.doodle.feature.home.presentation.HomeScreenViewModel(
-//                        imagePagingRepository
-//                    )
-//                val pictureDetailsViewModel = PictureDetailsViewModel(
-//                    favoriteImageRepository, storageManager
-//                )
-//
-//                LaunchedEffect(key1 = Unit) {
-//                    homeScreenViewModel.getImages(TabOrder.LATEST)
-//                }
-//
-//                PictureDetailsScreen(
-//                    homeScreenViewModel,
-//                    pictureDetailsViewModel,
-//                    PictureDetailsNavArgs(0, TabOrder.LATEST)
-//                ) {}
+
             }
         }
     }

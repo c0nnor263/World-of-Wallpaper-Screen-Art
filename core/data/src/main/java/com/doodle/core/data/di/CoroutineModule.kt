@@ -1,17 +1,36 @@
 package com.doodle.core.data.di
 
+import com.doodle.core.domain.di.ApplicationScope
+import com.doodle.core.domain.di.DefaultDispatcher
+import com.doodle.core.domain.di.IoDispatcher
+import com.doodle.core.domain.di.IoScope
+import com.doodle.core.domain.di.MainDispatcher
+import com.doodle.core.domain.di.UnconfinedDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import javax.inject.Qualifier
+import kotlinx.coroutines.SupervisorJob
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DispatcherModule {
+object CoroutineModule {
+
+    @Provides
+    @Singleton
+    @ApplicationScope
+    fun provideApplicationScope(): CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    @Provides
+    @Singleton
+    @IoScope
+    fun provideIoScope(): CoroutineScope =
+        CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @Provides
     @Singleton
@@ -34,21 +53,4 @@ object DispatcherModule {
     fun provideUnconfinedDispatcher(): CoroutineDispatcher = Dispatchers.Unconfined
 
 }
-
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class IoDispatcher
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class DefaultDispatcher
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class MainDispatcher
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class UnconfinedDispatcher
 

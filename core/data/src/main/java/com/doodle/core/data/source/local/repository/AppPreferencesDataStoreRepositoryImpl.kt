@@ -6,8 +6,7 @@ import javax.inject.Inject
 
 class AppPreferencesDataStoreRepositoryImpl @Inject constructor(
     private val appPreferencesDataStore: AppPreferencesDataStore
-) :
-    AppPreferencesDataStoreRepository {
+) : AppPreferencesDataStoreRepository {
     override suspend fun setIsAvailableForReview(value: Boolean) {
         appPreferencesDataStore.setIsAvailableForReview(value)
     }

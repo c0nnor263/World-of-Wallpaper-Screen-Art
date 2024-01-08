@@ -10,4 +10,8 @@
     <string name="developer_email">yikertaendriasmamushet@gmail.com</string>
     <string name="no_internet_connection">Error. Check internet connection</string>
     <string name="error_remove_ads">Something went wrong…</string>
+    <string name="tab_tags">Tags</string>
+    <string name="tab_latest">Latest</string>
+    <string name="tab_popular">Popular</string>
+    <string name="tab_editors_choice">Editor\'s Choice</string>
 </resources>

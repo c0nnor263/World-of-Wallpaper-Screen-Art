@@ -11,10 +11,10 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.doodle.core.advertising.data.NativeAdManager
-import com.doodle.core.data.di.IoDispatcher
 import com.doodle.core.data.domain.ApplicationPagingDataStore
 import com.doodle.core.database.domain.model.FavoriteImage
 import com.doodle.core.database.domain.repository.FavoriteImageRepository
+import com.doodle.core.domain.di.IoDispatcher
 import com.doodle.core.domain.enums.ActionType
 import com.doodle.core.domain.enums.PagingKey
 import com.doodle.core.domain.model.remote.ImageRequestInfo
@@ -27,7 +27,6 @@ import com.doodle.feature.picturedetails.domain.model.PublisherInfoData
 import com.doodle.feature.picturedetails.state.PictureDetailsState
 import com.google.android.gms.ads.nativead.NativeAd
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -40,6 +39,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class PictureDetailsViewModel @Inject constructor(
@@ -176,7 +176,7 @@ class PictureDetailsViewModel @Inject constructor(
     private fun getOrCreatePager(info: ImageRequestInfo): Flow<PagingData<RemoteImage.Hit>> {
         return if (info.options.order != PagingKey.FAVORITES) {
             applicationPagingDataStore.getPager(
-                key = info.options.order.requestValue + pictureDetailsState.query,
+                key = info.options.order.remoteOptionQuery + pictureDetailsState.query,
                 info = info,
                 source = remoteImagePagingRepository.getPagingSource(info)
             )
@@ -198,7 +198,11 @@ class PictureDetailsViewModel @Inject constructor(
     }
 
     fun getNativeAdById(id: Int): NativeAd? {
-        return nativeAdManager.getNativeAdById(id)
+        return if (pictureDetailsState.pagingKey.value != PagingKey.FAVORITES) {
+            nativeAdManager.getNativeAdById(id)
+        } else {
+            null
+        }
     }
 
     fun dismissNativeAd(id: Int) {

@@ -14,7 +14,7 @@ class RemoteImagePixabaySourceImpl @Inject constructor(
             pageKey = info.pageKey,
             q = info.options.query,
             category = info.options.category,
-            order = info.options.order.requestValue,
+            order = info.options.order.remoteOptionQuery,
             perPage = info.pageSize,
             editorsChoice = info.options.editorsChoice
         )

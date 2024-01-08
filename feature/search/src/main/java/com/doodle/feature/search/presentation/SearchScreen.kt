@@ -55,8 +55,8 @@ import com.doodle.core.ui.ApplicationScaffold
 import com.doodle.core.ui.FetchedImageItem
 import com.doodle.core.ui.LoadingBar
 import com.doodle.core.ui.R
-import com.doodle.core.ui.list.CardImageList
-import com.doodle.core.ui.list.EmptyListContent
+import com.doodle.core.ui.card.CardImageList
+import com.doodle.core.ui.card.EmptyListContent
 import com.doodle.core.ui.scaleWithPressAnimation
 import com.doodle.core.ui.theme.WallpapersTheme
 import com.doodle.feature.search.state.SearchQueryState
@@ -235,7 +235,8 @@ fun SearchButton(
         IconButton(
             onClick = onClick,
             interactionSource = interactionSource,
-            modifier = modifier.size(36.dp)
+            modifier = modifier
+                .size(36.dp)
                 .scaleWithPressAnimation(isPressed)
         ) {
             Icon(

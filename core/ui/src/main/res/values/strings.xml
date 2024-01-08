@@ -5,4 +5,8 @@
         Explore countless categories of beautiful wallpapers and make your screen truly stunning.\n
         Share the beauty with friends today!\n
         https://play.google.com/store/apps/details?id=%2$s</string>
+    <string name="yes">Yes</string>
+    <string name="request_notification_permission_message">Request notification</string>
+    <string name="request_notification_title">Request Notification title</string>
+    <string name="no">No</string>
 </resources>

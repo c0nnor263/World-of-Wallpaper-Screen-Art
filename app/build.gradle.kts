@@ -14,12 +14,12 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.doodle.turboracing3"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
         applicationId = namespace
-        minSdk = versions.config.minSdk
-        targetSdk = versions.config.targetSdk
+        minSdk = Versions.Config.minSdk
+        targetSdk = Versions.Config.targetSdk
         versionCode = 1
         versionName = "2023.12.15.01-ALPHA"
 
@@ -53,11 +53,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
 
     buildFeatures {
@@ -65,11 +65,11 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = versions.compose.compiler
+        kotlinCompilerExtensionVersion = Versions.Compose.compiler
     }
     packaging {
         resources {
-            excludes += versions.compose.exclude
+            excludes += Versions.Compose.exclude
         }
     }
 }

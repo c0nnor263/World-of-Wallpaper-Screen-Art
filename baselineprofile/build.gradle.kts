@@ -10,20 +10,20 @@ plugins {
 
 android {
     namespace = "com.doodle.baselineprofile"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
 
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
 
     defaultConfig {
-        minSdk = versions.config.minSdk
-        targetSdk = versions.config.targetSdk
+        minSdk = Versions.Config.minSdk
+        targetSdk = Versions.Config.targetSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["androidx.benchmark.suppressErrors"] = "EMULATOR"
@@ -54,10 +54,10 @@ baselineProfile {
 }
 
 dependencies {
-    implementation("androidx.test.ext:junit:${versions.tooling.androidJunit}")
-    implementation("androidx.test.espresso:espresso-core:${versions.tooling.androidEspressoCore}")
-    implementation("androidx.test.uiautomator:uiautomator:${versions.tooling.uiautomator}")
+    implementation("androidx.test.ext:junit:${Versions.Tooling.junitKtx}")
+    implementation("androidx.test.espresso:espresso-core:${Versions.Tooling.androidEspressoCore}")
+    implementation("androidx.test.uiautomator:uiautomator:${Versions.Tooling.uiautomator}")
     implementation(
-        "androidx.benchmark:benchmark-macro-junit4:${versions.tooling.benchmarkMacroJunit4}"
+        "androidx.benchmark:benchmark-macro-junit4:${Versions.Tooling.benchmarkMacroJunit4}"
     )
 }

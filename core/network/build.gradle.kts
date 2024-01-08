@@ -12,10 +12,10 @@ gradleProperties.load(FileInputStream(rootProject.file("gradle.properties")))
 
 android {
     namespace = "com.doodle.core.network"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
-        minSdk = versions.config.minSdk
+        minSdk = Versions.Config.minSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
@@ -42,11 +42,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
 }
 
@@ -55,6 +55,6 @@ dependencies {
     implementation(project(":core:domain"))
     networkModule()
 
-    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
-    implementation("androidx.paging:paging-compose:${versions.common.paging}")
+    implementation("androidx.paging:paging-runtime:${Versions.Common.paging}")
+    implementation("androidx.paging:paging-compose:${Versions.Common.paging}")
 }

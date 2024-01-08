@@ -6,23 +6,30 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.doodle.core.domain.di.IoScope
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.io.IOException
-import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
+import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-const val IS_AVAILABLE_FOR_APP_OPEN_AD_THRESHOLD = 3
+const val IS_AVAILABLE_FOR_APP_OPEN_AD_THRESHOLD = 2
 
+@Singleton
 class AppPreferencesDataStore @Inject constructor(
-    @ApplicationContext private val applicationContext: Context
+    @ApplicationContext private val applicationContext: Context,
+    @IoScope private val ioScope: CoroutineScope
 ) {
     companion object {
         private const val PREFERENCES_NAME = "app_preferences"
-        val Context.appPreferencesDataStore by preferencesDataStore(
-            name = PREFERENCES_NAME
-        )
     }
+
+    private val Context.appPreferencesDataStore by preferencesDataStore(
+        name = PREFERENCES_NAME,
+        scope = ioScope
+    )
 
     object Keys {
         val IS_AVAILABLE_FOR_REVIEW = booleanPreferencesKey("is_available_for_review")
@@ -57,7 +64,11 @@ class AppPreferencesDataStore @Inject constructor(
     }
 
     suspend fun getIsAvailableForAppOpenAd(): Boolean {
-        val current = dataFlow.first()[Keys.IS_AVAILABLE_FOR_APP_OPEN_AD] ?: 0
-        return current >= IS_AVAILABLE_FOR_APP_OPEN_AD_THRESHOLD
+        val current = getIsAvailableForAppOpenAdCount()
+        return current > IS_AVAILABLE_FOR_APP_OPEN_AD_THRESHOLD
+    }
+
+    suspend fun getIsAvailableForAppOpenAdCount(): Int {
+        return dataFlow.first()[Keys.IS_AVAILABLE_FOR_APP_OPEN_AD] ?: 0
     }
 }

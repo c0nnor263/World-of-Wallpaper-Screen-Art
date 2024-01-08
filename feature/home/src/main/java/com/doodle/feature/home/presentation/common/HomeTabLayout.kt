@@ -45,6 +45,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -64,7 +65,6 @@ fun HomeTabLayout(
     modifier: Modifier = Modifier,
     pagerState: PagerState,
     isLoading: Boolean,
-    isError: Boolean,
     errorMsg: String?,
     onErrorClick: () -> Unit
 ) {
@@ -104,38 +104,49 @@ fun HomeTabLayout(
             ) {
                 TabPage.entries.forEachIndexed { index, page ->
                     val selected = pagerState.currentPage == index
-                    val interactionSource = remember { NoRippleInteractionSource() }
-                    Tab(
-                        text = {
-                            androidx.compose.animation.AnimatedVisibility(
-                                visible = !isLoading || !selected,
-                                enter = fadeIn(tweenMedium()),
-                                exit = fadeOut(tweenMedium())
-                            ) {
-                                Text(
-                                    text = page.name,
-                                    modifier = Modifier.padding(4.dp),
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                            }
-                        },
-                        selected = pagerState.currentPage == index,
+                    HomeTab(
+                        tabPage = page,
+                        visible = !isLoading || !selected,
+                        selected = selected,
                         onClick = {
                             scope.launch {
                                 pagerState.animateScrollToPage(index)
                             }
-                        },
-                        interactionSource = interactionSource
+                        }
                     )
                 }
             }
-            ErrorMessage(isError, errorMsg, onErrorClick)
+            ErrorMessage(errorMsg, onErrorClick)
         }
     }
 }
 
 @Composable
-fun ErrorMessage(isError: Boolean, errorMsg: String?, onErrorClick: () -> Unit) {
+fun HomeTab(tabPage: TabPage, visible: Boolean, selected: Boolean, onClick: () -> Unit) {
+    val interactionSource = remember { NoRippleInteractionSource() }
+    Tab(
+        text = {
+            androidx.compose.animation.AnimatedVisibility(
+                visible = visible,
+                enter = fadeIn(tweenMedium()),
+                exit = fadeOut(tweenMedium())
+            ) {
+                Text(
+                    text = stringResource(id = tabPage.labelRes),
+                    modifier = Modifier.padding(4.dp),
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        },
+        selected = selected,
+        onClick = onClick,
+        interactionSource = interactionSource
+    )
+}
+
+@Composable
+fun ErrorMessage(errorMsg: String?, onErrorClick: () -> Unit) {
+    val isError = errorMsg != null
     androidx.compose.animation.AnimatedVisibility(
         visible = isError,
         enter = slideInVertically(tweenMedium()) { -it },
@@ -251,7 +262,6 @@ fun HomeTabPreview() {
         HomeTabLayout(
             pagerState = pagerState,
             isLoading = isLoading,
-            isError = false,
             errorMsg = "Error fetching images "
         ) {
         }

@@ -10,10 +10,10 @@ val gradleProperties = Properties()
 gradleProperties.load(FileInputStream(rootProject.file("gradle.properties")))
 android {
     namespace = "com.doodle.core.domain"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
-        minSdk = versions.config.minSdk
+        minSdk = Versions.Config.minSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         vectorDrawables {
@@ -38,22 +38,22 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
     buildFeatures {
         compose = true
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = versions.compose.compiler
+        kotlinCompilerExtensionVersion = Versions.Compose.compiler
     }
     packaging {
         resources {
-            excludes += versions.compose.exclude
+            excludes += Versions.Compose.exclude
         }
     }
 }
@@ -62,8 +62,8 @@ dependencies {
     composeCore()
     coreData()
 
-    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
-    implementation("androidx.paging:paging-compose:${versions.common.paging}")
+    implementation("androidx.paging:paging-runtime:${Versions.Common.paging}")
+    implementation("androidx.paging:paging-compose:${Versions.Common.paging}")
 
     libs.network.gson.get(this)
 }

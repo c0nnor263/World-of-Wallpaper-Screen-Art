@@ -13,10 +13,10 @@ val admobDataProperties = Properties().apply {
 }
 android {
     namespace = "com.doodle.core.data"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
-        minSdk = versions.config.minSdk
+        minSdk = Versions.Config.minSdk
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -55,11 +55,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
 
     buildFeatures {
@@ -67,7 +67,7 @@ android {
     }
     packaging {
         resources {
-            excludes += versions.compose.exclude
+            excludes += Versions.Compose.exclude
         }
     }
 }
@@ -76,29 +76,29 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:domain"))
 
-    implementation("androidx.core:core-ktx:${versions.android.coreKtx}")
-    implementation("androidx.appcompat:appcompat:${versions.android.appCompat}")
-    implementation("com.google.android.material:material:${versions.android.material}")
-    testImplementation("junit:junit:${versions.tooling.junit}")
-    androidTestImplementation("androidx.test.ext:junit:${versions.tooling.androidJunit}")
+    implementation("androidx.core:core-ktx:${Versions.Android.coreKtx}")
+    implementation("androidx.appcompat:appcompat:${Versions.Android.appCompat}")
+    implementation("com.google.android.material:material:${Versions.Android.material}")
+    testImplementation("junit:junit:${Versions.Tooling.junit}")
+    androidTestImplementation("androidx.test.ext:junit:${Versions.Tooling.junitKtx}")
     androidTestImplementation(
-        "androidx.test.espresso:espresso-core:${versions.tooling.androidEspressoCore}"
+        "androidx.test.espresso:espresso-core:${Versions.Tooling.androidEspressoCore}"
     )
     coreData()
 
     // Play Billing
-    implementation("com.android.billingclient:billing-ktx:${versions.playServices.billing}")
+    implementation("com.android.billingclient:billing-ktx:${Versions.PlayServices.billing}")
 
     // Volley
-    implementation("com.android.volley:volley:${versions.network.volley}")
+    implementation("com.android.volley:volley:${Versions.Network.volley}")
 
     // Kotlin Immutable Collections
     libs.android.kotlinImmutableCollections.get(this)
 
     // Play Review
-    implementation("com.google.android.play:review-ktx:${versions.playServices.playReview}")
+    implementation("com.google.android.play:review-ktx:${Versions.PlayServices.playReview}")
 
     // Paging
-    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
-    implementation("androidx.paging:paging-compose:${versions.common.paging}")
+    implementation("androidx.paging:paging-runtime:${Versions.Common.paging}")
+    implementation("androidx.paging:paging-compose:${Versions.Common.paging}")
 }

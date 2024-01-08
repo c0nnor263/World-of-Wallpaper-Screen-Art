@@ -51,11 +51,17 @@ fun DetailImage(
     onImageStateChanged: (AsyncImagePainter.State) -> Unit
 ) {
     val pictureDetailsUiState = LocalPictureDetailsUiState.current
-    var isNativeAdDismissed by remember { mutableStateOf(false) }
     var localBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var imageStateBuffer by remember {
         mutableStateOf<AsyncImagePainter.State?>(null)
     }
+    var isAdDismissed by remember { mutableStateOf(false) }
+    val isAdNotExists = pageData.nativeAd.value == null || isAdDismissed
+    val isActionRowEnabled =
+        isActiveNow &&
+                isAdNotExists &&
+                pictureDetailsUiState == PictureDetailsViewModel.UiState.ImageStateLoaded ||
+                pictureDetailsUiState == null
     LaunchedEffect(isActiveNow, imageStateBuffer) {
         if (isActiveNow) {
             imageStateBuffer?.let {
@@ -64,13 +70,7 @@ fun DetailImage(
         }
     }
 
-    val isNativeAdNotExists = pageData.nativeAd.value == null || isNativeAdDismissed
 
-    val isActionRowEnabled =
-        isActiveNow &&
-            isNativeAdNotExists &&
-            pictureDetailsUiState == PictureDetailsViewModel.UiState.ImageStateLoaded ||
-            pictureDetailsUiState == null
 
     AnchoredDraggableArea(
         modifier = modifier,
@@ -112,7 +112,7 @@ fun DetailImage(
                     .anchoredDraggable(
                         state = draggableInfo.state,
                         orientation = Orientation.Vertical,
-                        enabled = isActiveNow && isNativeAdNotExists
+                        enabled = isActiveNow && isAdNotExists
                     )
                     .clip(
                         RoundedCornerShape(
@@ -121,7 +121,7 @@ fun DetailImage(
                         )
                     )
                     .then(
-                        if (!isNativeAdNotExists) {
+                        if (!isAdNotExists) {
                             Modifier.blur(10.dp, 10.dp)
                         } else {
                             Modifier
@@ -132,9 +132,9 @@ fun DetailImage(
 
             NativeAdCard(
                 nativeAd = pageData.nativeAd.value,
-                isAdDismissed = isNativeAdDismissed
+                isAdDismissed = isAdDismissed
             ) {
-                isNativeAdDismissed = true
+                isAdDismissed = true
                 onDismissAd()
             }
 

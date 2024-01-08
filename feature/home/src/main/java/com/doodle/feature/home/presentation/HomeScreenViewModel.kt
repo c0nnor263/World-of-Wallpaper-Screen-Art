@@ -7,9 +7,9 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.doodle.core.billing.data.BillingDataSource
 import com.doodle.core.billing.domain.enums.BillingProductType
-import com.doodle.core.data.di.IoDispatcher
 import com.doodle.core.data.domain.ApplicationPagingDataStore
 import com.doodle.core.data.review.ApplicationReviewManager
+import com.doodle.core.domain.di.IoDispatcher
 import com.doodle.core.domain.enums.PagingKey
 import com.doodle.core.domain.model.remote.ImageRequestInfo
 import com.doodle.core.domain.model.remote.RemoteImage
@@ -19,7 +19,6 @@ import com.doodle.core.domain.source.remote.repository.RemoteImagePagingReposito
 import com.doodle.core.domain.source.remote.repository.TagImageRepository
 import com.doodle.feature.home.state.HomePagingState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Deferred
@@ -33,6 +32,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
@@ -68,7 +68,7 @@ class HomeScreenViewModel @Inject constructor(
                 )
             )
             applicationPagingDataStore.getPager(
-                key = order.requestValue,
+                key = order.remoteOptionQuery,
                 info = info,
                 source = remoteImagePagingRepository.getPagingSource(info)
             )

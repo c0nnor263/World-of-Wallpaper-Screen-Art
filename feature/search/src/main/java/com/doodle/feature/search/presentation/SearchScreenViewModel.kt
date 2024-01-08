@@ -10,8 +10,6 @@ import com.doodle.core.domain.model.remote.ImageRequestInfo
 import com.doodle.core.domain.source.remote.repository.SearchImagePagingRepository
 import com.doodle.feature.search.state.SearchQueryState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,6 +17,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
@@ -41,7 +41,7 @@ class SearchScreenViewModel @Inject constructor(
                     )
                 )
                 applicationPagingDataStore.getPager(
-                    key = PagingKey.SEARCH.requestValue + query,
+                    key = PagingKey.SEARCH.remoteOptionQuery + query,
                     info = info,
                     source = searchImagePagingRepository.getPagingSource(info)
                 )

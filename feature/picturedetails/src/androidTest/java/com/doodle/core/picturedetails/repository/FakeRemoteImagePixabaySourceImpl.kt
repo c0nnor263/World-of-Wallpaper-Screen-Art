@@ -43,12 +43,4 @@ class FakeRemoteImagePixabaySourceImpl @Inject constructor() : RemoteImagePixaba
             RemoteImage::class.java
         )
     }
-
-    override suspend fun getImagesByQuery(info: ImageRequestInfo): RemoteImage {
-        return RemoteImage(
-            total = 0,
-            totalHits = 0,
-            hits = emptyList()
-        )
-    }
 }

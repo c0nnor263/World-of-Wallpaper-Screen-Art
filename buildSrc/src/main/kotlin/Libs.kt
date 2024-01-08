@@ -5,33 +5,37 @@ object libs {
 
     object firebase {
         val bom =
-            Dependency("com.google.firebase:firebase-bom", versions.firebase.bom, Type.PLATFORM)
+            Dependency("com.google.firebase:firebase-bom", Versions.Firebase.bom, Type.PLATFORM)
         val crashlyticsKtx = Dependency("com.google.firebase:firebase-crashlytics-ktx")
         val analyticsKtx = Dependency("com.google.firebase:firebase-analytics-ktx")
         val perfKtx = Dependency("com.google.firebase:firebase-perf-ktx")
     }
 
     object storage {
-        val room = Dependency("androidx.room:room-runtime", versions.storage.room)
+        val room = Dependency("androidx.room:room-runtime", Versions.Storage.room)
         val roomCompiler =
-            Dependency("androidx.room:room-compiler", versions.storage.room, Type.KSP)
-        val roomKtx = Dependency("androidx.room:room-ktx", versions.storage.room)
+            Dependency("androidx.room:room-compiler", Versions.Storage.room, Type.KSP)
+        val roomKtx = Dependency("androidx.room:room-ktx", Versions.Storage.room)
         val datastorePreferences =
-            Dependency("androidx.datastore:datastore-preferences", versions.storage.dataStore)
+            Dependency("androidx.datastore:datastore-preferences", Versions.Storage.dataStore)
     }
 
     object tooling {
-        val junit = Dependency("junit:junit", versions.tooling.junit, Type.TEST)
+        val junit = Dependency("junit:junit", Versions.Tooling.junit, Type.TEST)
         val androidJunit =
-            Dependency("androidx.test.ext:junit", versions.tooling.androidJunit, Type.ANDROID_TEST)
+            Dependency(
+                "androidx.test.ext:junit",
+                Versions.Tooling.junitKtx,
+                Type.ANDROID_TEST
+            )
         val espressoCore = Dependency(
             "androidx.test.espresso:espresso-core",
-            versions.tooling.androidEspressoCore,
+            Versions.Tooling.androidEspressoCore,
             Type.ANDROID_TEST
         )
         val composeJunit4 = Dependency(
             "androidx.compose.ui:ui-test-junit4",
-            version = versions.tooling.composeJunit,
+            version = Versions.Tooling.composeJunit,
             type = Type.ANDROID_TEST
         )
         val composeUiTestManifest = Dependency(
@@ -40,20 +44,50 @@ object libs {
         )
         val daggerHiltAndroidTesting = Dependency(
             "com.google.dagger:hilt-android-testing",
-            versions.common.hilt,
+            Versions.Common.hilt,
             Type.ANDROID_TEST
         )
 
         val daggerHiltAndroidCompiler = Dependency(
             "com.google.dagger:hilt-android-compiler",
-            versions.common.hilt,
+            Versions.Common.hilt,
             Type.KSP
+        )
+
+        val runner = Dependency(
+            "androidx.test:runner",
+            Versions.Tooling.runner,
+            Type.ANDROID_TEST
+        )
+        val rules = Dependency(
+            "androidx.test:rules",
+            Versions.Tooling.rules,
+            Type.ANDROID_TEST
+        )
+        val testJunitKtx = Dependency(
+            "androidx.test.ext:junit-ktx",
+            Versions.Tooling.junitKtx,
+            Type.TEST
+        )
+        val coreKtx = Dependency("androidx.test:core-ktx", Versions.Tooling.coreKtx, Type.TEST)
+        val robolectric =
+            Dependency("org.robolectric:robolectric", Versions.Tooling.robolectric, Type.TEST)
+        val mockito = Dependency("org.mockito:mockito-core", Versions.Tooling.mockito, Type.TEST)
+        val mockitoKotlin = Dependency(
+            "org.mockito.kotlin:mockito-kotlin",
+            Versions.Tooling.mockitoKotlin,
+            Type.TEST
+        )
+        val kotlinxCoroutinesTest = Dependency(
+            "org.jetbrains.kotlinx:kotlinx-coroutines-test",
+            Versions.Android.coroutines,
+            Type.TEST
         )
     }
 
     object compose {
 
-        val bom = Dependency("androidx.compose:compose-bom", versions.compose.bom, Type.PLATFORM)
+        val bom = Dependency("androidx.compose:compose-bom", Versions.Compose.bom, Type.PLATFORM)
         val ui = Dependency("androidx.compose.ui:ui")
         val uiGraphics = Dependency("androidx.compose.ui:ui-graphics")
         val uiToolingPreview = Dependency("androidx.compose.ui:ui-tooling-preview")
@@ -64,21 +98,21 @@ object libs {
         val uiTooling = Dependency("androidx.compose.ui:ui-tooling", type = Type.DEBUG)
         val uiTestManifest = Dependency("androidx.compose.ui:ui-test-manifest", type = Type.DEBUG)
         val navigationCompose =
-            Dependency("androidx.navigation:navigation-compose", versions.compose.navigation)
+            Dependency("androidx.navigation:navigation-compose", Versions.Compose.navigation)
         val hiltNavigationCompose =
-            Dependency("androidx.hilt:hilt-navigation-compose", versions.compose.hiltNavigation)
+            Dependency("androidx.hilt:hilt-navigation-compose", Versions.Compose.hiltNavigation)
         val constraintLayoutCompose = Dependency(
             "androidx.constraintlayout:constraintlayout-compose",
-            versions.compose.constraintLayout
+            Versions.Compose.constraintLayout
         )
         val coil = Dependency(
             "io.coil-kt:coil-compose",
-            versions.compose.coil
+            Versions.Compose.coil
         )
 
         val composeUtil = Dependency(
             "androidx.compose.ui:ui-util",
-            versions.compose.composeUtil
+            Versions.Compose.composeUtil
         )
 
         val all = listOf(
@@ -98,72 +132,70 @@ object libs {
     }
 
     object android {
-        val coreKtx = Dependency("androidx.core:core-ktx", versions.android.coreKtx)
+        val coreKtx = Dependency("androidx.core:core-ktx", Versions.Android.coreKtx)
         val kotlinImmutableCollections =
             Dependency(
                 "org.jetbrains.kotlinx:kotlinx-collections-immutable",
-                versions.android.kotlinImmutableCollections
+                Versions.Android.kotlinImmutableCollections
             )
-        val activity = Dependency("androidx.activity:activity-compose", versions.android.activity)
+        val activity = Dependency("androidx.activity:activity-compose", Versions.Android.activity)
     }
 
     object lifecycle {
         val runtimeComposeKtx =
-            Dependency("androidx.lifecycle:lifecycle-runtime-compose", versions.android.lifecycle)
+            Dependency("androidx.lifecycle:lifecycle-runtime-compose", Versions.Android.lifecycle)
         val runtimeKtx =
-            Dependency("androidx.lifecycle:lifecycle-runtime-ktx", versions.android.lifecycle)
+            Dependency("androidx.lifecycle:lifecycle-runtime-ktx", Versions.Android.lifecycle)
         val viewmodelKtx =
-            Dependency("androidx.lifecycle:lifecycle-viewmodel-ktx", versions.android.lifecycle)
+            Dependency("androidx.lifecycle:lifecycle-viewmodel-ktx", Versions.Android.lifecycle)
         val viewmodelCompose =
-            Dependency("androidx.lifecycle:lifecycle-viewmodel-compose", versions.android.lifecycle)
+            Dependency("androidx.lifecycle:lifecycle-viewmodel-compose", Versions.Android.lifecycle)
     }
 
     object hilt {
-        val hiltAndroid = Dependency("com.google.dagger:hilt-android", versions.common.hilt)
+        val hiltAndroid = Dependency("com.google.dagger:hilt-android", Versions.Common.hilt)
         val hiltAndroidCompiler =
-            Dependency("com.google.dagger:hilt-android-compiler", versions.common.hilt, Type.KSP)
+            Dependency("com.google.dagger:hilt-android-compiler", Versions.Common.hilt, Type.KSP)
     }
 
     object coroutines {
         val core =
-            Dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core", versions.android.coroutines)
+            Dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core", Versions.Android.coroutines)
         val android =
             Dependency(
                 "org.jetbrains.kotlinx:kotlinx-coroutines-android",
-                versions.android.coroutines
+                Versions.Android.coroutines
             )
     }
 
     object playServices {
         val billingKtx =
-            Dependency("com.android.billingclient:billing-ktx", versions.playServices.billing)
+            Dependency("com.android.billingclient:billing-ktx", Versions.PlayServices.billing)
         val ads =
-            Dependency("com.google.android.gms:play-services-ads", versions.playServices.ads)
+            Dependency("com.google.android.gms:play-services-ads", Versions.PlayServices.ads)
         val integrity =
-            Dependency("com.google.android.play:integrity", versions.playServices.integrity)
+            Dependency("com.google.android.play:integrity", Versions.PlayServices.integrity)
     }
 
     object startup {
-        val coreSplashscreen =
-            Dependency("androidx.core:core-splashscreen", versions.startup.coreSplashscreen)
         val profileinstaller =
             Dependency(
                 "androidx.profileinstaller:profileinstaller",
-                versions.startup.profileinstaller
+                Versions.Startup.profileinstaller
             )
         val startupRuntime =
-            Dependency("androidx.startup:startup-runtime", versions.startup.startupRuntime)
+            Dependency("androidx.startup:startup-runtime", Versions.Startup.startupRuntime)
     }
 
     object network {
-        val retrofit = Dependency("com.squareup.retrofit2:retrofit", versions.network.retrofit)
+        val retrofit = Dependency("com.squareup.retrofit2:retrofit", Versions.Network.retrofit)
         val retrofitConverterGson =
-            Dependency("com.squareup.retrofit2:converter-gson", versions.network.converterGson)
+            Dependency("com.squareup.retrofit2:converter-gson", Versions.Network.converterGson)
         val httpLoggingInterceptor = Dependency(
             "com.squareup.okhttp3:logging-interceptor",
-            versions.network.httpLoggingInterceptor
+            Versions.Network.httpLoggingInterceptor
         )
-        val gson = Dependency("com.google.code.gson:gson", versions.network.gson)
+        val gson = Dependency("com.google.code.gson:gson", Versions.Network.gson)
     }
 }
 
@@ -185,6 +217,14 @@ fun DependencyHandler.test() {
     libs.tooling.composeJunit4.get(this)
     libs.tooling.daggerHiltAndroidTesting.get(this)
     libs.tooling.daggerHiltAndroidCompiler.get(this)
+    libs.tooling.runner.get(this)
+    libs.tooling.rules.get(this)
+    libs.tooling.testJunitKtx.get(this)
+    libs.tooling.coreKtx.get(this)
+    libs.tooling.robolectric.get(this)
+    libs.tooling.mockito.get(this)
+    libs.tooling.mockitoKotlin.get(this)
+    libs.tooling.kotlinxCoroutinesTest.get(this)
 }
 
 fun DependencyHandler.firebase() {
@@ -257,4 +297,22 @@ fun DependencyHandler.network() {
     libs.network.retrofitConverterGson.get(this)
     libs.network.httpLoggingInterceptor.get(this)
     libs.network.gson.get(this)
+}
+
+fun DependencyHandler.testingModule() {
+    libs.tooling.junit.get(this, Type.DEFAULT)
+    libs.tooling.androidJunit.get(this, Type.DEFAULT)
+    libs.tooling.espressoCore.get(this, Type.DEFAULT)
+    libs.tooling.composeUiTestManifest.get(this, Type.DEFAULT)
+    libs.tooling.composeJunit4.get(this, Type.DEFAULT)
+    libs.tooling.daggerHiltAndroidTesting.get(this, Type.DEFAULT)
+    libs.tooling.daggerHiltAndroidCompiler.get(this, Type.DEFAULT)
+    libs.tooling.runner.get(this, Type.DEFAULT)
+    libs.tooling.rules.get(this, Type.DEFAULT)
+    libs.tooling.testJunitKtx.get(this, Type.DEFAULT)
+    libs.tooling.coreKtx.get(this, Type.DEFAULT)
+    libs.tooling.robolectric.get(this, Type.DEFAULT)
+    libs.tooling.mockito.get(this, Type.DEFAULT)
+    libs.tooling.mockitoKotlin.get(this, Type.DEFAULT)
+    libs.tooling.kotlinxCoroutinesTest.get(this, Type.DEFAULT)
 }

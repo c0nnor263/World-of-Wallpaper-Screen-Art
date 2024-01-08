@@ -11,10 +11,10 @@ val gradleProperties = Properties()
 gradleProperties.load(FileInputStream(rootProject.file("gradle.properties")))
 android {
     namespace = "com.doodle.core.billing"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
-        minSdk = versions.config.minSdk
+        minSdk = Versions.Config.minSdk
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
@@ -27,26 +27,23 @@ android {
 
     buildTypes {
         release {
-
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
-        create("nonMinifiedRelease") {
-        }
     }
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = versions.compose.compiler
+        kotlinCompilerExtensionVersion = Versions.Compose.compiler
     }
     buildFeatures {
         buildConfig = true
@@ -54,7 +51,7 @@ android {
     }
     packaging {
         resources {
-            excludes += versions.compose.exclude
+            excludes += Versions.Compose.exclude
         }
     }
 }
@@ -64,9 +61,10 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     composeCore()
-    implementation("com.android.billingclient:billing-ktx:${versions.playServices.billing}")
-    implementation("com.android.volley:volley:${versions.android.volley}")
+    implementation("com.android.billingclient:billing-ktx:${Versions.PlayServices.billing}")
+    implementation("com.android.volley:volley:${Versions.Android.volley}")
     coreData()
 
-    implementation("com.google.android.play:review-ktx:${versions.playServices.playReview}")
+    implementation("com.google.android.play:review-ktx:${Versions.PlayServices.playReview}")
 }
+

@@ -1,4 +1,4 @@
-package com.doodle.feature.splash
+package com.doodle.core.testing
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

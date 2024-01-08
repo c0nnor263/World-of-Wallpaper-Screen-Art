@@ -6,10 +6,10 @@ plugins {
 
 android {
     namespace = "com.doodle.feature.picturedetails"
-    compileSdk = versions.config.compileSdk
+    compileSdk = Versions.Config.compileSdk
 
     defaultConfig {
-        minSdk = versions.config.minSdk
+        minSdk = Versions.Config.minSdk
         testInstrumentationRunner = "com.doodle.core.picturedetails.di.HiltTestRunner"
         consumerProguardFiles("consumer-rules.pro")
         vectorDrawables {
@@ -28,21 +28,21 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = versions.config.sourceCompatibility
-        targetCompatibility = versions.config.targetCompatibility
+        sourceCompatibility = Versions.Config.sourceCompatibility
+        targetCompatibility = Versions.Config.targetCompatibility
     }
     kotlinOptions {
-        jvmTarget = versions.config.jvmTarget
+        jvmTarget = Versions.Config.jvmTarget
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = versions.compose.compiler
+        kotlinCompilerExtensionVersion = Versions.Compose.compiler
     }
     packaging {
         resources {
-            excludes += versions.compose.exclude
+            excludes += Versions.Compose.exclude
         }
     }
 }
@@ -56,11 +56,12 @@ dependencies {
     implementation(project(":core:ui"))
     composeCore()
 
-    implementation("io.coil-kt:coil-compose:${versions.compose.coil}")
+    implementation("io.coil-kt:coil-compose:${Versions.Compose.coil}")
     //noinspection GradleDependency
-    implementation("androidx.compose.foundation:foundation:${versions.compose.foundation}")
-    implementation("androidx.paging:paging-runtime:${versions.common.paging}")
-    implementation("androidx.paging:paging-compose:${versions.common.paging}")
+    implementation("androidx.compose.foundation:foundation:${Versions.Compose.foundation}")
+    implementation("androidx.paging:paging-runtime:${Versions.Common.paging}")
+    implementation("androidx.paging:paging-compose:${Versions.Common.paging}")
+
     androidTestImplementation("androidx.paging:paging-testing:3.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.5.1")
     androidTestImplementation("androidx.test:runner:1.5.2")

@@ -33,6 +33,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,16 +44,18 @@ import com.doodle.core.advertising.domain.enums.AdStatus
 import com.doodle.core.ui.R
 import com.doodle.core.ui.theme.WallpapersTheme
 
+const val SplashScreenTag = "SplashScreen"
+
 @Composable
 fun SplashScreen(
     viewModel: SplashScreenViewModel,
     onNavigateToHome: () -> Unit
 ) {
     val context = LocalContext.current
-    val adStatus = viewModel.adStatus.collectAsStateWithLifecycle()
+    val adStatus = viewModel.appOpenAdStatus.collectAsStateWithLifecycle()
     LaunchedEffect(adStatus.value) {
         when (adStatus.value) {
-            AdStatus.LOADING -> {}
+            AdStatus.LOADING -> viewModel.incrementAppOpenTimes()
             else -> {
                 val activity = context as ComponentActivity
                 viewModel.showAppOpenAd(activity)
@@ -97,7 +101,11 @@ fun SplashScreenContent(modifier: Modifier = Modifier) {
     }
 
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .semantics {
+                contentDescription = SplashScreenTag
+            },
         contentAlignment = Alignment.Center
     ) {
         Image(

@@ -1,5 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+include(":core:testing")
+
+
 include(":core:advertising")
 
 
