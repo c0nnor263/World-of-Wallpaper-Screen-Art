@@ -20,8 +20,8 @@ android {
         applicationId = namespace
         minSdk = Versions.Config.minSdk
         targetSdk = Versions.Config.targetSdk
-        versionCode = 3
-        versionName = "24.01.12.01"
+        versionCode = 4
+        versionName = "24.01.12.02"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
