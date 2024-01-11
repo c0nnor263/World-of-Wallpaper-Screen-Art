@@ -20,8 +20,8 @@ android {
         applicationId = namespace
         minSdk = Versions.Config.minSdk
         targetSdk = Versions.Config.targetSdk
-        versionCode = 2
-        versionName = "24.01.9.01"
+        versionCode = 3
+        versionName = "24.01.12.01"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -88,6 +88,8 @@ dependencies {
     implementation(project(":feature:favorites"))
     appModule()
 
+    implementation("com.onesignal:OneSignal:4.8.7")
+    implementation("com.google.ads.mediation:facebook:6.16.0.0")
     libs.network.gson.get(this)
     libs.compose.coil.get(this)
 }

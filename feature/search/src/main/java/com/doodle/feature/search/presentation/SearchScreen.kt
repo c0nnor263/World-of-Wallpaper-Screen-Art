@@ -1,21 +1,27 @@
 package com.doodle.feature.search.presentation
 
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -30,6 +36,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -41,10 +48,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.paging.PagingData
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.doodle.core.domain.enums.PagingKey
@@ -52,15 +61,18 @@ import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.domain.model.remote.RemoteImage
 import com.doodle.core.ui.ApplicationScaffold
+import com.doodle.core.ui.ErrorMessage
 import com.doodle.core.ui.FetchedImageItem
 import com.doodle.core.ui.LoadingBar
+import com.doodle.core.ui.PagingLaunchedEffect
 import com.doodle.core.ui.R
 import com.doodle.core.ui.card.CardImageList
 import com.doodle.core.ui.card.EmptyListContent
+import com.doodle.core.ui.checkForSpecificException
 import com.doodle.core.ui.scaleWithPressAnimation
-import com.doodle.core.ui.theme.WallpapersTheme
+import com.doodle.core.ui.tweenEasy
+import com.doodle.core.ui.tweenMedium
 import com.doodle.feature.search.state.SearchQueryState
-import kotlinx.coroutines.flow.flow
 
 @Composable
 fun SearchScreen(
@@ -69,31 +81,31 @@ fun SearchScreen(
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val searchImages = viewModel.searchImagesState.collectAsLazyPagingItems()
+
     LaunchedEffect(navArgs) {
         viewModel.setSearchState(navArgs)
     }
 
-    val images = viewModel.imageState.collectAsLazyPagingItems()
 
-    ApplicationScaffold(
-        title = navArgs.query.ifBlank {
-            stringResource(com.doodle.feature.search.R.string.search)
-        },
-        navigationIcon = {
-            IconButton(
-                onClick = onNavigateBack
-            ) {
-                Icon(
-                    Icons.Default.ArrowLeft,
-                    contentDescription = null
-                )
-            }
+    ApplicationScaffold(title = navArgs.query.ifBlank {
+        stringResource(com.doodle.feature.search.R.string.search)
+    }, navigationIcon = {
+        IconButton(
+            onClick = onNavigateBack
+        ) {
+            Icon(
+                Icons.Default.ArrowLeft, contentDescription = null
+            )
         }
-    ) { innerPadding ->
+    }) { innerPadding ->
         SearchScreenContent(
-            images = images,
+            uiState = uiState,
+            searchImages = searchImages,
             searchQueryState = viewModel.searchQueryState,
             onNavigateToDetails = onNavigateToDetails,
+            onUpdateUiState = viewModel::updateUiState,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
@@ -103,11 +115,14 @@ fun SearchScreen(
 
 @Composable
 fun SearchScreenContent(
-    images: LazyPagingItems<RemoteImage.Hit>,
+    modifier: Modifier = Modifier,
+    uiState: SearchScreenViewModel.UiState?,
+    searchImages: LazyPagingItems<RemoteImage.Hit>,
     searchQueryState: SearchQueryState,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
-    modifier: Modifier = Modifier
+    onUpdateUiState: (SearchScreenViewModel.UiState?) -> Unit
 ) {
+    val context = LocalContext.current
     val query by searchQueryState.query.collectAsState()
     val listState = rememberLazyStaggeredGridState()
     val clearFocus by remember {
@@ -122,30 +137,48 @@ fun SearchScreenContent(
         }
     }
 
+    LaunchedEffect(searchQueryState.isRetrying) {
+        if (searchQueryState.isRetrying) {
+            searchImages.retry()
+            searchQueryState.retryComplete()
+            onUpdateUiState(SearchScreenViewModel.UiState.Loading)
+        }
+    }
+
+    PagingLaunchedEffect(states = searchImages.loadState, onLoading = {
+        val state = SearchScreenViewModel.UiState.Loading
+        onUpdateUiState(state)
+    }, onError = { error ->
+        val msg = checkForSpecificException(context, error)
+        val state = SearchScreenViewModel.UiState.Error(message = msg)
+        onUpdateUiState(state)
+    }, onNotLoading = {
+        onUpdateUiState(null)
+    })
+
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier,
+        verticalArrangement = Arrangement.Top
     ) {
-        SearchBarContent(searchQueryState = searchQueryState)
+        SearchBarContent(uiState = uiState, searchQueryState = searchQueryState)
 
-        CardImageList(
-            modifier = Modifier
-                .fillMaxSize()
-                .weight(1F),
+        CardImageList(modifier = Modifier
+            .fillMaxSize()
+            .weight(1F),
             columns = StaggeredGridCells.Fixed(3),
-            isItemsEmpty = images.itemCount == 0,
+            isItemsEmpty = searchImages.itemCount == 0,
             state = listState,
             onEmptyContent = {
                 EmptyListContent(
                     textPlaceholder = stringResource(id = R.string.no_images_available)
                 )
-            }
-        ) {
-            items(images.itemCount) { index ->
-                val image = images[index] ?: return@items
+            }) {
+            items(searchImages.itemCount) { index ->
+                val image = searchImages[index] ?: return@items
                 FetchedImageItem(
-                    previewURL = image.previewURL ?: "",
-                    onNavigateToDetails = {
+                    previewURL = image.previewURL ?: "", onNavigateToDetails = {
                         onNavigateToDetails(
                             PictureDetailsNavArgs(
                                 selectedImageIndex = index,
@@ -154,6 +187,7 @@ fun SearchScreenContent(
                             )
                         )
                     },
+                    isPremium = false,
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
@@ -167,67 +201,97 @@ fun SearchScreenContent(
 @Composable
 fun SearchBarContent(
     modifier: Modifier = Modifier,
+    uiState: SearchScreenViewModel.UiState?,
     searchQueryState: SearchQueryState
 ) {
     val query by searchQueryState.query.collectAsState()
-
     val transition = updateTransition(targetState = searchQueryState.isFocused, label = "")
+    val focusRequester = remember { FocusRequester() }
 
-    Card(
-        modifier = modifier.padding(8.dp),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
-        border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+    LaunchedEffect(searchQueryState.isFocused, transition.currentState) {
+        if (transition.currentState) {
+            focusRequester.requestFocus()
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .animateContentSize(tweenEasy())
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AnimatedContent(
-            targetState = transition.targetState,
-            transitionSpec = {
-                fadeIn() togetherWith fadeOut() using
-                    SizeTransform { _, _ ->
+        Card(
+            modifier = Modifier.padding(8.dp),
+            shape = RoundedCornerShape(24.dp),
+            elevation = CardDefaults.cardElevation(4.dp),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
+        ) {
+            AnimatedContent(
+                targetState = transition.currentState,
+                transitionSpec = {
+                    fadeIn(tweenMedium()) togetherWith fadeOut(tweenMedium()) using SizeTransform { _, _ ->
                         spring(
                             dampingRatio = Spring.DampingRatioLowBouncy,
                             stiffness = Spring.StiffnessLow
                         )
                     }
-            },
-            label = "Animated Search Bar"
-        ) { focused ->
-            if (!focused) {
-                SearchButton(
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                    query = query
-                ) {
-                    searchQueryState.setFocus()
+                },
+                label = "Animated Search Bar",
+            ) { focused ->
+                if (!focused) {
+                    SearchButton(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        query = query,
+                    ) {
+                        searchQueryState.setFocus()
+
+                    }
+                } else {
+                    SearchField(
+                        query = query,
+                        focusRequester = focusRequester,
+                        onValueChange = searchQueryState::updateQuery
+                    )
                 }
-            } else {
-                SearchField(
-                    query = query,
-                    onValueChange = searchQueryState::updateQuery
-                )
             }
         }
+        androidx.compose.animation.AnimatedVisibility(
+            visible = uiState is SearchScreenViewModel.UiState.Loading,
+            enter = slideInVertically(tweenEasy(easing = FastOutLinearInEasing)) { it },
+            exit = slideOutVertically(tweenEasy(easing = FastOutLinearInEasing)) { it }
+        ) {
+            LinearProgressIndicator(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
     }
+    ErrorMessage(
+        (uiState as? SearchScreenViewModel.UiState.Error)?.message,
+        onErrorClick = searchQueryState::retry
+    )
+
 }
 
 @Composable
 fun SearchButton(
-    modifier: Modifier = Modifier,
-    query: String,
-    onClick: () -> Unit
+    modifier: Modifier = Modifier, query: String, onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+
 
     if (query.isNotBlank()) {
         Text(
             text = query,
             style = MaterialTheme.typography.titleMedium,
             modifier = modifier
-                .padding(4.dp)
+                .padding(8.dp)
                 .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = onClick
+                    interactionSource = interactionSource, indication = null, onClick = onClick
                 )
                 .scaleWithPressAnimation(isPressed)
         )
@@ -256,21 +320,18 @@ fun SearchButton(
 fun SearchField(
     modifier: Modifier = Modifier,
     query: String,
+    focusRequester: FocusRequester,
     onValueChange: (String) -> Unit
 ) {
-
-    OutlinedTextField(
-        modifier = modifier,
+    OutlinedTextField(modifier = modifier.focusRequester(focusRequester),
         value = query,
         textStyle = MaterialTheme.typography.titleMedium,
         singleLine = true,
         onValueChange = onValueChange,
         trailingIcon = {
-            IconButton(
-                onClick = {
-                    onValueChange("")
-                }
-            ) {
+            IconButton(onClick = {
+                onValueChange("")
+            }) {
                 Icon(
                     Icons.Default.Clear,
                     contentDescription = null,
@@ -287,21 +348,5 @@ fun SearchField(
                     id = com.doodle.feature.search.R.string.search
                 )
             )
-        }
-    )
-}
-
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun SearchFieldPreview() {
-    WallpapersTheme {
-        val items = flow<PagingData<RemoteImage.Hit>> {
-            PagingData.empty<RemoteImage.Hit>()
-        }.collectAsLazyPagingItems()
-        SearchScreenContent(
-            images = items,
-            searchQueryState = SearchQueryState(),
-            onNavigateToDetails = {}
-        )
-    }
+        })
 }

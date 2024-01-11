@@ -19,7 +19,11 @@ class RemoteImagePagingSource(
         return try {
             val key = params.key ?: info.pageKey
             val response = remoteImagePixabaySource.getImagesByPage(info.copy(pageKey = key))
-            val hits = response.hits ?: throw Exception("No data")
+            val hits = response.hits?.run {
+                if (info.options.isPremium) {
+                    shuffled()
+                } else this
+            } ?: throw Exception("No data")
             LoadResult.Page(
                 data = hits,
                 prevKey = if (key == 1) null else key - 1,

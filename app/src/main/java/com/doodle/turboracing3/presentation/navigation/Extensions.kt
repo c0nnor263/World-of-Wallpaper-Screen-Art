@@ -55,17 +55,17 @@ fun NavGraphBuilder.searchScreen(
         arguments = search.arguments,
         enterTransition = {
             fadeIn(animationSpec = tweenMedium()) +
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    tweenMedium()
-                )
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        tweenMedium()
+                    )
         },
         exitTransition = {
             slideOutOfContainer(
                 AnimatedContentTransitionScope.SlideDirection.Right,
                 tweenMedium()
             ) +
-                fadeOut(animationSpec = tweenMedium())
+                    fadeOut(animationSpec = tweenMedium())
         }
     ) {
         val defaultValue = SearchNavArgs(query = "", pagingKey = PagingKey.POPULAR)
@@ -88,7 +88,14 @@ fun NavGraphBuilder.homeScreen(
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
     val home = Screen.Home
-    composable(home.route, arguments = home.arguments) {
+    composable(
+        home.route,
+        arguments = home.arguments,
+        enterTransition = {
+            fadeIn(tweenMedium())
+        },
+        exitTransition = { fadeOut(tweenMedium()) }
+    ) {
         val viewModel: HomeScreenViewModel = hiltViewModel()
         HomeScreen(
             viewModel = viewModel,
@@ -109,19 +116,19 @@ fun NavGraphBuilder.detailsScreen(
         arguments = details.arguments,
         enterTransition = {
             fadeIn(animationSpec = tweenMedium()) +
-                scaleIn(animationSpec = tweenMedium()) +
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up,
-                    tweenMedium()
-                )
+                    scaleIn(animationSpec = tweenMedium()) +
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Up,
+                        tweenMedium()
+                    )
         },
         exitTransition = {
             slideOutOfContainer(
                 AnimatedContentTransitionScope.SlideDirection.Up,
                 tweenMedium()
             ) +
-                scaleOut(animationSpec = tweenMedium()) +
-                fadeOut(animationSpec = tweenMedium())
+                    scaleOut(animationSpec = tweenMedium()) +
+                    fadeOut(animationSpec = tweenMedium())
         }
     ) {
         val defaultValue = PictureDetailsNavArgs(
@@ -153,17 +160,17 @@ fun NavGraphBuilder.favoritesScreen(
         arguments = favorites.arguments,
         enterTransition = {
             fadeIn(animationSpec = tweenMedium()) +
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    tweenMedium()
-                )
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        tweenMedium()
+                    )
         },
         exitTransition = {
             slideOutOfContainer(
                 AnimatedContentTransitionScope.SlideDirection.Right,
                 tweenMedium()
             ) +
-                fadeOut(animationSpec = tweenMedium())
+                    fadeOut(animationSpec = tweenMedium())
         }
     ) {
         val viewModel: FavoritesScreenViewModel = hiltViewModel()

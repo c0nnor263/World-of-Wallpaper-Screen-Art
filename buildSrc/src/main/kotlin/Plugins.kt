@@ -1,6 +1,5 @@
-import org.gradle.plugin.use.PluginDependenciesSpec
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.kotlin
+import org.gradle.plugin.use.PluginDependenciesSpec
 
 
 
@@ -24,7 +23,6 @@ fun PluginType.get(scope: PluginDependenciesSpec) {
                 id("kotlin-parcelize")
                 id("com.google.devtools.ksp")
                 id("com.google.dagger.hilt.android")
-
             }
         }
     }

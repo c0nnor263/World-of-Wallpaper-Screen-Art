@@ -64,6 +64,8 @@ fun AnchoredDraggableArea(
             }
         }
 
+
+
     Box(
         modifier
             .onSizeChanged { layoutSize ->
@@ -75,7 +77,7 @@ fun AnchoredDraggableArea(
                     },
                 )
             }
-            .background(Color.Black.copy(0.8F)),
+            .background(Color.Black.copy(0.7F)),
         contentAlignment = Alignment.Center,
     ) {
 

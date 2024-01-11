@@ -8,10 +8,10 @@
     <string name="share_app">Share App</string>
     <string name="contact_us">Contact Us</string>
     <string name="developer_email">yikertaendriasmamushet@gmail.com</string>
-    <string name="no_internet_connection">Error. Check internet connection</string>
-    <string name="error_remove_ads">Something went wrong…</string>
     <string name="tab_tags">Tags</string>
     <string name="tab_latest">Latest</string>
     <string name="tab_popular">Popular</string>
-    <string name="tab_editors_choice">Editor\'s Choice</string>
+    <string name="tab_premium_editor_choice">Premium</string>
+    <string name="watch_ad_for_wallpaper_title">Watch a short ad to see this wallpaper</string>
+    <string name="show_ad">SHOW AD</string>
 </resources>

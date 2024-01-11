@@ -41,6 +41,11 @@ android {
             "admob_native_ad_unit_id",
             admobDataProperties.getProperty("admob_native_ad_unit_id")
         )
+        resValue(
+            "string",
+            "admob_rewarded_ad_unit_id",
+            admobDataProperties.getProperty("admob_rewarded_ad_unit_id")
+        )
     }
 
     buildTypes {

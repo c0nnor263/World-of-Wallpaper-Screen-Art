@@ -11,8 +11,6 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -46,10 +44,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.doodle.core.ui.ErrorMessage
 import com.doodle.core.ui.NoRippleInteractionSource
 import com.doodle.core.ui.scaleWithPressAnimation
 import com.doodle.core.ui.theme.WallpapersTheme
@@ -144,35 +142,6 @@ fun HomeTab(tabPage: TabPage, visible: Boolean, selected: Boolean, onClick: () -
     )
 }
 
-@Composable
-fun ErrorMessage(errorMsg: String?, onErrorClick: () -> Unit) {
-    val isError = errorMsg != null
-    androidx.compose.animation.AnimatedVisibility(
-        visible = isError,
-        enter = slideInVertically(tweenMedium()) { -it },
-        exit = slideOutVertically(tweenMedium()) { -it },
-        modifier = Modifier
-            .fillMaxWidth()
-            .zIndex(-1F)
-    ) {
-        val msg by remember { mutableStateOf(errorMsg ?: "") }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.error)
-                .clickable { if (isError) onErrorClick() },
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = msg,
-                modifier = Modifier.padding(16.dp),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onError
-            )
-        }
-    }
-}
 
 @Composable
 fun TabIndicator(

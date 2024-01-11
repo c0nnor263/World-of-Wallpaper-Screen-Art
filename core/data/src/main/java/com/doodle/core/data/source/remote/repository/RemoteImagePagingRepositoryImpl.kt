@@ -8,7 +8,7 @@ import com.doodle.core.domain.source.remote.RemoteImagePixabaySource
 import com.doodle.core.domain.source.remote.repository.RemoteImagePagingRepository
 import javax.inject.Inject
 
-class RemoteRemoteImagePagingRepositoryImpl @Inject constructor(
+class RemoteImagePagingRepositoryImpl @Inject constructor(
     private val remoteImagePixabaySource: RemoteImagePixabaySource
 ) : RemoteImagePagingRepository {
     override fun getPagingSource(info: ImageRequestInfo): PagingSource<Int, RemoteImage.Hit> {

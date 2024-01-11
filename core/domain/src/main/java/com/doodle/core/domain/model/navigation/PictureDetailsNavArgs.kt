@@ -10,7 +10,8 @@ import kotlinx.parcelize.Parcelize
 data class PictureDetailsNavArgs(
     val selectedImageIndex: Int,
     val pagingKey: PagingKey,
-    val query: String = ""
+    val query: String = "",
+    val isPremium: Boolean = false,
 ) : Parcelable {
     override fun toString(): String {
         return Uri.encode(Gson().toJson(this))

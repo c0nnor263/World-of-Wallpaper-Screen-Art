@@ -58,8 +58,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -272,13 +274,14 @@ fun HomeNavigationDrawerItem(
     imageVector: ImageVector,
     onClick: () -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     var isShowLabel by remember { mutableStateOf(false) }
 
     val bottomPadding by animateDpAsState(
         targetValue = if (isShowLabel) LABEL_HEIGHT - 14.dp else 0.dp,
-        animationSpec = tweenMedium()
+        animationSpec = tweenMedium(), label = ""
     )
 
     Box(
@@ -299,7 +302,6 @@ fun HomeNavigationDrawerItem(
             Card(
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -333,6 +335,7 @@ fun HomeNavigationDrawerItem(
                         onClick = onClick,
                         onLongClick = {
                             isShowLabel = !isShowLabel
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
                         }
                     )
                     .fillMaxSize(),

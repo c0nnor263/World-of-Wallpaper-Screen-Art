@@ -16,7 +16,7 @@ class RemoteImagePixabaySourceImpl @Inject constructor(
             category = info.options.category,
             order = info.options.order.remoteOptionQuery,
             perPage = info.pageSize,
-            editorsChoice = info.options.editorsChoice
+            editorsChoice = info.options.isPremium
         )
     }
 }
