@@ -34,9 +34,7 @@ fun AppContent() {
 
         AnimatedVisibility(
             visible = backStackEntry?.destination?.route != Screen.Splash.route,
-            enter = slideInVertically(tweenLong()) { it },
-            modifier = Modifier
-                .zIndex(1F)
+            enter = slideInVertically(tweenLong()) { it }
         ) {
             BottomBarContent(
                 modifier = Modifier
