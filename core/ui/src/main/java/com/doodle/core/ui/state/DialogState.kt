@@ -8,14 +8,14 @@ import androidx.compose.runtime.setValue
 
 
 @Composable
-fun rememberDialogState(): DialogState {
+fun rememberDialogState(initial: Boolean = false): DialogState {
     return remember {
-        DialogState()
+        DialogState(initial)
     }
 }
 
-class DialogState {
-    var isVisible by mutableStateOf(false)
+class DialogState(initial: Boolean) {
+    var isVisible by mutableStateOf(initial)
         private set
 
     fun show() {

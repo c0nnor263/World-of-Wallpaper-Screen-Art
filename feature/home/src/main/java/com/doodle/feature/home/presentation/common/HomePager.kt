@@ -25,11 +25,11 @@ import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.domain.model.remote.RemoteImage
 import com.doodle.core.domain.model.remote.TagData
 import com.doodle.core.ui.FetchedImageItem
+import com.doodle.core.ui.PagingLaunchedEffect
 import com.doodle.core.ui.R
 import com.doodle.core.ui.card.CardImageList
 import com.doodle.core.ui.card.EmptyListContent
-import com.doodle.feature.home.PagingLaunchedEffect
-import com.doodle.feature.home.checkForSpecificException
+import com.doodle.core.ui.checkForSpecificException
 import com.doodle.feature.home.domain.enums.TabPage
 import com.doodle.feature.home.offsetForPage
 import com.doodle.feature.home.presentation.HomeScreenViewModel
@@ -150,14 +150,20 @@ fun PagerContent(
             }
 
             else -> {
+                val isPremium = pagingKey == PagingKey.EDITORS_CHOICE
                 ImageList(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight(),
                     items = pagingRemoteImages,
+                    isPremium = isPremium,
                     onNavigateToDetails = { index ->
                         val args = PictureDetailsNavArgs(index, pagingKey)
-                        onNavigateToDetails(args)
+                        if (!isPremium) {
+                            onNavigateToDetails(args)
+                        } else {
+                            onUpdateUiState(HomeScreenViewModel.UiState.Premium(args))
+                        }
                     }
                 )
             }
@@ -181,15 +187,17 @@ fun LazyStaggeredGridScope.TagList(
 }
 
 fun LazyStaggeredGridScope.ImageList(
+    modifier: Modifier = Modifier,
+    isPremium: Boolean,
     items: LazyPagingItems<RemoteImage.Hit>,
-    onNavigateToDetails: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    onNavigateToDetails: (Int) -> Unit
 ) {
     items(items.itemCount) { index ->
         val image = items[index]
         FetchedImageItem(
             previewURL = image?.previewURL ?: "",
             onNavigateToDetails = { onNavigateToDetails(index) },
+            isPremium = isPremium,
             modifier = modifier
         )
     }

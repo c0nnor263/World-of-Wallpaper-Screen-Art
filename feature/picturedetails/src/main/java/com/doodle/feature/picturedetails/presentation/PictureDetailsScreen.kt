@@ -59,6 +59,7 @@ fun PictureDetailsScreen(
     val publisherInfoState = rememberPublisherInfoState()
     val pagerDetailState = rememberPagerDetailState(
         initialPage = navArgs.selectedImageIndex,
+        isPremium = navArgs.isPremium,
         imagesState = viewModel.imageState,
         onGetNativeAd = viewModel::getNativeAdById,
         onCheckFavorite = viewModel::checkForFavorite,
@@ -211,7 +212,8 @@ fun PictureDetailsScreenContent(
     HorizontalPager(
         modifier = modifier,
         state = pagerState.pagerState,
-        key = pagerState::getKey
+        key = pagerState::getKey,
+        userScrollEnabled = pagerState.isScrollEnabled,
     ) { pageIndex ->
         val pageData = remember { pagerState.getPageData(pageIndex) }
         val isActiveNow by remember {

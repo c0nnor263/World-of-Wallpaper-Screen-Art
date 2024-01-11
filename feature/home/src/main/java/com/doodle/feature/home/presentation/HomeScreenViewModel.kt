@@ -11,6 +11,7 @@ import com.doodle.core.data.domain.ApplicationPagingDataStore
 import com.doodle.core.data.review.ApplicationReviewManager
 import com.doodle.core.domain.di.IoDispatcher
 import com.doodle.core.domain.enums.PagingKey
+import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.remote.ImageRequestInfo
 import com.doodle.core.domain.model.remote.RemoteImage
 import com.doodle.core.domain.model.remote.TagData
@@ -63,8 +64,8 @@ class HomeScreenViewModel @Inject constructor(
             val editorsChoice = order == PagingKey.EDITORS_CHOICE
             val info = ImageRequestInfo(
                 options = ImageRequestInfo.RemoteOption(
-                    order,
-                    editorsChoice = editorsChoice
+                    if (editorsChoice) PagingKey.LATEST else order,
+                    isPremium = editorsChoice
                 )
             )
             applicationPagingDataStore.getPager(
@@ -113,7 +114,7 @@ class HomeScreenViewModel @Inject constructor(
             onError = {
                 val msg =
                     stringResourceProvider.getString(
-                        com.doodle.feature.home.R.string.error_remove_ads
+                        com.doodle.core.ui.R.string.something_went_wrong
                     )
                 updateUiState(UiState.Error(msg))
             }
@@ -121,6 +122,7 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     sealed class UiState {
+        data class Premium(val args: PictureDetailsNavArgs) : UiState()
         data object Loading : UiState()
         data class Error(val message: String) : UiState()
     }

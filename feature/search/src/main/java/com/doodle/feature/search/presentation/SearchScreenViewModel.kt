@@ -12,7 +12,9 @@ import com.doodle.feature.search.state.SearchQueryState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
@@ -25,10 +27,14 @@ class SearchScreenViewModel @Inject constructor(
     private val searchImagePagingRepository: SearchImagePagingRepository,
     private val applicationPagingDataStore: ApplicationPagingDataStore
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow<UiState?>(UiState.Loading)
+    val uiState = _uiState.asStateFlow()
+
+
     val searchQueryState = SearchQueryState()
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
-    val imageState =
+    val searchImagesState =
         searchQueryState.query
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), "")
             .debounce(500.milliseconds)
@@ -53,5 +59,15 @@ class SearchScreenViewModel @Inject constructor(
         if (searchQueryState.query.value == navArgs.query || navArgs.query.isBlank()) return
         searchQueryState.updateQuery(navArgs.query)
         searchQueryState.updateTabOrder(navArgs.pagingKey)
+    }
+
+    fun updateUiState(uiState: UiState?) {
+        _uiState.value = uiState
+    }
+
+
+    sealed class UiState {
+        data object Loading : UiState()
+        data class Error(val message: String) : UiState()
     }
 }

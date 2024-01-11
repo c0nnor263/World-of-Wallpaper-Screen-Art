@@ -2,7 +2,7 @@ package com.doodle.core.data.di
 
 import com.doodle.core.data.domain.ApplicationPagingDataStore
 import com.doodle.core.data.source.remote.ApplicationPagingDataStoreImpl
-import com.doodle.core.data.source.remote.repository.RemoteRemoteImagePagingRepositoryImpl
+import com.doodle.core.data.source.remote.repository.RemoteImagePagingRepositoryImpl
 import com.doodle.core.data.source.remote.repository.SearchImagePagingRepositoryImpl
 import com.doodle.core.domain.source.remote.repository.RemoteImagePagingRepository
 import com.doodle.core.domain.source.remote.repository.SearchImagePagingRepository
@@ -16,7 +16,7 @@ import dagger.hilt.components.SingletonComponent
 interface RemoteSourceModule {
     @Binds
     fun provideImagePagingRepository(
-        remoteImagePagingRepositoryImpl: RemoteRemoteImagePagingRepositoryImpl
+        remoteImagePagingRepositoryImpl: RemoteImagePagingRepositoryImpl
     ): RemoteImagePagingRepository
 
     @Binds

@@ -74,19 +74,42 @@ class PictureDetailsViewModel @Inject constructor(
         .distinctUntilChanged()
         .cachedIn(viewModelScope)
 
+    private fun getOrCreatePager(info: ImageRequestInfo): Flow<PagingData<RemoteImage.Hit>> {
+        return if (info.options.order != PagingKey.FAVORITES) {
+            applicationPagingDataStore.getPager(
+                key = info.options.order.remoteOptionQuery + pictureDetailsState.query,
+                info = info,
+                source = remoteImagePagingRepository.getPagingSource(info)
+            )
+        } else {
+            createFavoritesPager(info)
+        }
+    }
+
+    fun createFavoritesPager(info: ImageRequestInfo): Flow<PagingData<RemoteImage.Hit>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = info.pageSize,
+                prefetchDistance = info.prefetchDistance
+            ),
+            pagingSourceFactory = {
+                favoriteImageRepository.pagingSource()
+            }
+        ).flow.map { data ->
+            data.map {
+                it.mapToFetchedImageHit()
+            }
+        }
+    }
+
     fun setPagingData(key: PagingKey, query: String) {
         pictureDetailsState.updateData(key, query)
     }
 
-    fun checkForFavorite(imageId: Int?) = viewModelScope.launch(ioDispatcher) {
-        pictureDetailsState.isFavoriteEnabled = imageId?.let {
-            favoriteImageRepository.checkForFavorite(it)
-        } ?: false
-    }
 
     private fun isPictureReadyForActions() =
         uiState.value !is UiState.ImageStateLoading &&
-            uiState.value !is UiState.Error
+                uiState.value !is UiState.Error
 
     fun onActionClick(
         type: ActionType,
@@ -153,6 +176,12 @@ class PictureDetailsViewModel @Inject constructor(
         }
     }
 
+    fun checkForFavorite(imageId: Int?) = viewModelScope.launch(ioDispatcher) {
+        pictureDetailsState.isFavoriteEnabled = imageId?.let {
+            favoriteImageRepository.checkForFavorite(it)
+        } ?: false
+    }
+
     private fun upsertFavoriteImage(image: FavoriteImage) = viewModelScope.launch(ioDispatcher) {
         if (pictureDetailsState.isFavoriteEnabled) {
             favoriteImageRepository.deleteById(image.imageId)
@@ -173,29 +202,6 @@ class PictureDetailsViewModel @Inject constructor(
         _uiState.value = null
     }
 
-    private fun getOrCreatePager(info: ImageRequestInfo): Flow<PagingData<RemoteImage.Hit>> {
-        return if (info.options.order != PagingKey.FAVORITES) {
-            applicationPagingDataStore.getPager(
-                key = info.options.order.remoteOptionQuery + pictureDetailsState.query,
-                info = info,
-                source = remoteImagePagingRepository.getPagingSource(info)
-            )
-        } else {
-            Pager(
-                config = PagingConfig(
-                    pageSize = info.pageSize,
-                    prefetchDistance = info.prefetchDistance
-                ),
-                pagingSourceFactory = {
-                    favoriteImageRepository.pagingSource()
-                }
-            ).flow.map { data ->
-                data.map {
-                    it.mapToFetchedImageHit()
-                }
-            }
-        }
-    }
 
     fun getNativeAdById(id: Int): NativeAd? {
         return if (pictureDetailsState.pagingKey.value != PagingKey.FAVORITES) {

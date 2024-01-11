@@ -47,7 +47,7 @@ fun CardImageList(
             }
         }
 
-        Box(modifier = modifier, contentAlignment = Alignment.Center) {
+        Box(modifier = modifier, contentAlignment = Alignment.TopCenter) {
             LazyVerticalStaggeredGrid(
                 state = state,
                 columns = columns,

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
-import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.cardview.widget.CardView
@@ -68,11 +67,6 @@ fun NativeAdCard(
                 // Ad
                 view.advertiserView = view.findViewById<TextView>(R.id.ad_notification_view).apply {
                     text = nativeAd.advertiser
-                }
-
-                // Star Rating
-                view.starRatingView = view.findViewById<RatingBar>(R.id.rating_bar).apply {
-                    rating = nativeAd.starRating?.toFloat() ?: 0f
                 }
 
                 // Icon

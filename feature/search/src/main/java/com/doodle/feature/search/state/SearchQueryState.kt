@@ -19,8 +19,19 @@ class SearchQueryState {
         private set
     var isSearching by mutableStateOf(false)
 
+    var isRetrying by mutableStateOf(false)
+        private set
+
     fun updateQuery(data: String) {
         _query.value = data
+    }
+
+    fun retry() {
+        isRetrying = true
+    }
+
+    fun retryComplete() {
+        isRetrying = false
     }
 
     fun setFocus() {

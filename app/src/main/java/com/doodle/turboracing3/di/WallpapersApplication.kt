@@ -5,6 +5,7 @@ import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
+import com.onesignal.OneSignal
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -22,5 +23,13 @@ class WallpapersApplication : Application(), ImageLoaderFactory {
                     .maxSizePercent(0.02)
                     .build()
             }.build()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        OneSignal.initWithContext(this)
+        OneSignal.setAppId(getString(com.doodle.turboracing3.R.string.one_signal_app_id))
+        OneSignal.setLogLevel(OneSignal.LOG_LEVEL.VERBOSE, OneSignal.LOG_LEVEL.NONE)
     }
 }

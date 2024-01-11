@@ -5,6 +5,7 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.paging.PagingData
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun rememberPagerDetailState(
     initialPage: Int,
+    isPremium: Boolean,
     imagesState: Flow<PagingData<RemoteImage.Hit>>,
     onGetNativeAd: (Int) -> NativeAd?,
     onDismissAd: (Int) -> Unit,
@@ -40,6 +42,7 @@ fun rememberPagerDetailState(
         PagerPictureDetailState(
             pagerState = pagerState,
             images = images,
+            isPremium = isPremium,
             onGetNativeAd = onGetNativeAd,
             onDismissNativeAd = onDismissAd
         )
@@ -50,9 +53,12 @@ fun rememberPagerDetailState(
 class PagerPictureDetailState(
     val pagerState: PagerState,
     private val images: LazyPagingItems<RemoteImage.Hit>,
+    private val isPremium: Boolean,
     private val onGetNativeAd: (Int) -> NativeAd?,
     private val onDismissNativeAd: (Int) -> Unit
 ) {
+    val isScrollEnabled by mutableStateOf(isPremium)
+
     fun getKey(id: Int): Int {
         return images[id]?.id ?: 0
     }

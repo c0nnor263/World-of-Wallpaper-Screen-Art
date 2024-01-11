@@ -11,5 +11,8 @@ enum class TabPage(
     TAGS(labelRes = R.string.tab_tags, pagingKey = PagingKey.TAGS),
     LATEST(labelRes = R.string.tab_latest, pagingKey = PagingKey.LATEST),
     POPULAR(labelRes = R.string.tab_popular, pagingKey = PagingKey.POPULAR),
-    EDITORS_CHOICE(labelRes = R.string.tab_editors_choice, pagingKey = PagingKey.EDITORS_CHOICE)
+    EDITORS_CHOICE(
+        labelRes = R.string.tab_premium_editor_choice,
+        pagingKey = PagingKey.EDITORS_CHOICE
+    )
 }

@@ -25,6 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +52,7 @@ fun ActionRow(
     userImageUrl: String,
     onActionClick: (ActionType) -> Unit
 ) {
+    val hapticFeedback = LocalHapticFeedback.current
     val isFavoriteIconEnabled = LocalFavoriteIconEnabled.current
 
     AnimatedVisibility(
@@ -86,7 +89,10 @@ fun ActionRow(
                             Icons.Default.FavoriteBorder
                         },
                         type = ActionType.FAVORITE,
-                        onActionClick = onActionClick,
+                        onActionClick = {
+                            onActionClick(it)
+                            hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
+                        },
                         color = if (isFavoriteIconEnabled) Color.Red else Color.White,
                         isActive = isActive,
                         modifier = Modifier.testTag(PictureDetailsScreenContentFavoriteTag)
