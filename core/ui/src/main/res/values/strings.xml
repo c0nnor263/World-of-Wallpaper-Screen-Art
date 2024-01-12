@@ -7,7 +7,7 @@
         https://play.google.com/store/apps/details?id=%2$s</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="request_notification_permission_title">🌟Get the latest!</string>
+    <string name="request_notification_permission_title">🌟Get the latest!🌟</string>
     <string name="request_notification_permission_message">Activate Push Notifications with %1$s for fresh updates and unique wallpapers. Tap into the excitement now!</string>
 
     <string name="no_internet_connection">Error. Check internet connection</string>

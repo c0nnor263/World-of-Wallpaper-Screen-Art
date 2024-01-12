@@ -1,7 +1,6 @@
 package com.doodle.core.advertising
 
 import android.content.Context
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,13 +54,11 @@ class RewardedAdViewState(
                     onSuccess = { ad ->
                         rewardedAd = ad
                         retryPolicy.reset()
-                        Log.i("TAG", "loadOrGetAd: onSuccess")
                     },
                     onFailure = {
                         retryPolicy.retry {
                             loadOrGetAd(activity)
                         }
-                        Log.i("TAG", "loadOrGetAd: onFailure: $it")
                     }
                 )
         }
