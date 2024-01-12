@@ -158,7 +158,7 @@ fun PagerContent(
                     items = pagingRemoteImages,
                     isPremium = isPremium,
                     onNavigateToDetails = { index ->
-                        val args = PictureDetailsNavArgs(index, pagingKey)
+                        val args = PictureDetailsNavArgs(index, pagingKey, isPremium = isPremium)
                         if (!isPremium) {
                             onNavigateToDetails(args)
                         } else {

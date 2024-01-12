@@ -1,7 +1,6 @@
 package com.doodle.core.advertising.data
 
 import android.content.Context
-import android.util.Log
 import com.doodle.core.advertising.wasLoadTimeLessThanLimitHoursAgo
 import com.doodle.core.data.R
 import com.google.android.gms.ads.AdListener
@@ -45,7 +44,6 @@ class NativeAdManager @Inject constructor(
             object : AdListener() {
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     super.onAdFailedToLoad(error)
-                    Log.i("TAG", "onAdFailedToLoad: ${error.message} ${error.cause}")
                 }
 
                 override fun onAdLoaded() {
