@@ -58,6 +58,7 @@ fun FavoritesScreen(
         FavoritesScreenContent(
             modifier = Modifier.padding(innerPadding),
             favoriteImages = favoriteImages,
+            onCheckImageExisting = viewModel::checkIfFileExists,
             onNavigateToDetails = onNavigateToDetails,
             onNavigateToHome = onNavigateToHome
         )
@@ -68,6 +69,7 @@ fun FavoritesScreen(
 fun FavoritesScreenContent(
     modifier: Modifier = Modifier,
     favoriteImages: LazyPagingItems<RemoteImage.Hit>,
+    onCheckImageExisting: (Int?, Uri) -> Boolean,
     onNavigateToHome: () -> Unit,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
@@ -81,17 +83,20 @@ fun FavoritesScreenContent(
         content = {
             items(favoriteImages.itemCount) { index ->
                 val image = favoriteImages[index]
-                FavoriteImageItem(
-                    fileURI = image?.largeImageURL ?: "",
-                    onNavigateToDetails = {
-                        onNavigateToDetails(
-                            PictureDetailsNavArgs(
-                                selectedImageIndex = index,
-                                pagingKey = PagingKey.FAVORITES
+                val uri: Uri = image?.largeImageURL?.let { Uri.parse(it) } ?: return@items
+                if (onCheckImageExisting(image.id, uri)) {
+                    FavoriteImageItem(
+                        fileURI = uri,
+                        onNavigateToDetails = {
+                            onNavigateToDetails(
+                                PictureDetailsNavArgs(
+                                    selectedImageIndex = index,
+                                    pagingKey = PagingKey.FAVORITES
+                                )
                             )
-                        )
-                    }
-                )
+                        }
+                    )
+                }
             }
         }
     )
@@ -100,7 +105,7 @@ fun FavoritesScreenContent(
 @Composable
 fun FavoriteImageItem(
     modifier: Modifier = Modifier,
-    fileURI: String,
+    fileURI: Uri,
     onNavigateToDetails: () -> Unit
 ) {
     CardImage(modifier = modifier) {
@@ -109,7 +114,7 @@ fun FavoriteImageItem(
                 .fillMaxSize()
                 .defaultMinSize(minHeight = 200.dp)
                 .clickable(onClick = onNavigateToDetails),
-            model = Uri.parse(fileURI),
+            model = fileURI,
             contentDescription = null,
             contentScale = ContentScale.Crop
         )

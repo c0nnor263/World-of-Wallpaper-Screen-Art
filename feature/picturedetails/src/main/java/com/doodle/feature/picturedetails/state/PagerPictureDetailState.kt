@@ -11,6 +11,8 @@ import androidx.compose.runtime.remember
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.doodle.core.domain.enums.RemoveAdsStatus
+import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.domain.model.remote.RemoteImage
 import com.doodle.feature.picturedetails.domain.model.PageData
 import com.google.android.gms.ads.nativead.NativeAd
@@ -20,7 +22,7 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun rememberPagerDetailState(
     initialPage: Int,
-    isPremium: Boolean,
+    isScrollEnabled: Boolean,
     imagesState: Flow<PagingData<RemoteImage.Hit>>,
     onGetNativeAd: (Int) -> NativeAd?,
     onDismissAd: (Int) -> Unit,
@@ -42,7 +44,7 @@ fun rememberPagerDetailState(
         PagerPictureDetailState(
             pagerState = pagerState,
             images = images,
-            isPremium = isPremium,
+            isScrollEnabled = isScrollEnabled,
             onGetNativeAd = onGetNativeAd,
             onDismissNativeAd = onDismissAd
         )
@@ -51,24 +53,23 @@ fun rememberPagerDetailState(
 
 @OptIn(ExperimentalFoundationApi::class)
 class PagerPictureDetailState(
+    isScrollEnabled: Boolean,
     val pagerState: PagerState,
     private val images: LazyPagingItems<RemoteImage.Hit>,
-    private val isPremium: Boolean,
     private val onGetNativeAd: (Int) -> NativeAd?,
     private val onDismissNativeAd: (Int) -> Unit
 ) {
-    val isScrollEnabled by mutableStateOf(isPremium)
+    val isScrollEnabled by mutableStateOf(isScrollEnabled)
 
     fun getKey(id: Int): Int {
         return images[id]?.id ?: 0
     }
 
-    fun getPageData(id: Int): PageData {
+    fun getPageData(id: Int, removeAdsStatus: RemoveAdsStatus): PageData {
+        val nativeAd = if (removeAdsStatus.isNotPurchased()) onGetNativeAd(id) else null
         return PageData(
             image = mutableStateOf(images[id]),
-            nativeAd = mutableStateOf(
-                onGetNativeAd(id)
-            )
+            nativeAd = mutableStateOf(nativeAd)
         )
     }
 

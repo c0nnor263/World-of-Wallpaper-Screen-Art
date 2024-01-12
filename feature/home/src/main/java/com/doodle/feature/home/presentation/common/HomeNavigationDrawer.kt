@@ -9,27 +9,22 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContactSupport
@@ -46,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,14 +51,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -81,6 +74,7 @@ import kotlinx.coroutines.launch
 fun HomeNavigationDrawer(
     modifier: Modifier = Modifier,
     drawerState: DrawerState,
+    onRestorePurchases: () -> Unit,
     onNavigateToFavorites: () -> Unit,
     onShowReview: () -> Unit,
     onRequestRemoveAds: () -> Unit
@@ -104,6 +98,12 @@ fun HomeNavigationDrawer(
                         drawerState.close()
                     }
                 },
+                onRestorePurchases = {
+                    scope.launch {
+                        onRestorePurchases()
+                        drawerState.close()
+                    }
+                },
                 onNavigateToFavorites = onNavigateToFavorites
             )
         },
@@ -117,6 +117,7 @@ fun HomeNavigationDrawer(
 private fun HomeModalNavigationDrawerContent(
     drawerState: DrawerState,
     onShowReview: () -> Unit,
+    onRestorePurchases: () -> Unit,
     onRequestRemoveAds: () -> Unit,
     onNavigateToFavorites: () -> Unit
 ) {
@@ -129,134 +130,101 @@ private fun HomeModalNavigationDrawerContent(
             .fillMaxWidth(0.7F),
         drawerContainerColor = Color.Transparent
     ) {
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.Center,
-            verticalArrangement = Arrangement.Center,
-            contentPadding = PaddingValues(8.dp)
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            item {
-                HomeNavigationDrawerItem(
-                    label = R.string.favorites_wallpapers,
-                    imageVector = Icons.Default.Favorite,
-                    color = Color(0xFFF08080),
-                    onClick = {
-                        scope.launch {
-                            onNavigateToFavorites()
-                            drawerState.close()
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1F),
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Center,
+                contentPadding = PaddingValues(8.dp)
+            ) {
+                item {
+                    HomeNavigationDrawerItem(
+                        label = R.string.favorites_wallpapers,
+                        imageVector = Icons.Default.Favorite,
+                        color = Color(0xFFF08080),
+                        onClick = {
+                            scope.launch {
+                                onNavigateToFavorites()
+                                drawerState.close()
+                            }
                         }
-                    }
-                )
-            }
-            item {
-                HomeNavigationDrawerItem(
-                    label = R.string.remove_ads,
-                    imageVector = ImageVector.vectorResource(
-                        com.doodle.core.ui.R.drawable.remove_ads_icon
-                    ),
-                    color = Color(0xFFF0E68C),
-                    onClick = onRequestRemoveAds
-                )
-            }
-            item {
-                HomeNavigationDrawerItem(
-                    label = R.string.privacy_policy,
-                    imageVector = Icons.Default.PrivacyTip,
-                    color = Color(0xFF00BFFF),
-                    onClick = {
-                        val policyUrl = context.getString(R.string.privacy_policy_link)
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(policyUrl)
-                        )
-                        context.startActivity(intent)
-                    }
-                )
-            }
-            item {
-                HomeNavigationDrawerItem(
-                    label = R.string.rate_us,
-                    imageVector = Icons.Default.StarRate,
-                    color = Color(0xFF00FA9A),
-                    onClick = onShowReview
-                )
-            }
-            item {
-                HomeNavigationDrawerItem(
-                    label = R.string.share_app,
-                    imageVector = Icons.Default.Share,
-                    color = Color(0xFFFFE4B5),
-                    onClick = {
-                        showShareDialog(context)
-                    }
-                )
-            }
-            item {
-                HomeNavigationDrawerItem(
-                    label = R.string.contact_us,
-                    imageVector = Icons.Default.ContactSupport,
-                    color = Color(0xFFADD8E6),
-                    onClick = {
-                        Intent(Intent.ACTION_SENDTO).apply {
-                            data = Uri.parse("mailto:")
-                            putExtra(
-                                Intent.EXTRA_EMAIL,
-                                context.getString(R.string.developer_email)
-                            )
-                            val intent = Intent.createChooser(
-                                this,
-                                context.getString(R.string.contact_us)
+                    )
+                }
+                item {
+                    HomeNavigationDrawerItem(
+                        label = R.string.remove_ads,
+                        imageVector = ImageVector.vectorResource(
+                            com.doodle.core.ui.R.drawable.remove_ads_icon
+                        ),
+                        color = Color(0xFFF0E68C),
+                        onClick = onRequestRemoveAds
+                    )
+                }
+                item {
+                    HomeNavigationDrawerItem(
+                        label = R.string.privacy_policy,
+                        imageVector = Icons.Default.PrivacyTip,
+                        color = Color(0xFF00BFFF),
+                        onClick = {
+                            val policyUrl = context.getString(R.string.privacy_policy_link)
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse(policyUrl)
                             )
                             context.startActivity(intent)
                         }
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun HeaderContent(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Card(
-            shape = RoundedCornerShape(0.dp),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(vertical = 8.dp)
-                    .clickable(
+                    )
+                }
+                item {
+                    HomeNavigationDrawerItem(
+                        label = R.string.rate_us,
+                        imageVector = Icons.Default.StarRate,
+                        color = Color(0xFF00FA9A),
+                        onClick = onShowReview
+                    )
+                }
+                item {
+                    HomeNavigationDrawerItem(
+                        label = R.string.share_app,
+                        imageVector = Icons.Default.Share,
+                        color = Color(0xFFFFE4B5),
                         onClick = {
+                            showShareDialog(context)
                         }
-                    ),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Image(
-                    painter = painterResource(
-                        id = com.doodle.core.ui.R.drawable.app_icon
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.FillBounds
-
-                )
-
-                Spacer(modifier = Modifier.width(8.dp))
+                    )
+                }
+                item {
+                    HomeNavigationDrawerItem(
+                        label = R.string.contact_us,
+                        imageVector = Icons.Default.ContactSupport,
+                        color = Color(0xFFADD8E6),
+                        onClick = {
+                            Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:")
+                                putExtra(
+                                    Intent.EXTRA_EMAIL,
+                                    context.getString(R.string.developer_email)
+                                )
+                                val intent = Intent.createChooser(
+                                    this,
+                                    context.getString(R.string.contact_us)
+                                )
+                                context.startActivity(intent)
+                            }
+                        }
+                    )
+                }
+            }
+            TextButton(onClick = onRestorePurchases) {
                 Text(
-                    text = stringResource(id = com.doodle.core.domain.R.string.app_name),
-                    style = MaterialTheme.typography.headlineSmall,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    text = stringResource(com.doodle.core.ui.R.string.restore_purchases),
+                    style = MaterialTheme.typography.titleMedium
                 )
             }
         }
@@ -361,7 +329,8 @@ fun HomeModalNavigationDrawerContentPreview() {
             drawerState = drawerState,
             onShowReview = {},
             onRequestRemoveAds = { BuyProductResult.SUCCESS },
-            onNavigateToFavorites = {}
+            onNavigateToFavorites = {},
+            onRestorePurchases = {}
         )
     }
 }

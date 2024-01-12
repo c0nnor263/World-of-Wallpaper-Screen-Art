@@ -8,10 +8,7 @@ import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManagerFactory
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,9 +32,10 @@ class ApplicationReviewManager @Inject constructor(
                     val reviewInfo: ReviewInfo? = task.result
                     startReviewFlow(activity, reviewInfo)
 
-                    CoroutineScope(SupervisorJob() + ioDispatcher).launch {
-                        appPreferencesDataStoreRepository.setIsAvailableForReview(false)
-                    }
+                    // Disabled because user can initiate review flow by himself
+//                    CoroutineScope(SupervisorJob() + ioDispatcher).launch {
+//                        appPreferencesDataStoreRepository.setIsAvailableForReview(false)
+//                    }
                 }
             }
         }

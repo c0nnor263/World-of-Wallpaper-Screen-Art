@@ -2,13 +2,13 @@ package com.doodle.feature.picturedetails.presentation
 
 import android.content.Intent
 import android.graphics.Bitmap
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -17,18 +17,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.testTag
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImagePainter
 import com.doodle.core.domain.enums.ActionType
+import com.doodle.core.domain.enums.isNotPurchased
+import com.doodle.core.domain.enums.isPurchased
 import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.domain.model.remote.RemoteImage
+import com.doodle.core.ui.DisposableEffectLifecycle
 import com.doodle.core.ui.LoadingBar
+import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.feature.picturedetails.R
 import com.doodle.feature.picturedetails.presentation.common.DetailImage
 import com.doodle.feature.picturedetails.presentation.common.dialog.PublisherInfoDialog
@@ -50,8 +51,8 @@ fun PictureDetailsScreen(
     onNavigateToSearch: (SearchNavArgs?) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    val removeAdsStatus = LocalRemoveAdsStatus.current
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     var loadingDownloadDialogVisible by remember { mutableStateOf(false) }
@@ -59,28 +60,25 @@ fun PictureDetailsScreen(
     val publisherInfoState = rememberPublisherInfoState()
     val pagerDetailState = rememberPagerDetailState(
         initialPage = navArgs.selectedImageIndex,
-        isPremium = navArgs.isPremium,
+        isScrollEnabled = !navArgs.isPremium || removeAdsStatus.isPurchased(),
         imagesState = viewModel.imageState,
         onGetNativeAd = viewModel::getNativeAdById,
         onCheckFavorite = viewModel::checkForFavorite,
         onDismissAd = viewModel::dismissNativeAd
     )
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_DESTROY -> {
-                    viewModel.destroyNativeAds()
-                }
 
-                else -> {}
+    DisposableEffectLifecycle(
+        onResume = {
+            if (removeAdsStatus.isNotPurchased()) {
+                val activity = context as ComponentActivity
+                viewModel.showAppOpenAd(activity)
             }
+        },
+        onDestroy = {
+            viewModel.destroyNativeAds()
         }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
+    )
 
     LaunchedEffect(uiState.value) {
         when (val state = uiState.value) {
@@ -209,13 +207,14 @@ fun PictureDetailsScreenContent(
     onImageStateChanged: (AsyncImagePainter.State) -> Unit,
     onActionClick: (ActionType, RemoteImage.Hit?, Bitmap?) -> Unit
 ) {
+    val removeAdsStatus = LocalRemoveAdsStatus.current
     HorizontalPager(
         modifier = modifier,
         state = pagerState.pagerState,
         key = pagerState::getKey,
         userScrollEnabled = pagerState.isScrollEnabled,
     ) { pageIndex ->
-        val pageData = remember { pagerState.getPageData(pageIndex) }
+        val pageData = remember { pagerState.getPageData(pageIndex, removeAdsStatus) }
         val isActiveNow by remember {
             derivedStateOf {
                 pagerState.isActiveNow(pageIndex)

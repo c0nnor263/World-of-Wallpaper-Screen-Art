@@ -12,4 +12,5 @@
 
     <string name="no_internet_connection">Error. Check internet connection</string>
     <string name="something_went_wrong">Something went wrong…</string>
+    <string name="restore_purchases">Restore Purchases</string>
 </resources>

@@ -3,9 +3,11 @@ package com.doodle.core.data.di
 import com.doodle.core.data.source.local.StringResourceProviderImpl
 import com.doodle.core.data.source.local.repository.AppPreferencesDataStoreRepositoryImpl
 import com.doodle.core.data.source.local.repository.FavoriteImageRepositoryImpl
+import com.doodle.core.data.source.local.repository.UserPreferencesDataStoreRepositoryImpl
 import com.doodle.core.database.domain.repository.FavoriteImageRepository
 import com.doodle.core.domain.source.local.StringResourceProvider
 import com.doodle.core.domain.source.local.repository.AppPreferencesDataStoreRepository
+import com.doodle.core.domain.source.local.repository.UserPreferencesDataStoreRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -25,4 +27,9 @@ interface LocalSourceModule {
     fun provideAppPreferencesDataStoreRepository(
         appPreferencesDataStoreRepositoryImpl: AppPreferencesDataStoreRepositoryImpl
     ): AppPreferencesDataStoreRepository
+
+    @Binds
+    fun provideUserPreferencesDataStoreRepository(
+        userPreferencesDataStoreRepositoryImpl: UserPreferencesDataStoreRepositoryImpl
+    ): UserPreferencesDataStoreRepository
 }

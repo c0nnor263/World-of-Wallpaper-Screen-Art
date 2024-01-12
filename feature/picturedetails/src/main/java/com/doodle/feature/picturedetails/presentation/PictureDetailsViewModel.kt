@@ -2,6 +2,7 @@ package com.doodle.feature.picturedetails.presentation
 
 import android.graphics.Bitmap
 import android.net.Uri
+import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +11,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.doodle.core.advertising.data.AppOpenAdManager
 import com.doodle.core.advertising.data.NativeAdManager
 import com.doodle.core.data.domain.ApplicationPagingDataStore
 import com.doodle.core.database.domain.model.FavoriteImage
@@ -49,7 +51,8 @@ class PictureDetailsViewModel @Inject constructor(
     private val remoteImagePagingRepository: RemoteImagePagingRepository,
     private val applicationPagingDataStore: ApplicationPagingDataStore,
     private val stringResourceProvider: StringResourceProvider,
-    private val nativeAdManager: NativeAdManager
+    private val nativeAdManager: NativeAdManager,
+    private val appOpenAdManager: AppOpenAdManager
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UiState?> = MutableStateFlow(null)
     val uiState = _uiState.asStateFlow()
@@ -215,8 +218,13 @@ class PictureDetailsViewModel @Inject constructor(
         nativeAdManager.dismissAd(id)
     }
 
+
     fun destroyNativeAds() {
         nativeAdManager.onActivityDestroy()
+    }
+
+    fun showAppOpenAd(activity: ComponentActivity) {
+        appOpenAdManager.showAdIfAvailable(activity)
     }
 
     sealed class UiState {

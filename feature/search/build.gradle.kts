@@ -53,6 +53,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
     implementation(project(":core:network"))
+    implementation(project(":core:advertising"))
     composeCore()
 
     implementation("io.coil-kt:coil-compose:${Versions.Compose.coil}")

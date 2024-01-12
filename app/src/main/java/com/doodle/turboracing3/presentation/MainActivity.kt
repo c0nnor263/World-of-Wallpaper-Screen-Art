@@ -9,24 +9,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
-import com.doodle.core.advertising.data.AppOpenAdManager
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.doodle.core.domain.enums.RemoveAdsStatus
+import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.core.ui.theme.WallpapersTheme
 import com.doodle.turboracing3.presentation.composables.AppContent
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var appOpenAdManager: AppOpenAdManager
-
     private val viewModel by viewModels<AppContentViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            WallpapersTheme {
-                AppContent()
+            val removeAdsStatus =
+                viewModel.isPremiumUser.collectAsStateWithLifecycle(RemoveAdsStatus.NOT_PURCHASED)
+
+            CompositionLocalProvider(LocalRemoveAdsStatus provides removeAdsStatus.value) {
+                WallpapersTheme {
+                    AppContent()
+                }
             }
         }
         setFullscreen()
@@ -35,7 +39,6 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.onResumeBilling()
-        appOpenAdManager.showAdIfAvailable(this)
     }
 
     private fun setFullscreen() {

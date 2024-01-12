@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.doodle.core.advertising.data.AppOpenAdManager
 import com.doodle.core.billing.data.BillingDataSource
 import com.doodle.core.billing.domain.enums.BillingProductType
 import com.doodle.core.data.domain.ApplicationPagingDataStore
@@ -15,7 +16,6 @@ import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.remote.ImageRequestInfo
 import com.doodle.core.domain.model.remote.RemoteImage
 import com.doodle.core.domain.model.remote.TagData
-import com.doodle.core.domain.source.local.StringResourceProvider
 import com.doodle.core.domain.source.remote.repository.RemoteImagePagingRepository
 import com.doodle.core.domain.source.remote.repository.TagImageRepository
 import com.doodle.feature.home.state.HomePagingState
@@ -43,7 +43,7 @@ class HomeScreenViewModel @Inject constructor(
     private val tagImageRepository: TagImageRepository,
     private val applicationReviewManager: ApplicationReviewManager,
     private val billingDataSource: BillingDataSource,
-    private val stringResourceProvider: StringResourceProvider
+    private val appOpenAdManager: AppOpenAdManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState?>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -106,19 +106,22 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun requestBillingRemoveAds(
-        activity: ComponentActivity
+        activity: ComponentActivity,
+        onError: () -> Unit
     ) = viewModelScope.launch {
         billingDataSource.purchaseProduct(
             BillingProductType.REMOVE_ADS,
             activity = activity,
-            onError = {
-                val msg =
-                    stringResourceProvider.getString(
-                        com.doodle.core.ui.R.string.something_went_wrong
-                    )
-                updateUiState(UiState.Error(msg))
-            }
+            onError = onError
         )
+    }
+
+    fun showAppOpenAd(activity: ComponentActivity) {
+        appOpenAdManager.showAdIfAvailable(activity)
+    }
+
+    fun restorePurchases() {
+        billingDataSource.restorePurchases()
     }
 
     sealed class UiState {

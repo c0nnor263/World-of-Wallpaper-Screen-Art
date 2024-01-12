@@ -1,5 +1,6 @@
 package com.doodle.feature.search.presentation
 
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.animateContentSize
@@ -57,10 +58,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.doodle.core.domain.enums.PagingKey
+import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.domain.model.remote.RemoteImage
 import com.doodle.core.ui.ApplicationScaffold
+import com.doodle.core.ui.DisposableEffectLifecycle
 import com.doodle.core.ui.ErrorMessage
 import com.doodle.core.ui.FetchedImageItem
 import com.doodle.core.ui.LoadingBar
@@ -70,6 +73,7 @@ import com.doodle.core.ui.card.CardImageList
 import com.doodle.core.ui.card.EmptyListContent
 import com.doodle.core.ui.checkForSpecificException
 import com.doodle.core.ui.scaleWithPressAnimation
+import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.core.ui.tweenEasy
 import com.doodle.core.ui.tweenMedium
 import com.doodle.feature.search.state.SearchQueryState
@@ -81,12 +85,23 @@ fun SearchScreen(
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    val removeAdsStatus = LocalRemoveAdsStatus.current
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchImages = viewModel.searchImagesState.collectAsLazyPagingItems()
 
     LaunchedEffect(navArgs) {
         viewModel.setSearchState(navArgs)
     }
+
+    DisposableEffectLifecycle(
+        onResume = {
+            if (removeAdsStatus.isNotPurchased()) {
+                val activity = context as ComponentActivity
+                viewModel.showAppOpenAd(activity)
+            }
+        }
+    )
 
 
     ApplicationScaffold(title = navArgs.query.ifBlank {

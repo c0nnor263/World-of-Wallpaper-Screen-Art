@@ -2,7 +2,6 @@ package com.doodle.core.advertising.data
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import com.doodle.core.advertising.domain.DEFAULT_LOAD_RETRY
 import com.doodle.core.advertising.domain.enums.AdStatus
 import com.doodle.core.advertising.wasLoadTimeLessThanLimitHoursAgo
@@ -74,12 +73,6 @@ class AppOpenAdManager @Inject constructor(
             return@launch
         }
 
-        Log.i(
-            "TAG",
-            "showAdIfAvailable: ${appOpenAd != null} &&" +
-                    "${!wasLoadTimeLessThanLimitHoursAgo(loadTime, 4)} &&" +
-                    "${appPreferencesDataStoreRepository.getIsAvailableForAppOpenAd()}"
-        )
         if (!isAdAvailable()) {
             loadAd()
             return@launch
@@ -105,7 +98,6 @@ class AppOpenAdManager @Inject constructor(
     }
 
     private fun updateAppOpenAd(ad: AppOpenAd?, adStatus: AdStatus) {
-        Log.i("TAG", "updateAppOpenAd: $ad $adStatus")
         when (adStatus) {
             AdStatus.LOADED -> {
                 appOpenAd = ad

@@ -41,7 +41,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.doodle.core.advertising.domain.enums.AdStatus
+import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.ui.R
+import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.core.ui.theme.WallpapersTheme
 
 const val SplashScreenTag = "SplashScreen"
@@ -51,14 +53,17 @@ fun SplashScreen(
     viewModel: SplashScreenViewModel,
     onNavigateToHome: () -> Unit
 ) {
+    val removeAdsStatus = LocalRemoveAdsStatus.current
     val context = LocalContext.current
     val adStatus = viewModel.appOpenAdStatus.collectAsStateWithLifecycle()
     LaunchedEffect(adStatus.value) {
         when (adStatus.value) {
             AdStatus.LOADING -> viewModel.incrementAppOpenTimes()
             else -> {
-                val activity = context as ComponentActivity
-                viewModel.showAppOpenAd(activity)
+                if (removeAdsStatus.isNotPurchased()) {
+                    val activity = context as ComponentActivity
+                    viewModel.showAppOpenAd(activity)
+                }
                 onNavigateToHome()
             }
         }

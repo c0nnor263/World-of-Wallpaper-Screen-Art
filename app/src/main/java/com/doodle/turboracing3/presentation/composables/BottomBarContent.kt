@@ -2,6 +2,8 @@ package com.doodle.turboracing3.presentation.composables
 
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -11,15 +13,18 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.doodle.core.data.R
+import com.doodle.core.ui.tweenLong
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 
 @Composable
-fun BottomBarContent(modifier: Modifier = Modifier) {
+fun BottomBarContent(modifier: Modifier = Modifier, isVisible: Boolean) {
     AnimatedVisibility(
-        modifier = modifier,
-        visible = true
+        visible = isVisible,
+        enter = slideInVertically(tweenLong()) { it },
+        exit = slideOutVertically(tweenLong()) { it },
+        modifier = modifier
     ) {
         Box(
             modifier = Modifier.fillMaxWidth(),

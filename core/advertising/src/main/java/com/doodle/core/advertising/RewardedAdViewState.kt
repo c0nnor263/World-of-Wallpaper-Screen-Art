@@ -46,8 +46,6 @@ class RewardedAdViewState(
     private val retryPolicy = AdRetryPolicy()
     var rewardedAd by mutableStateOf<RewardedAd?>(null)
         private set
-    val isAdAvailable
-        get() = rewardedAd != null
 
     fun loadOrGetAd(activity: ComponentActivity) {
         scope.launch {

@@ -20,16 +20,14 @@ import com.android.billingclient.api.consumePurchase
 import com.android.billingclient.api.queryProductDetails
 import com.android.billingclient.api.queryPurchaseHistory
 import com.android.billingclient.api.queryPurchasesAsync
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.doodle.core.billing.domain.enums.BillingProductType
 import com.doodle.core.billing.domain.enums.VerifyResult
 import com.doodle.core.billing.domain.model.ProductDetailsInfo
 import com.doodle.core.billing.domain.model.PurchaseProduct
 import com.doodle.core.domain.di.ApplicationScope
 import com.doodle.core.domain.di.IoDispatcher
+import com.doodle.core.domain.enums.RemoveAdsStatus
+import com.doodle.core.domain.source.local.repository.UserPreferencesDataStoreRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.collections.immutable.toImmutableList
@@ -50,7 +48,8 @@ import javax.inject.Inject
 class BillingDataSource @Inject constructor(
     @ApplicationContext private val context: Context,
     @ApplicationScope private val scope: CoroutineScope,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
+    private val userPreferencesDataStoreRepository: UserPreferencesDataStoreRepository
 ) {
     private var initialBillingStartTime = 0L
     var fetchDelay: Long = TimeUnit.SECONDS.toMillis(1)
@@ -178,56 +177,15 @@ class BillingDataSource @Inject constructor(
     private fun verifyPurchase(purchase: Purchase?) {
         val purchaseJson = purchase?.originalJson?.let { JSONObject(it) }
         val productId = purchaseJson?.getString("productId")
-        val type = ProductType.INAPP
-        Log.i("TAG", "verifyPurchase: $purchase")
-        val url =
-//            BuildConfig.verifyPurchases + "?" + // TODO verifyPurchases
-            "purchaseToken=${purchase?.purchaseToken}&" +
-                "productId=$productId&" +
-                "productType=$type"
-        Log.i("TAG", "verifyPurchase: $url")
 
-        val responseListener = Response.Listener<String> { response ->
-            Log.i("TAG", "verifyPurchase: response $response")
-            val isValid = JSONObject(response).getBoolean("isValid").also {
-                Log.i("TAG", "verifyPurchase: $it")
+        updatePendingBenefitType(purchaseJson)
+        when (productId) {
+            BillingProductType.REMOVE_ADS.id -> {
+                acknowledgePurchase(purchase)
             }
-            if (isValid) {
-                updatePendingBenefitType(purchaseJson)
-                when (productId) {
-                    BillingProductType.REMOVE_ADS.id -> {
-                        acknowledgePurchase(purchase)
-                    }
 
-                    else -> consumePurchase(purchase)
-                }
-            } else {
-                updatePendingBenefitResult(VerifyResult.FAILED)
-            }
+            else -> consumePurchase(purchase)
         }
-
-        val request = StringRequest(
-            Request.Method.POST,
-            url,
-            responseListener
-        ) { error ->
-            Log.i(
-                "TAG",
-                "verifyPurchase: net error ${error.networkResponse.statusCode} \n${error.message}"
-            )
-            when (productId) {
-                BillingProductType.REMOVE_ADS.id -> {
-                    updatePendingBenefitResult(VerifyResult.FAILED)
-                }
-
-                else -> {
-                    updatePendingBenefitType(purchaseJson)
-                    consumePurchase(purchase)
-                }
-            }
-        }
-
-        Volley.newRequestQueue(context).add(request)
     }
 
     suspend fun purchaseProduct(
@@ -242,7 +200,6 @@ class BillingDataSource @Inject constructor(
                     ?.getOrNull(0)
             }
         }
-        Log.i("TAG", "purchaseProduct: $details")
 
         if (details == null) {
             onError()
@@ -261,12 +218,14 @@ class BillingDataSource @Inject constructor(
             client.launchBillingFlow(activity, flowParams)
         } catch (e: Exception) {
             _pendingBenefitFlow.value = PurchaseProduct(type, VerifyResult.FAILED)
+            onError()
         }
     }
 
     private fun receiveProduct(type: BillingProductType?) = scope.launch {
         when (type) {
             BillingProductType.REMOVE_ADS -> {
+                userPreferencesDataStoreRepository.setRemoveAds(RemoveAdsStatus.PURCHASED)
             }
 
             else -> {}
@@ -281,7 +240,6 @@ class BillingDataSource @Inject constructor(
                 .build()
         scope.launch {
             val consumeResult = client.consumePurchase(params)
-            Log.i("TAG", "consumePurchase: $consumeResult")
             if (consumeResult.billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 updatePendingBenefitResult(VerifyResult.SUCCESS)
             } else {

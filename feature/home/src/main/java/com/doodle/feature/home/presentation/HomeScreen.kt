@@ -2,7 +2,6 @@ package com.doodle.feature.home.presentation
 
 import android.Manifest
 import android.os.Build
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -51,13 +50,17 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.doodle.core.advertising.enums.RewardedAdResult
 import com.doodle.core.advertising.rememberRewardedAdViewState
 import com.doodle.core.domain.R
+import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.ui.ApplicationScaffold
+import com.doodle.core.ui.DisposableEffectLifecycle
+import com.doodle.core.ui.LoadingBar
 import com.doodle.core.ui.NavigationIcon
 import com.doodle.core.ui.RequestPermissionDialog
 import com.doodle.core.ui.captureChildrenGestures
 import com.doodle.core.ui.card.CardButton
+import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.core.ui.state.rememberDialogState
 import com.doodle.core.ui.tweenMedium
 import com.doodle.feature.home.domain.enums.TabPage
@@ -74,10 +77,12 @@ fun HomeScreen(
     onNavigateToSearch: (SearchNavArgs?) -> Unit,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
+    val removeAdsStatus = LocalRemoveAdsStatus.current
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingImageFlow by viewModel.pagingImageFlow.collectAsStateWithLifecycle(null)
     val drawerState = rememberHomeDrawerState()
+    val showLoadingDialogState = rememberDialogState()
 
     val isRequiredPermissionGranted = remember {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -89,16 +94,24 @@ fun HomeScreen(
     val requestNotificationDialog = rememberDialogState(!isRequiredPermissionGranted)
 
     SideEffect {
+        // Set the drawer width to be 1/4 of the screen width
         drawerState.updateWidth()
     }
 
     LaunchedEffect(pagingImageFlow) {
+        // Cache the data for paging when the pagingImageFlow with PagingKey is changed
         viewModel.cacheDataForPagingKey(pagingImageFlow)
     }
 
+    DisposableEffectLifecycle(onResume = {
+        if (removeAdsStatus.isNotPurchased()) {
+            viewModel.showAppOpenAd(context as ComponentActivity)
+        }
+    })
+
+
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         HomeNavigationDrawer(
             drawerState = drawerState.state,
@@ -108,63 +121,55 @@ fun HomeScreen(
                 viewModel.requestApplicationReview(activity)
             },
             onRequestRemoveAds = {
+                showLoadingDialogState.showFor(10)
                 val activity = context as ComponentActivity
-                viewModel.requestBillingRemoveAds(activity)
-            }
-        )
-        ApplicationScaffold(
-            title = stringResource(id = R.string.app_name),
-            navigationIcon = {
-                NavigationIcon(
-                    imageVector = Icons.Default.Menu,
-                    onClick = drawerState::showOrClose
-                )
+                viewModel.requestBillingRemoveAds(activity, onError = {
+                    val msg = context.getString(
+                        com.doodle.core.ui.R.string.something_went_wrong
+                    )
+                    viewModel.updateUiState(HomeScreenViewModel.UiState.Error(msg))
+                    showLoadingDialogState.dismiss()
+                })
             },
-            actions = arrayOf(
-                {
-                    IconButton(
-                        onClick = {
-                            onNavigateToSearch(null)
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    }
-                }
-            ),
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    val interpolatedScale =
-                        lerp(
-                            start = 1F,
-                            stop = 1.2F,
-                            fraction = drawerState.fraction
-                        )
-                    val interpolatedTransitionX =
-                        lerp(
-                            start = 0F,
-                            stop = drawerState.width / 1.4F,
-                            fraction = drawerState.fraction
-                        )
-                    translationX = interpolatedTransitionX
-                    scaleX = interpolatedScale
-                    scaleY = interpolatedScale
+            onRestorePurchases = {
+                showLoadingDialogState.showFor(5)
+                viewModel.restorePurchases()
+            },
+        )
+        ApplicationScaffold(title = stringResource(id = R.string.app_name), navigationIcon = {
+            NavigationIcon(
+                imageVector = Icons.Default.Menu, onClick = drawerState::showOrClose
+            )
+        }, actions = arrayOf({
+            IconButton(onClick = {
+                onNavigateToSearch(null)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Search, contentDescription = null
+                )
+            }
+        }), modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                val interpolatedScale = lerp(
+                    start = 1F, stop = 1.2F, fraction = drawerState.fraction
+                )
+                val interpolatedTransitionX = lerp(
+                    start = 0F, stop = drawerState.width / 1.4F, fraction = drawerState.fraction
+                )
+                translationX = interpolatedTransitionX
+                scaleX = interpolatedScale
+                scaleY = interpolatedScale
 
-                    if (drawerState.state.targetValue == DrawerValue.Open ||
-                        drawerState.state.isAnimationRunning
-                    ) {
-                        shadowElevation = 8F
-                        shape = RoundedCornerShape(24.dp)
-                        clip = true
-                    }
+                if (drawerState.state.targetValue == DrawerValue.Open || drawerState.state.isAnimationRunning) {
+                    shadowElevation = 8F
+                    shape = RoundedCornerShape(24.dp)
+                    clip = true
                 }
-                .captureChildrenGestures(drawerState.state.isOpen) {
-                    drawerState.close()
-                }
-        ) { innerPadding ->
+            }
+            .captureChildrenGestures(drawerState.state.isOpen) {
+                drawerState.close()
+            }) { innerPadding ->
             CompositionLocalProvider(LocalHomePagingState provides viewModel.homePagingState) {
                 HomeScreenContent(
                     uiState = uiState,
@@ -196,16 +201,16 @@ fun HomeScreen(
 
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        RequestPermissionDialog(
-            state = requestNotificationDialog,
+        RequestPermissionDialog(state = requestNotificationDialog,
             permission = Manifest.permission.POST_NOTIFICATIONS,
             requestTitleMessage = com.doodle.core.ui.R.string.request_notification_permission_title,
             requestContentMessage = com.doodle.core.ui.R.string.request_notification_permission_message,
             onDismiss = {
                 requestNotificationDialog.dismiss()
-            }
-        )
+            })
     }
+
+    LoadingBar(visible = showLoadingDialogState.isVisible)
 }
 
 @Composable
@@ -216,6 +221,7 @@ fun WatchAdForWallpaper(
     onError: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val removeAdStatus = LocalRemoveAdsStatus.current
     val activity = LocalContext.current as ComponentActivity
     val rewardedInterstitialAd = rememberRewardedAdViewState(
         activity
@@ -225,7 +231,6 @@ fun WatchAdForWallpaper(
     LaunchedEffect(isShowingAdDialog.isVisible) {
         if (isShowingAdDialog.isVisible) {
             rewardedInterstitialAd.showAd(activity) { result ->
-                Log.i("TAG", "WatchAdForWallpaper: $result")
                 when (result) {
                     RewardedAdResult.REWARDED -> {
                         onWatched(args)
@@ -272,6 +277,11 @@ fun WatchAdForWallpaper(
                     ) {
                         CardButton(
                             onClick = {
+                                if (removeAdStatus.isNotPurchased()) {
+                                    isShowingAdDialog.show()
+                                } else {
+                                    onWatched(args)
+                                }
                                 isShowingAdDialog.show()
                             },
                         ) {
@@ -303,18 +313,15 @@ private fun HomeScreenContent(
     }
 
     Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        HomeTabLayout(
-            modifier = Modifier.fillMaxWidth(),
+        HomeTabLayout(modifier = Modifier.fillMaxWidth(),
             pagerState = pagerState,
             isLoading = uiState is HomeScreenViewModel.UiState.Loading,
             errorMsg = (uiState as? HomeScreenViewModel.UiState.Error)?.message,
             onErrorClick = {
                 homePagingState.retry()
-            }
-        )
+            })
 
         HomePager(
             pagerState = pagerState,

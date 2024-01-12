@@ -1,8 +1,10 @@
 package com.doodle.feature.search.presentation
 
+import androidx.activity.ComponentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
+import com.doodle.core.advertising.data.AppOpenAdManager
 import com.doodle.core.data.domain.ApplicationPagingDataStore
 import com.doodle.core.domain.enums.PagingKey
 import com.doodle.core.domain.model.navigation.SearchNavArgs
@@ -25,7 +27,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class SearchScreenViewModel @Inject constructor(
     private val searchImagePagingRepository: SearchImagePagingRepository,
-    private val applicationPagingDataStore: ApplicationPagingDataStore
+    private val applicationPagingDataStore: ApplicationPagingDataStore,
+    private val appOpenAdManager: AppOpenAdManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState?>(UiState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -63,6 +66,10 @@ class SearchScreenViewModel @Inject constructor(
 
     fun updateUiState(uiState: UiState?) {
         _uiState.value = uiState
+    }
+
+    fun showAppOpenAd(activity: ComponentActivity) {
+        appOpenAdManager.showAdIfAvailable(activity)
     }
 
 
