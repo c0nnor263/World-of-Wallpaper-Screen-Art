@@ -12,9 +12,14 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.doodle.core.domain.enums.RemoveAdsStatus
+import com.doodle.core.domain.enums.isNotPurchased
+import com.doodle.core.ui.DisposableEffectLifecycle
 import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.core.ui.theme.WallpapersTheme
+import com.doodle.turboracing3.navigation.isPermittedForAppOpenAd
 import com.doodle.turboracing3.presentation.composables.AppContent
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,21 +29,30 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val navController = rememberNavController()
+            val backStackEntry = navController.currentBackStackEntryAsState()
             val removeAdsStatus =
                 viewModel.isPremiumUser.collectAsStateWithLifecycle(RemoveAdsStatus.NOT_PURCHASED)
 
+            DisposableEffectLifecycle(
+                onResume = {
+                    viewModel.onResumeBilling()
+                    if (removeAdsStatus.value.isNotPurchased() &&
+                        backStackEntry.value.isPermittedForAppOpenAd()
+                    ) {
+                        viewModel.showAppOpenAd(this)
+                    }
+                }, onDestroy = {
+                    viewModel.destroyNativeAds()
+                })
+
             CompositionLocalProvider(LocalRemoveAdsStatus provides removeAdsStatus.value) {
                 WallpapersTheme {
-                    AppContent()
+                    AppContent(navController)
                 }
             }
         }
         setFullscreen()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResumeBilling()
     }
 
     private fun setFullscreen() {

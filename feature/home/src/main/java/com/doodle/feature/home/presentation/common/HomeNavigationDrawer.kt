@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
@@ -66,6 +67,18 @@ import com.doodle.core.billing.domain.enums.BuyProductResult
 import com.doodle.core.ui.scaleWithPressAnimation
 import com.doodle.core.ui.showShareDialog
 import com.doodle.core.ui.theme.WallpapersTheme
+import com.doodle.core.ui.theme.color_contact_dark
+import com.doodle.core.ui.theme.color_contact_light
+import com.doodle.core.ui.theme.color_favorite_dark
+import com.doodle.core.ui.theme.color_favorite_light
+import com.doodle.core.ui.theme.color_policy_dark
+import com.doodle.core.ui.theme.color_policy_light
+import com.doodle.core.ui.theme.color_rate_dark
+import com.doodle.core.ui.theme.color_rate_light
+import com.doodle.core.ui.theme.color_remove_ads_dark
+import com.doodle.core.ui.theme.color_remove_ads_light
+import com.doodle.core.ui.theme.color_share_dark
+import com.doodle.core.ui.theme.color_share_light
 import com.doodle.core.ui.tweenMedium
 import com.doodle.feature.home.R
 import kotlinx.coroutines.launch
@@ -123,6 +136,8 @@ private fun HomeModalNavigationDrawerContent(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val configuration = LocalConfiguration.current
+    val uiMode = configuration.uiMode and UI_MODE_NIGHT_YES
 
     ModalDrawerSheet(
         modifier = Modifier
@@ -147,7 +162,7 @@ private fun HomeModalNavigationDrawerContent(
                     HomeNavigationDrawerItem(
                         label = R.string.favorites_wallpapers,
                         imageVector = Icons.Default.Favorite,
-                        color = Color(0xFFF08080),
+                        color = if (uiMode == UI_MODE_NIGHT_YES) color_favorite_dark else color_favorite_light,
                         onClick = {
                             scope.launch {
                                 onNavigateToFavorites()
@@ -162,7 +177,7 @@ private fun HomeModalNavigationDrawerContent(
                         imageVector = ImageVector.vectorResource(
                             com.doodle.core.ui.R.drawable.remove_ads_icon
                         ),
-                        color = Color(0xFFF0E68C),
+                        color = if (uiMode == UI_MODE_NIGHT_YES) color_remove_ads_dark else color_remove_ads_light,
                         onClick = onRequestRemoveAds
                     )
                 }
@@ -170,7 +185,7 @@ private fun HomeModalNavigationDrawerContent(
                     HomeNavigationDrawerItem(
                         label = R.string.privacy_policy,
                         imageVector = Icons.Default.PrivacyTip,
-                        color = Color(0xFF00BFFF),
+                        color = if (uiMode == UI_MODE_NIGHT_YES) color_policy_dark else color_policy_light,
                         onClick = {
                             val policyUrl = context.getString(R.string.privacy_policy_link)
                             val intent = Intent(
@@ -185,7 +200,7 @@ private fun HomeModalNavigationDrawerContent(
                     HomeNavigationDrawerItem(
                         label = R.string.rate_us,
                         imageVector = Icons.Default.StarRate,
-                        color = Color(0xFF00FA9A),
+                        color = if (uiMode == UI_MODE_NIGHT_YES) color_rate_dark else color_rate_light,
                         onClick = onShowReview
                     )
                 }
@@ -193,7 +208,7 @@ private fun HomeModalNavigationDrawerContent(
                     HomeNavigationDrawerItem(
                         label = R.string.share_app,
                         imageVector = Icons.Default.Share,
-                        color = Color(0xFFFFE4B5),
+                        color = if (uiMode == UI_MODE_NIGHT_YES) color_share_dark else color_share_light,
                         onClick = {
                             showShareDialog(context)
                         }
@@ -203,7 +218,7 @@ private fun HomeModalNavigationDrawerContent(
                     HomeNavigationDrawerItem(
                         label = R.string.contact_us,
                         imageVector = Icons.Default.ContactSupport,
-                        color = Color(0xFFADD8E6),
+                        color = if (uiMode == UI_MODE_NIGHT_YES) color_contact_dark else color_contact_light,
                         onClick = {
                             Intent(Intent.ACTION_SENDTO).apply {
                                 data = Uri.parse("mailto:")

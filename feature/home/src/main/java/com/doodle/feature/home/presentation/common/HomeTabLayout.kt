@@ -67,11 +67,7 @@ fun HomeTabLayout(
     onErrorClick: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    BoxWithConstraints(
-        modifier = modifier
-            .fillMaxWidth()
-
-    ) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
         val tabRowEdgePadding = maxWidth - minWidth * 0.8F
         Column(modifier = Modifier.animateContentSize(tweenMedium())) {
             ScrollableTabRow(

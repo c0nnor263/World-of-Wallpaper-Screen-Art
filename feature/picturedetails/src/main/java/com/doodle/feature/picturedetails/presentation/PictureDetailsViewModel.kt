@@ -219,10 +219,6 @@ class PictureDetailsViewModel @Inject constructor(
     }
 
 
-    fun destroyNativeAds() {
-        nativeAdManager.onActivityDestroy()
-    }
-
     fun showAppOpenAd(activity: ComponentActivity) {
         appOpenAdManager.showAdIfAvailable(activity)
     }

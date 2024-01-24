@@ -9,6 +9,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -54,7 +57,6 @@ import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.ui.ApplicationScaffold
-import com.doodle.core.ui.DisposableEffectLifecycle
 import com.doodle.core.ui.LoadingBar
 import com.doodle.core.ui.NavigationIcon
 import com.doodle.core.ui.RequestPermissionDialog
@@ -77,7 +79,6 @@ fun HomeScreen(
     onNavigateToSearch: (SearchNavArgs?) -> Unit,
     onNavigateToDetails: (PictureDetailsNavArgs) -> Unit
 ) {
-    val removeAdsStatus = LocalRemoveAdsStatus.current
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pagingImageFlow by viewModel.pagingImageFlow.collectAsStateWithLifecycle(null)
@@ -102,13 +103,6 @@ fun HomeScreen(
         // Cache the data for paging when the pagingImageFlow with PagingKey is changed
         viewModel.cacheDataForPagingKey(pagingImageFlow)
     }
-
-    DisposableEffectLifecycle(onResume = {
-        if (removeAdsStatus.isNotPurchased()) {
-            viewModel.showAppOpenAd(context as ComponentActivity)
-        }
-    })
-
 
     Box(
         modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
@@ -162,7 +156,9 @@ fun HomeScreen(
                 scaleY = interpolatedScale
 
                 if (drawerState.state.targetValue == DrawerValue.Open || drawerState.state.isAnimationRunning) {
-                    shadowElevation = 8F
+                    spotShadowColor = Color.White
+                    ambientShadowColor = Color.White
+                    shadowElevation = 24F
                     shape = RoundedCornerShape(24.dp)
                     clip = true
                 }
@@ -323,6 +319,16 @@ private fun HomeScreenContent(
                 homePagingState.retry()
             })
 
+        val primary = MaterialTheme.colorScheme.primary.copy(0.1F)
+        val secondary = MaterialTheme.colorScheme.secondary.copy(0.1F)
+        val colors = remember {
+            listOf(
+                primary,
+                Color.Transparent,
+                Color.Transparent,
+                secondary
+            )
+        }
         HomePager(
             pagerState = pagerState,
             onNavigateToDetails = onNavigateToDetails,
@@ -331,6 +337,7 @@ private fun HomeScreenContent(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(1F)
+                .background(brush = Brush.linearGradient(colors = colors))
         )
     }
 }

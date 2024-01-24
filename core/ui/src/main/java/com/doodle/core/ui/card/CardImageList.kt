@@ -1,5 +1,7 @@
 package com.doodle.core.ui.card
 
+import android.content.res.Configuration.UI_MODE_NIGHT_NO
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,8 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.doodle.core.ui.ActionButton
+import com.doodle.core.ui.FetchedImageItem
+import com.doodle.core.ui.theme.WallpapersTheme
 import com.doodle.core.ui.tweenMedium
 import kotlinx.coroutines.launch
 
@@ -51,9 +56,9 @@ fun CardImageList(
             LazyVerticalStaggeredGrid(
                 state = state,
                 columns = columns,
-                contentPadding = PaddingValues(2.dp, 4.dp, 2.dp, 2.dp),
-                verticalItemSpacing = 4.dp,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                contentPadding = PaddingValues(8.dp),
+                verticalItemSpacing = 8.dp,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 content()
             }
@@ -77,5 +82,30 @@ fun CardImageList(
                 )
             }
         }
+    }
+}
+
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO)
+@Composable
+fun CardImageListPreview() {
+    WallpapersTheme {
+        CardImageList(
+            columns = StaggeredGridCells.Fixed(3),
+            isItemsEmpty = false,
+            onEmptyContent = {},
+            content = {
+                items(10) {
+                    FetchedImageItem(
+                        isPremium = false,
+                        previewURL = "https://images.pexels.com/photos/2486168/pexels-photo-2486168.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+                        modifier = Modifier.padding(4.dp)
+                    ) {
+
+                    }
+                }
+            }
+        )
     }
 }

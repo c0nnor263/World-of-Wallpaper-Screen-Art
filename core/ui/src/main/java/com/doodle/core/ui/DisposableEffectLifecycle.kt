@@ -15,9 +15,8 @@ fun DisposableEffectLifecycle(
     onStop: () -> Unit = {},
     onDestroy: () -> Unit = {},
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    DisposableEffect(lifecycle) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_CREATE -> onCreate()
@@ -29,9 +28,9 @@ fun DisposableEffectLifecycle(
                 else -> {}
             }
         }
-        lifecycleOwner.lifecycle.addObserver(observer)
+        lifecycle.addObserver(observer)
         onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+            lifecycle.removeObserver(observer)
         }
     }
 }

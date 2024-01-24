@@ -1,6 +1,5 @@
 package com.doodle.turboracing3.presentation.composables
 
-import android.util.Log
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,7 +8,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.core.ui.tweenEasy
@@ -17,11 +16,10 @@ import com.doodle.turboracing3.navigation.Screen
 import com.doodle.turboracing3.presentation.navigation.AppHost
 
 @Composable
-fun AppContent() {
-    val navController = rememberNavController()
+fun AppContent(navController: NavHostController) {
     val backStackEntry = navController.currentBackStackEntry
     val removeAdsStatus = LocalRemoveAdsStatus.current
-    Log.i("TAG", "AppContent: $removeAdsStatus")
+
     Column(
         modifier = Modifier
             .fillMaxSize()

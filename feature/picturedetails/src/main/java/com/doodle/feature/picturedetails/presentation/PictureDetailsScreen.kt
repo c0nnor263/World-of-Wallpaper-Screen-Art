@@ -2,7 +2,6 @@ package com.doodle.feature.picturedetails.presentation
 
 import android.content.Intent
 import android.graphics.Bitmap
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,12 +21,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImagePainter
 import com.doodle.core.domain.enums.ActionType
-import com.doodle.core.domain.enums.isNotPurchased
 import com.doodle.core.domain.enums.isPurchased
 import com.doodle.core.domain.model.navigation.PictureDetailsNavArgs
 import com.doodle.core.domain.model.navigation.SearchNavArgs
 import com.doodle.core.domain.model.remote.RemoteImage
-import com.doodle.core.ui.DisposableEffectLifecycle
 import com.doodle.core.ui.LoadingBar
 import com.doodle.core.ui.state.LocalRemoveAdsStatus
 import com.doodle.feature.picturedetails.R
@@ -65,19 +62,6 @@ fun PictureDetailsScreen(
         onGetNativeAd = viewModel::getNativeAdById,
         onCheckFavorite = viewModel::checkForFavorite,
         onDismissAd = viewModel::dismissNativeAd
-    )
-
-
-    DisposableEffectLifecycle(
-        onResume = {
-            if (removeAdsStatus.isNotPurchased()) {
-                val activity = context as ComponentActivity
-                viewModel.showAppOpenAd(activity)
-            }
-        },
-        onDestroy = {
-            viewModel.destroyNativeAds()
-        }
     )
 
     LaunchedEffect(uiState.value) {

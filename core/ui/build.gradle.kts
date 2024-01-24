@@ -55,4 +55,5 @@ dependencies {
     implementation("io.coil-kt:coil-compose:${Versions.Compose.coil}")
     implementation("androidx.paging:paging-runtime:${Versions.Common.paging}")
     implementation("androidx.paging:paging-compose:${Versions.Common.paging}")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
 }

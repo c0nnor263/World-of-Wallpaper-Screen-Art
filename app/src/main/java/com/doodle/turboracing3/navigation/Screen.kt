@@ -1,6 +1,7 @@
 package com.doodle.turboracing3.navigation
 
 import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.navArgument
 import com.doodle.turboracing3.navigation.type.PictureDetailsNavArgsType
 import com.doodle.turboracing3.navigation.type.SearchNavArgsType
@@ -40,4 +41,12 @@ sealed class Screen(
             }
         )
     )
+}
+
+fun NavBackStackEntry?.isPermittedForAppOpenAd(): Boolean {
+    return this?.run {
+        destination.route == Screen.Search().route ||
+                destination.route == Screen.Details().route ||
+                destination.route == Screen.Home.route
+    } ?: false
 }
