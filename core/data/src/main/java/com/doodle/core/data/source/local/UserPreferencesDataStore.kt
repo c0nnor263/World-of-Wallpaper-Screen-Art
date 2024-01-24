@@ -15,7 +15,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserPreferencesDataStore @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     @IoScope private val ioScope: CoroutineScope

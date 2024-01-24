@@ -5,7 +5,9 @@ import com.doodle.core.domain.enums.RemoveAdsStatus
 import com.doodle.core.domain.source.local.repository.UserPreferencesDataStoreRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UserPreferencesDataStoreRepositoryImpl @Inject constructor(
     private val userPreferencesDataStore: UserPreferencesDataStore
 ) : UserPreferencesDataStoreRepository {
